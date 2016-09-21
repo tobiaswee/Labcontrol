@@ -20,7 +20,7 @@
 #include "sessionstarter.h"
 #include "ui_sessionstarter.h"
 
-lc::SessionStarter::SessionStarter( lcLablib *argLablib, QPlainTextEdit *argDebugMessagesTextEdit, QWidget *parent ) :
+lc::SessionStarter::SessionStarter( Lablib *argLablib, QPlainTextEdit *argDebugMessagesTextEdit, QWidget *parent ) :
     QWidget{ parent },
     debugMessagesTextEdit { argDebugMessagesTextEdit },
     lablib{ argLablib },

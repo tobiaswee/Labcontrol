@@ -19,7 +19,7 @@
 
 #include "clienthelpnotificationserver.h"
 
-lcClientHelpNotificationServer::lcClientHelpNotificationServer( const QMap< QString, lcClient* > * const argClientIPsToClientsMap,
+lc::ClientHelpNotificationServer::ClientHelpNotificationServer( const QMap< QString, Client* > * const argClientIPsToClientsMap,
                                 const QString * const argServerIP, const unsigned short int &argServerPort, QObject *argParent ) :
     QObject{ argParent },
     clientIPsToClientsMap{ argClientIPsToClientsMap },
@@ -40,16 +40,18 @@ lcClientHelpNotificationServer::lcClientHelpNotificationServer( const QMap< QStr
             config = manager.defaultConfiguration();
         }
         networkSession = new QNetworkSession{ config, this };
-        connect( networkSession, &QNetworkSession::opened, this, &lcClientHelpNotificationServer::OpenSession );
+        connect( networkSession, &QNetworkSession::opened,
+                 this, &ClientHelpNotificationServer::OpenSession );
         networkSession->open();
     } else {
         OpenSession();
     }
 
-    connect( helpMessageServer, &QTcpServer::newConnection, this, &lcClientHelpNotificationServer::SendReply );
+    connect( helpMessageServer, &QTcpServer::newConnection,
+             this, &ClientHelpNotificationServer::SendReply );
 }
 
-void lcClientHelpNotificationServer::OpenSession() {
+void lc::ClientHelpNotificationServer::OpenSession() {
     // Save the used configuration
     if ( networkSession ) {
         QNetworkConfiguration config = networkSession->configuration();
@@ -75,7 +77,7 @@ void lcClientHelpNotificationServer::OpenSession() {
     }
 }
 
-void lcClientHelpNotificationServer::SendReply() {
+void lc::ClientHelpNotificationServer::SendReply() {
     QByteArray block;
     QDataStream out{ &block, QIODevice::WriteOnly };
     out.setVersion( QDataStream::Qt_5_2 );

@@ -23,9 +23,9 @@
 
 #include "lablib.h"
 
-lcLablib::lcLablib( QPlainTextEdit *argDebugMessagesTextEdit, QObject *argParent ) :
+lc::Lablib::Lablib( QPlainTextEdit *argDebugMessagesTextEdit, QObject *argParent ) :
     QObject{ argParent },
-    clientIPsToClientsMap{ new QMap< QString, lcClient* > },
+    clientIPsToClientsMap{ new QMap< QString, Client* > },
     debugMessagesTextEdit{ argDebugMessagesTextEdit },
     labSettings{ "Economic Laboratory", "Labcontrol", this },
     occupiedPorts{ new QVector< int > },
@@ -39,23 +39,25 @@ lcLablib::lcLablib( QPlainTextEdit *argDebugMessagesTextEdit, QObject *argParent
 
     // Initialize all 'netstat' query mechanisms
     if ( ( *settingsItems )[ ( int )settingsItems_t::NETSTAT_COMMAND ] ) {
-        netstatAgent = new lcNetstatAgent{ ( *settingsItems )[ ( int )settingsItems_t::NETSTAT_COMMAND ] };
+        netstatAgent = new NetstatAgent{ ( *settingsItems )[ ( int )settingsItems_t::NETSTAT_COMMAND ] };
         netstatAgent->moveToThread( &netstatThread );
         connect( &netstatThread, &QThread::finished, netstatAgent, &QObject::deleteLater );
-        connect( netstatAgent, &lcNetstatAgent::QueryFinished, this, &lcLablib::GotNetstatQueryResult );
+        connect( netstatAgent, &NetstatAgent::QueryFinished,
+                 this, &Lablib::GotNetstatQueryResult );
         netstatThread.start();
         netstatTimer = new QTimer{ this };
-        connect( netstatTimer, &QTimer::timeout, netstatAgent, &lcNetstatAgent::QueryClientConnections );
+        connect( netstatTimer, &QTimer::timeout,
+                 netstatAgent, &NetstatAgent::QueryClientConnections );
         netstatTimer->start( 500 );
     }
 
     // Initialize the server for client help requests retrieval
     if ( clientHelpNotificationServerPort && ( *settingsItems )[ ( int )settingsItems_t::SERVER_IP ] ) {
-        clientHelpNotificationServer = new lcClientHelpNotificationServer{ clientIPsToClientsMap, ( *settingsItems )[ ( int )settingsItems_t::SERVER_IP ], clientHelpNotificationServerPort, this };
+        clientHelpNotificationServer = new ClientHelpNotificationServer{ clientIPsToClientsMap,( *settingsItems )[ ( int )settingsItems_t::SERVER_IP ], clientHelpNotificationServerPort, this };
     }
 }
 
-lcLablib::~lcLablib () {
+lc::Lablib::~Lablib () {
     if ( netstatTimer ) {
         netstatTimer->stop();
         delete netstatTimer;
@@ -64,7 +66,7 @@ lcLablib::~lcLablib () {
     netstatThread.wait();
     delete adminUsers;
     if ( clients ) {
-        for ( QVector< lcClient* >::iterator it = clients->begin(); it != clients->end(); ++it ) {
+        for ( QVector< Client* >::iterator it = clients->begin(); it != clients->end(); ++it ) {
             delete *it;
         }
     }
@@ -78,7 +80,9 @@ lcLablib::~lcLablib () {
     delete settingsItems;
 }
 
-bool lcLablib::CheckPathAndComplain( const QString * const argPath, const QString &argVariableName, const QString &argComplaint ) {
+bool lc::Lablib::CheckPathAndComplain( const QString * const argPath,
+                                       const QString &argVariableName,
+                                       const QString &argComplaint ) {
     if ( !QFile::exists( *argPath ) ) {
         QMessageBox::information( nullptr, tr( "Specified path '%1' does not exist" ).arg( argVariableName ), tr( "The path specified by '%1' does not exist. %2" ).arg( argVariableName ).arg( argComplaint ) );
         debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] The path specified by '%1' does not exist. %2" ).arg( argVariableName ).arg( argComplaint ) );
@@ -88,7 +92,7 @@ bool lcLablib::CheckPathAndComplain( const QString * const argPath, const QStrin
     return true;
 }
 
-void lcLablib::DetectInstalledZTreeVersionsAndLaTeXHeaders() {
+void lc::Lablib::DetectInstalledZTreeVersionsAndLaTeXHeaders() {
     // Detect the installed LaTeX headers
     if ( ( *settingsItems )[ ( int )settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ] ) {
         QDir laTeXDirectory{ *( *settingsItems )[ ( int )settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ], "*header.tex", QDir::Name, QDir::CaseSensitive | QDir::Files | QDir::Readable };
@@ -127,7 +131,7 @@ void lcLablib::DetectInstalledZTreeVersionsAndLaTeXHeaders() {
     }
 }
 
-void lcLablib::GotNetstatQueryResult( QStringList *argActiveZLeafConnections ) {
+void lc::Lablib::GotNetstatQueryResult( QStringList *argActiveZLeafConnections ) {
     if ( argActiveZLeafConnections != nullptr ) {
         for ( auto s: *argActiveZLeafConnections ) {
             // Set all given clients' statuses to 'ZLEAF_RUNNING'
@@ -139,7 +143,7 @@ void lcLablib::GotNetstatQueryResult( QStringList *argActiveZLeafConnections ) {
     delete argActiveZLeafConnections;
 }
 
-void lcLablib::ReadSettings() {
+void lc::Lablib::ReadSettings() {
     QStringList simpleLoadableItems = { QStringList{}
                                          << "dvips_command"
                                          << "file_manager"
@@ -325,9 +329,9 @@ void lcLablib::ReadSettings() {
     }
     debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] client_ypos: %1" ).arg( clientYPositions.join( " / " ) ) );
 
-    clients = new QVector< lcClient* >;
+    clients = new QVector< Client* >;
     for ( int i = 0; i < clientQuantity; i++ ) {
-        clients->append( new lcClient{ debugMessagesTextEdit, &clientIPs[ i ], &clientMACs[ i ], &clientNames[ i ], clientXPositions[ i ].toUShort(),
+        clients->append( new Client{ debugMessagesTextEdit, &clientIPs[ i ], &clientMACs[ i ], &clientNames[ i ], clientXPositions[ i ].toUShort(),
                                        clientYPositions[ i ].toUShort(), clientWebcams[ i ].toInt(), settingsItems } );
 
         // Add an corresponding entry to the 'client_ips_to_clients_map' std::map<QString, Client*>
@@ -340,13 +344,14 @@ void lcLablib::ReadSettings() {
         clientPointerAddressStream << clientPointerAddress;
 
         // Connect the 'Client' instance to the 'ZLEAF_RUNNING(QString client_ip)' signal
-        connect( this, &lcLablib::ZLEAF_RUNNING, clients->last(), &lcClient::SetStateToZLEAF_RUNNING );
+        connect( this, &Lablib::ZLEAF_RUNNING,
+                 clients->last(), &Client::SetStateToZLEAF_RUNNING );
 
         debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] Added '%1' to 'client_ips_to_clients_map': '%2'" ).arg( clients->last()->name ).arg( clientPointerAddressString ) );
     }
 }
 
-QString *lcLablib::ReadSettingsItem( const QString &argVariableName, const QString &argComplaint, bool argItemIsFile ) {
+QString *lc::Lablib::ReadSettingsItem( const QString &argVariableName, const QString &argComplaint, bool argItemIsFile ) {
     if ( !labSettings.contains( argVariableName ) ) {
         QMessageBox::information( nullptr, tr( "'%1' not set" ).arg( argVariableName ), tr( "The '%1' variable was not set. %2" ).arg( argVariableName ).arg( argComplaint ) );
         debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] '%1' was not set. %2" ).arg( argVariableName ).arg( argComplaint ) );
@@ -369,42 +374,42 @@ QString *lcLablib::ReadSettingsItem( const QString &argVariableName, const QStri
     return nullptr;
 }
 
-void lcLablib::SetAnonymousReceiptsPlaceholder( const QString &argPlaceHolder ) {
+void lc::Lablib::SetAnonymousReceiptsPlaceholder( const QString &argPlaceHolder ) {
     anonymousReceiptsPlaceholder = argPlaceHolder;
     debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] anonymous_receipts_placeholder set to: '%1'" ).arg( anonymousReceiptsPlaceholder ) );
 }
 
-void lcLablib::SetChosenLaTeXHeader( const QString &argLatexHeader ) {
+void lc::Lablib::SetChosenLaTeXHeader( const QString &argLatexHeader ) {
     chosenLaTeXHeader = argLatexHeader;
     debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] chosen_latex_header set to: '%1'" ).arg( chosenLaTeXHeader ) );
 }
 
-void lcLablib::SetChosenZTreeDataTargetPath( const QString &argZTreeDataTargetPath ) {
+void lc::Lablib::SetChosenZTreeDataTargetPath( const QString &argZTreeDataTargetPath ) {
     chosenZTreeDataTargetPath = argZTreeDataTargetPath;
     debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] chosen_zTree_data_target_path set to: '%1'" ).arg( chosenZTreeDataTargetPath ) );
 }
 
-void lcLablib::SetChosenZTreePort( const int &argPort ) {
+void lc::Lablib::SetChosenZTreePort( const int &argPort ) {
     chosenZTreePort = argPort;
     debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] chosen_zTree_port set to: '%1'" ).arg( QString::number( chosenZTreePort ) ) );
 }
 
-void lcLablib::SetChosenZTreeVersion( const QString &argZTreeVersion ) {
+void lc::Lablib::SetChosenZTreeVersion( const QString &argZTreeVersion ) {
     chosenZTreeVersion = QString{ "zTree_" + argZTreeVersion };
     debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] chosen_zTree_version set to: '%1'" ).arg( chosenZTreeVersion ) );
 }
 
-void lcLablib::SetPrintReceiptsForLocalClients( const bool &argPrintReceiptsForLocalClients ) {
+void lc::Lablib::SetPrintReceiptsForLocalClients( const bool &argPrintReceiptsForLocalClients ) {
     PrintReceiptsForLocalClients = argPrintReceiptsForLocalClients;
     debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] Set print_receipts_for_local_clients to : '%1'" ).arg( QString::number( PrintReceiptsForLocalClients ) ) );
 }
 
-void lcLablib::SetUserNameOnServer( const QString &argUserName ) {
+void lc::Lablib::SetUserNameOnServer( const QString &argUserName ) {
     userNameOnServer = argUserName;
     debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] user_name_on_server set to: '%1'" ).arg( userNameOnServer ) );
 }
 
-void lcLablib::ShowOrsee() {
+void lc::Lablib::ShowOrsee() {
     // Start the process
     QProcess showOrseeProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
@@ -415,7 +420,7 @@ void lcLablib::ShowOrsee() {
     debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] %1" ).arg( *( *settingsItems )[ ( int )settingsItems_t::ORSEE_COMMAND ] ) );
 }
 
-void lcLablib::ShowPreprints() {
+void lc::Lablib::ShowPreprints() {
     // Start the process
     QProcess showPreprintsProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
@@ -428,7 +433,7 @@ void lcLablib::ShowPreprints() {
     debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] %1 %2" ).arg( program ).arg( arguments.join( " " ) ) );
 }
 
-void lcLablib::StartNewZTreeInstance() {
+void lc::Lablib::StartNewZTreeInstance() {
     if ( !QDir( chosenZTreeDataTargetPath ).exists() ) {
         QMessageBox messageBox{ QMessageBox::Critical, tr( "Data target path does not exist" ),
                     tr( "Your chosen data target path does not exist. Do you want it to be created automatically?" ), QMessageBox::Yes | QMessageBox::No };
@@ -449,18 +454,21 @@ void lcLablib::StartNewZTreeInstance() {
         }
     }
     try {
-        sessionsModel->push_back( new lcSession{ debugMessagesTextEdit, chosenZTreeDataTargetPath, chosenZTreePort, chosenZTreeVersion,
-                                                 PrintReceiptsForLocalClients, anonymousReceiptsPlaceholder, chosenLaTeXHeader, settingsItems } );
+        sessionsModel->push_back( new Session{ debugMessagesTextEdit, chosenZTreeDataTargetPath,
+                                               chosenZTreePort, chosenZTreeVersion,
+                                               PrintReceiptsForLocalClients,
+                                               anonymousReceiptsPlaceholder, chosenLaTeXHeader,
+                                               settingsItems } );
         occupiedPorts->append( sessionsModel->back()->zTreePort );
     }
-    catch ( lcSession::lcDataTargetPathCreationFailed ) {
+    catch ( Session::lcDataTargetPathCreationFailed ) {
         QMessageBox::information( nullptr, tr( "Chosen data target path could not be created" ),
                                   tr( "The path specified by your chosen data target path '%1' could not be created. Please check if it is a valid location and you have all needed permissions." )
                                   .arg( chosenZTreeDataTargetPath ) );
     }
 }
 
-void lcLablib::SetLocalZLeafDefaultName( const QString &argName ) {
+void lc::Lablib::SetLocalZLeafDefaultName( const QString &argName ) {
     delete ( *settingsItems )[ ( int )settingsItems_t::LOCAL_ZLEAF_NAME ];
     ( *settingsItems )[ ( int )settingsItems_t::LOCAL_ZLEAF_NAME ] = new QString{ argName };
     labSettings.setValue( "local_zLeaf_name", argName );

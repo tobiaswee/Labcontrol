@@ -19,7 +19,7 @@
 
 #include "netstatagent.h"
 
-lcNetstatAgent::lcNetstatAgent( QString *argNetstatCommand, QObject *argParent ) :
+lc::NetstatAgent::NetstatAgent( QString *argNetstatCommand, QObject *argParent ) :
     QObject{ argParent },
     extractionRegexp{ "\\d+\\.\\d+\\.\\d+\\.\\d+" },
     netstatArguments{ QStringList{} << "-anp" << "--tcp" },
@@ -31,7 +31,7 @@ lcNetstatAgent::lcNetstatAgent( QString *argNetstatCommand, QObject *argParent )
     netstatQueryProcess.setProcessEnvironment( env );
 }
 
-void lcNetstatAgent::QueryClientConnections() {
+void lc::NetstatAgent::QueryClientConnections() {
     netstatQueryProcess.start( netstatCommand, netstatArguments );
     if ( !netstatQueryProcess.waitForFinished( 400 ) ) {
         emit QueryFinished( nullptr );

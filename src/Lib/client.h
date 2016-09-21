@@ -31,12 +31,13 @@
 #include "global.h"
 #include "clientpinger.h"
 
+namespace lc {
+
 //! Class which represents the clients in the lab
 /*!
   This class contains elements and functions needed to represent all functions of a client.
 */
-class lcClient : public QObject
-{
+class Client : public QObject {
     Q_OBJECT
 
 public slots:
@@ -62,9 +63,9 @@ public:
       @param argHasWebcam                   If the represented client has a webcam installed
       @param argSettingsItems               A QVector storing many needed data QStrings
     */
-    lcClient( QPlainTextEdit *argDebugMessagesTextEditPtr, QString *argIP, QString *argMAC, QString *argName, unsigned short int argXPosition, unsigned short int argYPosition, bool argHasWebcam, const QVector< QString* > * const argSettingsItems );
+    Client( QPlainTextEdit *argDebugMessagesTextEditPtr, QString *argIP, QString *argMAC, QString *argName, unsigned short int argXPosition, unsigned short int argYPosition, bool argHasWebcam, const QVector< QString* > * const argSettingsItems );
     //! Client's destructor
-    ~lcClient();
+    ~Client();
     //! Beams the chosen file to the client's 'media4ztree' directory
     /*!
       @param argFileToBeam                  The file which shall be beamed to the client's 'media4ztree' directory
@@ -130,7 +131,7 @@ public:
 private:
     QPlainTextEdit * const debugMessagesTextEdit = nullptr;
     unsigned short int protectedCycles;
-    lcClientPinger *pinger = nullptr;
+    ClientPinger *pinger = nullptr;
     QThread pingerThread;
     const QVector<QString*> * const settingsItems;
     state_t state = state_t::UNINITIALIZED;
@@ -144,5 +145,7 @@ private slots:
 signals:
     void PingWanted();
 };
+
+}
 
 #endif // CLIENT_H

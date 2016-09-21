@@ -19,9 +19,13 @@
 
 #include "receipts_handler.h"
 
-lcReceiptsHandler::lcReceiptsHandler( QPlainTextEdit *argDebugMessagesTextEdit, const QString &argZTreeDataTargetPath,
-                                      const bool &argPrintReceiptsForLocalClients, const QString &argAnonymousReceiptsPlaceholder,
-                                      const QString &argLatexHeaderName, const QVector< QString* > * const argSettingsItems, QObject *argParent ) :
+lc::ReceiptsHandler::ReceiptsHandler( QPlainTextEdit *argDebugMessagesTextEdit,
+                                      const QString &argZTreeDataTargetPath,
+                                      const bool &argPrintReceiptsForLocalClients,
+                                      const QString &argAnonymousReceiptsPlaceholder,
+                                      const QString &argLatexHeaderName,
+                                      const QVector< QString* > * const argSettingsItems,
+                                      QObject *argParent ) :
     QObject{ argParent },
     anonymousReceiptsPlaceholder{ new QString{ argAnonymousReceiptsPlaceholder } },
     settingsItems{ argSettingsItems },
@@ -43,13 +47,18 @@ lcReceiptsHandler::lcReceiptsHandler( QPlainTextEdit *argDebugMessagesTextEdit, 
     paymentFile = new QFile( expectedPaymentFilePath );
 
     // Create a QTimer regularly checking if the payment file was created and print it if so
-    connect( timer, &QTimer::timeout, this, &lcReceiptsHandler::PrintReceipts );
+    connect( timer, &QTimer::timeout,
+             this, &ReceiptsHandler::PrintReceipts );
     timer->start( 2000 );
 }
 
-lcReceiptsHandler::lcReceiptsHandler( QPlainTextEdit *argDebugMessagesTextEdit, const QString &argZTreeDataTargetPath,
-                                      const bool &argPrintReceiptsForLocalClients, const QString &argAnonymousReceiptsPlaceholder,
-                                      const QString &argLatexHeaderName, const QVector< QString* > * const argSettingsItems, const QString * const argDateString, QObject *argParent ) :
+lc::ReceiptsHandler::ReceiptsHandler( QPlainTextEdit *argDebugMessagesTextEdit,
+                                      const QString &argZTreeDataTargetPath,
+                                      const bool &argPrintReceiptsForLocalClients,
+                                      const QString &argAnonymousReceiptsPlaceholder,
+                                      const QString &argLatexHeaderName,
+                                      const QVector< QString* > * const argSettingsItems,
+                                      const QString * const argDateString, QObject *argParent ) :
     QObject{ argParent },
     anonymousReceiptsPlaceholder{ new QString{ argAnonymousReceiptsPlaceholder } },
     settingsItems{ argSettingsItems },
@@ -69,7 +78,7 @@ lcReceiptsHandler::lcReceiptsHandler( QPlainTextEdit *argDebugMessagesTextEdit, 
     PrintReceipts();
 }
 
-lcReceiptsHandler::~lcReceiptsHandler() {
+lc::ReceiptsHandler::~ReceiptsHandler() {
     delete anonymousReceiptsPlaceholder;
     delete dateString;
     delete latexHeaderName;
@@ -79,7 +88,7 @@ lcReceiptsHandler::~lcReceiptsHandler() {
     delete zTreeDataTargetPath;
 }
 
-void lcReceiptsHandler::PrintReceipts() {
+void lc::ReceiptsHandler::PrintReceipts() {
     // If the payment file exists, print it
     if ( paymentFile->exists() ) {
         debugMessagesTextEdit->appendPlainText( "[DEBUG] The payment file has been created and will be printed" );
@@ -91,7 +100,7 @@ void lcReceiptsHandler::PrintReceipts() {
     }
 }
 
-void lcReceiptsHandler::CreateReceiptsFromPaymentFile() {
+void lc::ReceiptsHandler::CreateReceiptsFromPaymentFile() {
     // Get the data needed for receipts creation from the payment file
     QVector<QString> *rawParticipantsData = nullptr;
     rawParticipantsData = GetParticipantsDataFromPaymentFile();
@@ -206,17 +215,19 @@ void lcReceiptsHandler::CreateReceiptsFromPaymentFile() {
     delete latexText;
     latexText = nullptr;
 
-    receiptsPrinter = new lcReceiptsPrinter{ dateString, zTreeDataTargetPath, settingsItems };
+    receiptsPrinter = new ReceiptsPrinter{ dateString, zTreeDataTargetPath, settingsItems };
     receiptsPrinter->start();
-    connect( receiptsPrinter, &lcReceiptsPrinter::PrintingFinished, this, &lcReceiptsHandler::DeleteReceiptsPrinterInstance );
-    connect( receiptsPrinter, &lcReceiptsPrinter::ErrorOccurred, this, &lcReceiptsHandler::DisplayMessageBox );
+    connect( receiptsPrinter, &ReceiptsPrinter::PrintingFinished,
+             this, &ReceiptsHandler::DeleteReceiptsPrinterInstance );
+    connect( receiptsPrinter, &ReceiptsPrinter::ErrorOccurred,
+             this, &ReceiptsHandler::DisplayMessageBox );
 
     // Clean up
     texFile->close();
     delete texFile;
 }
 
-void lcReceiptsHandler::DeleteReceiptsPrinterInstance() {
+void lc::ReceiptsHandler::DeleteReceiptsPrinterInstance() {
     receiptsPrinter->quit();
     receiptsPrinter->wait();
     delete receiptsPrinter;
@@ -226,14 +237,14 @@ void lcReceiptsHandler::DeleteReceiptsPrinterInstance() {
     emit PrintingFinished();
 }
 
-void lcReceiptsHandler::DisplayMessageBox( QString *argErrorMessage, QString *argHeading ) {
+void lc::ReceiptsHandler::DisplayMessageBox( QString *argErrorMessage, QString *argHeading ) {
     QMessageBox messageBox( QMessageBox::Warning, *argHeading, *argErrorMessage, QMessageBox::Ok );
     delete argHeading;
     delete argErrorMessage;
     messageBox.exec();
 }
 
-QVector<QString> *lcReceiptsHandler::GetParticipantsDataFromPaymentFile() {
+QVector<QString> *lc::ReceiptsHandler::GetParticipantsDataFromPaymentFile() {
     // Create the vector to store the single lines of the file
     QVector<QString> *participantsData = new QVector<QString>;
 
@@ -260,7 +271,7 @@ QVector<QString> *lcReceiptsHandler::GetParticipantsDataFromPaymentFile() {
     return participantsData;
 }
 
-QString *lcReceiptsHandler::LoadLatexHeader() {
+QString *lc::ReceiptsHandler::LoadLatexHeader() {
     // Prepare all facilities to read the latex header file
     QFile latexHeaderFile( *( *settingsItems )[ ( int )settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ] + "/" + *latexHeaderName + "_header.tex" );
     if ( !latexHeaderFile.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
@@ -279,7 +290,7 @@ QString *lcReceiptsHandler::LoadLatexHeader() {
     return header;
 }
 
-void lcReceiptsHandler::MakeReceiptsAnonymous( QVector<paymentEntry_t*> *argDataVector, bool argAlsoAnonymizeClients ) {
+void lc::ReceiptsHandler::MakeReceiptsAnonymous( QVector<paymentEntry_t*> *argDataVector, bool argAlsoAnonymizeClients ) {
     if ( !argAlsoAnonymizeClients ) {
         debugMessagesTextEdit->appendPlainText( "[DEBUG] Names are made anonymous" );
         for ( QVector< paymentEntry_t* >::iterator it = argDataVector->begin(); it != argDataVector->end(); ++it ) {

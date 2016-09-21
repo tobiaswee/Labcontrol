@@ -28,7 +28,7 @@ lc::MainWindow::MainWindow( QWidget *argParent ) :
     ui{ new Ui::MainWindow }
 {
     ui->setupUi( this );
-    lablib = new lcLablib{ ui->PTEDebugMessages, this };
+    lablib = new Lablib{ ui->PTEDebugMessages, this };
 
     LoadIconPixmaps();
 
@@ -234,7 +234,7 @@ void lc::MainWindow::on_PBBeamFile_clicked() {
     const QString fileToBeam{ ui->LEFilePath->text() };
     for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
-            lcClient *client = static_cast< lcClient * >( ( *it ).data( Qt::UserRole ).value< void * >() );
+            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
             client->BeamFile( fileToBeam, publickeyPathUser, userNameOnClients );
         }
     }
@@ -244,7 +244,7 @@ void lc::MainWindow::on_PBBoot_clicked() {
     QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
     for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
-            lcClient *client = static_cast< lcClient * >( ( *it ).data( Qt::UserRole ).value< void * >() );
+            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
             client->Boot( lablib->GetSettingsItem( settingsItems_t::NETWORK_BROADCAST_ADDRESS ) );
         }
     }
@@ -270,7 +270,7 @@ void lc::MainWindow::on_PBChooseFile_clicked() {
 
 void lc::MainWindow::on_PBDeactivateScreensaver_clicked() {
     const QString * const publickey_path_user = lablib->GetSettingsItem( settingsItems_t::PUBLICKEY_PATH_USER ), * const user_name_on_clients = lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS );
-    QVector< lcClient* > *clients = lablib->GetClients();
+    QVector< Client* > *clients = lablib->GetClients();
     for ( auto s : *clients ) {
         if ( s->GetClientState() >= state_t::RESPONDING )
             s->DeactiveScreensaver( publickey_path_user, user_name_on_clients );
@@ -282,7 +282,7 @@ void lc::MainWindow::on_PBExecute_clicked() {
     bool executeOnEveryClient = true;
 
     // Cancel, if not all clients are up and running
-    QVector< lcClient* > *clients = lablib->GetClients();
+    QVector< Client* > *clients = lablib->GetClients();
     for ( auto s: *clients ) {
         if ( !( s->name.contains( "backup", Qt::CaseInsensitive ) ) ) {
             if ( s->GetClientState() < state_t::RESPONDING ) {
@@ -326,7 +326,7 @@ void lc::MainWindow::on_PBExecute_clicked() {
         QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
         for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
             if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
-                lcClient *client = static_cast< lcClient * >( ( *it ).data( Qt::UserRole ).value< void * >() );
+                Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
                 client->OpenTerminal( command, ui->RBUseUserRoot->isChecked(), publickeyPathUser, lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS ) );
             }
         }
@@ -355,7 +355,7 @@ void lc::MainWindow::on_PBKillzLeaf_clicked() {
     const QString * const publickeyPathUser = lablib->GetSettingsItem( settingsItems_t::PUBLICKEY_PATH_USER ), * const userNameOnClients = lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS );
     for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
-            lcClient *client = static_cast< lcClient * >( ( *it ).data( Qt::UserRole ).value< void * >() );
+            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
             client->KillZLeaf( publickeyPathUser, userNameOnClients );
         }
     }
@@ -373,7 +373,7 @@ void lc::MainWindow::on_PBOpenFilesystem_clicked() {
     QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
     for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
-            lcClient *client = static_cast< lcClient * >( ( *it ).data( Qt::UserRole ).value< void * >() );
+            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
             client->OpenFilesystem( userToBeUsed );
         }
     }
@@ -392,7 +392,7 @@ void lc::MainWindow::on_PBOpenTerminal_clicked() {
     QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
     for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
-            lcClient *client = static_cast< lcClient * >( ( *it ).data( Qt::UserRole ).value< void * >() );
+            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
             client->OpenTerminal( QString{}, ui->RBUseUserRoot->isChecked(), publickeyPathUser, userNameOnClients );
         }
     }
@@ -443,7 +443,7 @@ void lc::MainWindow::on_PBRunzLeaf_clicked() {
                 * const userNameOnClients = lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS );
         for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
             if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
-                lcClient *client = static_cast< lcClient * >( ( *it ).data( Qt::UserRole ).value< void * >() );
+                Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
                 client->StartZLeaf( publickeyPathUser, userNameOnClients, zLeafVersion, serverIP, ui->SBzLeafPort->value(), fakeName );
             }
         }
@@ -474,7 +474,7 @@ void lc::MainWindow::on_PBShutdown_clicked() {
                   * const userNameOnClients = lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS );
     for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
-            lcClient *client = static_cast< lcClient * >( ( *it ).data( Qt::UserRole ).value< void * >() );
+            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
             client->Shutdown( publickeyPathUser, userNameOnClients );
         }
     }
@@ -535,7 +535,7 @@ void lc::MainWindow::on_PBStartzLeaf_clicked() {
                   * const zLeafVersion = new QString{ ui->CBzLeafVersion->currentText() };
     for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
-            lcClient *client = static_cast< lcClient * >( ( *it ).data( Qt::UserRole ).value< void * >() );
+            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
             client->StartZLeaf( publickeyPathUser, userNameOnClients, zLeafVersion, serverIP, ui->SBzLeafPort->value(), nullptr );
         }
     }
@@ -593,7 +593,7 @@ void lc::MainWindow::on_PBViewDesktop_clicked() {
     QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
     for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
-            lcClient *client = static_cast< lcClient * >( ( *it ).data( Qt::UserRole ).value< void * >() );
+            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
             client->ShowDesktop();
         }
     }
@@ -607,7 +607,7 @@ void lc::MainWindow::on_RBUseLocalUser_toggled(bool checked) {
 
 void lc::MainWindow::SetupWidgets() {
     // Fill the 'CBClientNames' with possible client names and the 'TVClients' with the clients
-    const QVector< lcClient* > *clients = lablib->GetClients();
+    const QVector< Client* > *clients = lablib->GetClients();
     if ( !( clients == nullptr ) ) {
         valid_items = new QVector< QStandardItem * >;
         valid_items->reserve( clients->size() );
@@ -737,7 +737,7 @@ void lc::MainWindow::SetupWidgets() {
 
 void lc::MainWindow::UpdateClientsTableView() {
     for ( auto s : *valid_items ) {
-        state_t state = static_cast< lcClient * >( s->data( Qt::UserRole ).value<void *>() )->GetClientState();
+        state_t state = static_cast< Client* >( s->data( Qt::UserRole ).value<void *>() )->GetClientState();
         switch ( state ) {
         case state_t::RESPONDING:
             s->setBackground( QBrush( QColor( 128, 255, 128, 255 ) ) );

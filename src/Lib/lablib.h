@@ -43,11 +43,13 @@
 #include "session.h"
 #include "sessionsmodel.h"
 
+namespace lc {
+
 //! This class represents the entire lab and running sessions.
 /*!
   This class contains elements and functions needed to represent the lab and running sessions.
 */
-class lcLablib : public QObject
+class Lablib : public QObject
 {
     Q_OBJECT
 public:
@@ -56,10 +58,10 @@ public:
      * @param argDebugMessagesTextEdit      A pointer to the debug messages text edit for verbose output
      * @param argParent                     This 'lcLablib' instance's parent QObject
      */
-    lcLablib( QPlainTextEdit *argDebugMessagesTextEdit, QObject *argParent = nullptr );
+    Lablib( QPlainTextEdit *argDebugMessagesTextEdit, QObject *argParent = nullptr );
     /** Lablib's destructor
      */
-    ~lcLablib();
+    ~Lablib();
     /*! Returns the users who have administrative rights
      *
      * @return The users with administrative rights
@@ -79,7 +81,7 @@ public:
      *
      * @return A QVector of pointers to the Client class instances
      */
-    QVector<lcClient*> *GetClients () const { return clients; }
+    QVector< Client* > *GetClients () const { return clients; }
     /** Returns the default receipt index for the 'CBReceipts' combobox
      *
      * @return The default receipt index for the 'CBReceipts' combobox
@@ -187,16 +189,16 @@ private:
     QString chosenZTreeDataTargetPath;
     int chosenZTreePort = 7000;               //! Stores the currently chosen port for new zTree instances
     QString chosenZTreeVersion;
-    lcClientHelpNotificationServer *clientHelpNotificationServer = nullptr;    //! A server to retrieve help requests from the clients
+    ClientHelpNotificationServer *clientHelpNotificationServer = nullptr;    //! A server to retrieve help requests from the clients
     unsigned short int clientHelpNotificationServerPort = 0;        //! The port the help requests shall be received on
-    QMap< QString, lcClient* > * clientIPsToClientsMap = nullptr;    //! A map container storing ip-client pairs
-    QVector<lcClient*> *clients = nullptr;            //! A QVector storing pointers to all Client instances
+    QMap< QString, Client* > * clientIPsToClientsMap = nullptr;    //! A map container storing ip-client pairs
+    QVector<Client*> *clients = nullptr;            //! A QVector storing pointers to all Client instances
     QPlainTextEdit *debugMessagesTextEdit = nullptr;       //! This stores a pointer to the text edit in the debug tab to be able to write to it
     int defaultReceiptIndex = 0;                  //! Stores the index of the LaTeX header to be displayed by default
     QStringList *installedLaTeXHeaders = nullptr;
     QStringList *InstalledZTreeVersions = nullptr;
     QSettings labSettings;
-    lcNetstatAgent *netstatAgent = nullptr;         //! Tries to detect active zLeaf connections from the clients
+    NetstatAgent *netstatAgent = nullptr;           //! Tries to detect active zLeaf connections from the clients
     QThread netstatThread;
     QTimer *netstatTimer = nullptr;                //! A timer for regular execution of the NetstatAgent instance's request mechanism
     QVector< int > *occupiedPorts = nullptr;
@@ -206,5 +208,7 @@ private:
     QString userNameOnServer;         //! The user name on the server as extracted from the environment variables
     QStringList *webcams = nullptr;                 //! A QStringList containing all available stationary webcams in the laboratory
 };
+
+}
 
 #endif // LABLIB_H

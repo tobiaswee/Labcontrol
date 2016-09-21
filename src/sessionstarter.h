@@ -35,7 +35,8 @@ class SessionStarter : public QWidget {
     Q_OBJECT
 
 public:
-    explicit SessionStarter( lcLablib *argLablib, QPlainTextEdit *argDebugMessagesTextEdit, QWidget *parent = nullptr );
+    explicit SessionStarter( Lablib *argLablib, QPlainTextEdit *argDebugMessagesTextEdit,
+                             QWidget *parent = nullptr );
     ~SessionStarter();
 
     //! This gets thrown as an exception if this class is created even if it shouldn't
@@ -44,7 +45,7 @@ public:
 
 private:
     QPlainTextEdit * const debugMessagesTextEdit = nullptr;
-    lcLablib * const lablib = nullptr;
+    Lablib * const lablib = nullptr;
     Ui::SessionStarter *ui = nullptr;
 
     void SetupWidgets();

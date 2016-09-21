@@ -25,15 +25,17 @@
 #include <QRegularExpression>
 #include <QStringList>
 
+namespace lc {
+
 //! The NetstatAgent class is used to do repetitive runs of the 'netstat' program to check for active zLeaf connections.
 /*!
   This class is just used for repetive executions of netstat.
 */
-class lcNetstatAgent : public QObject
-{
+class NetstatAgent : public QObject {
     Q_OBJECT
+
 public:
-    explicit lcNetstatAgent( QString *argNetstatCommand, QObject *argParent = nullptr );
+    explicit NetstatAgent( QString *argNetstatCommand, QObject *argParent = nullptr );
     
 signals:
     //! This signal is emitted if the query of the currently active zLeaf connections finished
@@ -49,5 +51,7 @@ private:
     QProcess netstatQueryProcess;
     const QRegularExpression searchRegexp;
 };
+
+}
 
 #endif // NETSTATAGENT_H

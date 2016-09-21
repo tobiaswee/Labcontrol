@@ -19,28 +19,28 @@
 
 #include "sessionsmodel.h"
 
-SessionsModel::SessionsModel(QObject *parent) :
-    QAbstractTableModel{parent},
-    sessions_vector{ new QVector< lcSession* > }
+lc::SessionsModel::SessionsModel( QObject *argParent ) :
+    QAbstractTableModel{ argParent },
+    sessions_vector{ new QVector< Session* > }
 {
 }
 
-SessionsModel::~SessionsModel() {
+lc::SessionsModel::~SessionsModel() {
     for (auto s: *sessions_vector)
         delete s;
     delete sessions_vector;
 }
 
-lcSession *SessionsModel::back() const {
+lc::Session *lc::SessionsModel::back() const {
     return sessions_vector->back();
 }
 
-int SessionsModel::columnCount(const QModelIndex &parent) const {
+int lc::SessionsModel::columnCount(const QModelIndex &parent) const {
     Q_UNUSED(parent);
     return 2;
 }
 
-QVariant SessionsModel::data(const QModelIndex &index, int role) const {
+QVariant lc::SessionsModel::data(const QModelIndex &index, int role) const {
     if (!index.isValid())
         return QVariant{};
 
@@ -53,7 +53,7 @@ QVariant SessionsModel::data(const QModelIndex &index, int role) const {
     return QVariant{};
 }
 
-QVariant SessionsModel::headerData(int section, Qt::Orientation orientation, int role) const {
+QVariant lc::SessionsModel::headerData(int section, Qt::Orientation orientation, int role) const {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
         switch(section) {
         case 0:
@@ -71,11 +71,11 @@ QVariant SessionsModel::headerData(int section, Qt::Orientation orientation, int
     return QVariant{};
 }
 
-void SessionsModel::push_back( lcSession *argSession ) {
+void lc::SessionsModel::push_back( Session *argSession ) {
     sessions_vector->push_back( argSession );
 }
 
-int SessionsModel::rowCount(const QModelIndex &parent) const {
+int lc::SessionsModel::rowCount(const QModelIndex &parent) const {
     Q_UNUSED(parent);
     return sessions_vector->length();
 }

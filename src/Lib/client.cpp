@@ -19,7 +19,10 @@
 
 #include "client.h"
 
-lcClient::lcClient( QPlainTextEdit *argDebugMessagesTextEdit, QString *argIP, QString *argMAC, QString *argName, unsigned short int argXPosition, unsigned short int argYPosition, bool argHasWebcam, const QVector< QString* > * const argSettingsItems ):
+lc::Client::Client( QPlainTextEdit *argDebugMessagesTextEdit, QString *argIP, QString *argMAC,
+                    QString *argName, unsigned short int argXPosition,
+                    unsigned short int argYPosition, bool argHasWebcam,
+                    const QVector< QString* > * const argSettingsItems ):
     hasWebcam{ argHasWebcam },
     ip{ *argIP },
     mac{ *argMAC },
@@ -33,16 +36,20 @@ lcClient::lcClient( QPlainTextEdit *argDebugMessagesTextEdit, QString *argIP, QS
     qRegisterMetaType< state_t >( "STATE" );
 
     if ( ( *settingsItems )[ ( int )settingsItems_t::PING_COMMAND ] ) {
-        pinger = new lcClientPinger{ &ip, ( *settingsItems )[ ( int )settingsItems_t::PING_COMMAND ] };
+        pinger = new ClientPinger{ &ip, ( *settingsItems )[ ( int )settingsItems_t::PING_COMMAND ] };
         pinger->moveToThread( &pingerThread );
-        connect( &pingerThread, &QThread::finished, pinger, &QObject::deleteLater );
-        connect( this, &lcClient::PingWanted, pinger, &lcClientPinger::doPing );
-        connect( pinger, &lcClientPinger::PingFinished, this, &lcClient::GotStatusChanged );
+        connect( &pingerThread, &QThread::finished,
+                 pinger, &QObject::deleteLater );
+        connect( this, &Client::PingWanted,
+                 pinger, &ClientPinger::doPing );
+        connect( pinger, &ClientPinger::PingFinished,
+                 this, &Client::GotStatusChanged );
         // connect(pinger, &ClientPinger::ping_string, this, &Client::display_ping_string);
         pingerThread.start();
 
         pingTimer = new QTimer{ this };
-        connect( pingTimer, &QTimer::timeout, this, &lcClient::RequestAPing ) ;
+        connect( pingTimer, &QTimer::timeout,
+                 this, &Client::RequestAPing ) ;
         pingTimer->start( 3000 );
     }
 
@@ -51,7 +58,7 @@ lcClient::lcClient( QPlainTextEdit *argDebugMessagesTextEdit, QString *argIP, QS
                                             .arg( QString::number( yPosition ) ).arg( QString::number( hasWebcam ) ) );
 }
 
-lcClient::~lcClient() {
+lc::Client::~Client() {
     if ( pingTimer ) {
         pingTimer->stop();
     }
@@ -60,7 +67,7 @@ lcClient::~lcClient() {
     pingerThread.wait();
 }
 
-void lcClient::BeamFile( const QString &argFileToBeam, const QString * const argPublickeyPathUser, const QString * const argUserNameOnClients ) {
+void lc::Client::BeamFile( const QString &argFileToBeam, const QString * const argPublickeyPathUser, const QString * const argUserNameOnClients ) {
     if ( state < state_t::RESPONDING ) {
         return;
     }
@@ -77,7 +84,7 @@ void lcClient::BeamFile( const QString &argFileToBeam, const QString * const arg
     debugMessagesTextEdit->appendPlainText( "[DEBUG] " + *( *settingsItems )[ ( int )settingsItems_t::RCP_COMMAND ] + " " +  arguments.join( " " ) );
 }
 
-void lcClient::Boot( const QString * const argNetworkBroadcastAddress ) {
+void lc::Client::Boot( const QString * const argNetworkBroadcastAddress ) {
     if ( state == state_t::SHUTTING_DOWN || state == state_t::RESPONDING ) {
         return;
     }
@@ -100,7 +107,7 @@ void lcClient::Boot( const QString * const argNetworkBroadcastAddress ) {
     GotStatusChanged( state_t::BOOTING );
 }
 
-void lcClient::DeactiveScreensaver( const QString * const argPublickeyPathUser, const QString * const argUserNameOnClients ) {
+void lc::Client::DeactiveScreensaver( const QString * const argPublickeyPathUser, const QString * const argUserNameOnClients ) {
     QStringList arguments;
     arguments << "-i" << *argPublickeyPathUser << QString{ *argUserNameOnClients + "@" + name }
               << *( *settingsItems )[ ( int )settingsItems_t::XSET_COMMAND ] << "-display" << ":0.0" << "dpms" << "force" <<  "on";
@@ -120,7 +127,7 @@ void lcClient::DeactiveScreensaver( const QString * const argPublickeyPathUser, 
 //     delete ping_string;
 // }
 
-void lcClient::GotStatusChanged( state_t argState ) {
+void lc::Client::GotStatusChanged( state_t argState ) {
     if ( ( protectedCycles > 0 ) && ( state == state_t::BOOTING ) && ( argState != state_t::RESPONDING ) ) {
         return;
     }
@@ -131,7 +138,7 @@ void lcClient::GotStatusChanged( state_t argState ) {
     debugMessagesTextEdit->appendPlainText( "[DEBUG] " + name + " status changed to: " + QString::number( ( int )argState ) );
 }
 
-void lcClient::KillZLeaf( const QString * const argPublickeyPathUser, const QString * const argUserNameOnClients ) {
+void lc::Client::KillZLeaf( const QString * const argPublickeyPathUser, const QString * const argUserNameOnClients ) {
     QStringList arguments;
     arguments << "-i" << *argPublickeyPathUser << QString{ *argUserNameOnClients + "@" + name }
               << QString{ *( *settingsItems )[ ( int )settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ] + "/scripts/kill_zLeaf_labcontrol2.sh" };
@@ -149,7 +156,7 @@ void lcClient::KillZLeaf( const QString * const argPublickeyPathUser, const QStr
     pingTimer->start( 3000 );
 }
 
-void lcClient::OpenFilesystem( const QString * const argUserToBeUsed ) {
+void lc::Client::OpenFilesystem( const QString * const argUserToBeUsed ) {
     if ( state < state_t::RESPONDING ) {
         return;
     }
@@ -162,7 +169,7 @@ void lcClient::OpenFilesystem( const QString * const argUserToBeUsed ) {
     debugMessagesTextEdit->appendPlainText( "[DEBUG] " + *( *settingsItems )[ ( int )settingsItems_t::FILE_MANAGER ] + " " + arguments.join( " " ) );
 }
 
-void lcClient::OpenTerminal( const QString &argCommand, const bool &argOpenAsRoot, const QString * const argPublickeyPathUser, const QString * const argUserNameOnClients ) {
+void lc::Client::OpenTerminal( const QString &argCommand, const bool &argOpenAsRoot, const QString * const argPublickeyPathUser, const QString * const argUserNameOnClients ) {
     if ( ( *settingsItems )[ ( int )settingsItems_t::TERMINAL_EMULATOR_COMMAND ] ) {
         if ( state < state_t::RESPONDING ) {
             return;
@@ -201,14 +208,14 @@ void lcClient::OpenTerminal( const QString &argCommand, const bool &argOpenAsRoo
     }
 }
 
-void lcClient::RequestAPing() {
+void lc::Client::RequestAPing() {
     if ( protectedCycles > 0 ) {
         --protectedCycles;
     }
     emit PingWanted();
 }
 
-void lcClient::SetStateToZLEAF_RUNNING( QString argClientIP ) {
+void lc::Client::SetStateToZLEAF_RUNNING( QString argClientIP ) {
     if ( argClientIP != ip ) {
         return;
     }
@@ -221,7 +228,7 @@ void lcClient::SetStateToZLEAF_RUNNING( QString argClientIP ) {
     }
 }
 
-void lcClient::ShowDesktop() {
+void lc::Client::ShowDesktop() {
     QStringList arguments;
     arguments << name;
 
@@ -234,7 +241,7 @@ void lcClient::ShowDesktop() {
     debugMessagesTextEdit->appendPlainText( "[DEBUG] " + *( *settingsItems )[ ( int )settingsItems_t::VNC_VIEWER ] + " " +  arguments.join( " " ) );
 }
 
-void lcClient::Shutdown( const QString * const argPublickeyPathUser, const QString * const argUserNameOnClients ) {
+void lc::Client::Shutdown( const QString * const argPublickeyPathUser, const QString * const argUserNameOnClients ) {
     if ( state == state_t::NOT_RESPONDING || state == state_t::BOOTING || state == state_t::SHUTTING_DOWN ) {
         return;
     }
@@ -257,7 +264,7 @@ void lcClient::Shutdown( const QString * const argPublickeyPathUser, const QStri
     GotStatusChanged( state_t::SHUTTING_DOWN );
 }
 
-void lcClient::StartZLeaf( const QString * const argPublickeyPathUser, const QString * const argUserNameOnClients, const QString * const argZTreeVersion,
+void lc::Client::StartZLeaf( const QString * const argPublickeyPathUser, const QString * const argUserNameOnClients, const QString * const argZTreeVersion,
                            const QString * const argServerIP, unsigned short int argPort, const QString * const argFakeName ) {
     if ( state < state_t::RESPONDING ) {
         return;

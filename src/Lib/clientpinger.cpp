@@ -19,7 +19,8 @@
 
 #include "clientpinger.h"
 
-lcClientPinger::lcClientPinger( const QString * const argIP, const QString * const argPingCommand, QObject *argParent ) :
+lc::ClientPinger::ClientPinger( const QString * const argIP,
+                                const QString * const argPingCommand, QObject *argParent ) :
     QObject{ argParent },
     ip{ argIP },
     // Arguments: -c 1 (send 1 ECHO_REQUEST packet) -w 1 (timeout after 1 second) -q (quiet output)
@@ -33,12 +34,12 @@ lcClientPinger::lcClientPinger( const QString * const argIP, const QString * con
     // emit ping_string(new QString(*ping_command + " " + ping_arguments->join(" ")));
 }
 
-lcClientPinger::~lcClientPinger() {
+lc::ClientPinger::~ClientPinger() {
     delete pingProcess;
     delete pingArguments;
 }
 
-void lcClientPinger::doPing() {
+void lc::ClientPinger::doPing() {
     // Initialize the new state to be queried
     state_t newState = state_t::UNINITIALIZED;
 
@@ -60,6 +61,6 @@ void lcClientPinger::doPing() {
     }
 }
 
-void lcClientPinger::setStateToZLEAF_RUNNING() {
+void lc::ClientPinger::setStateToZLEAF_RUNNING() {
     state = state_t::ZLEAF_RUNNING;
 }

@@ -30,6 +30,8 @@
 
 #include "receiptsprinter.h"
 
+namespace lc {
+
 //! A struct representing one payoff entry.
 /*!
   This class represents a single payoff entry which will be used in the receipts creation process. Multiple instances of this will be used to represent the individual participants' outcomes.
@@ -40,18 +42,18 @@ struct paymentEntry_t {QString computer; QString name; double payoff;};
 /*!
   This class is element of every session and is used to handle the receipts printing.
 */
-class lcReceiptsHandler : public QObject
-{
+class ReceiptsHandler : public QObject {
     Q_OBJECT
+
 public:
-    explicit lcReceiptsHandler( QPlainTextEdit *argDebugMessagesTextEdit, const QString &argZTreeDataTargetPath,
+    explicit ReceiptsHandler( QPlainTextEdit *argDebugMessagesTextEdit, const QString &argZTreeDataTargetPath,
                                 const bool &argPrintReceiptsForLocalClients, const QString &argAnonymousReceiptsPlaceholder,
                                 const QString &argLatexHeaderName, const QVector<QString*> * const argSettingsItems, QObject *argParent = nullptr );
-    explicit lcReceiptsHandler( QPlainTextEdit *argDebugMessagesTextEdit, const QString &argZTreeDataTargetPath,
+    explicit ReceiptsHandler( QPlainTextEdit *argDebugMessagesTextEdit, const QString &argZTreeDataTargetPath,
                                 const bool &argPrintReceiptsForLocalClients, const QString &argAnonymousReceiptsPlaceholder,
                                 const QString &argLatexHeaderName, const QVector<QString*> * const argSettingsItems,
                                 const QString * const argDateString, QObject *argParent = nullptr );
-    ~lcReceiptsHandler();
+    ~ReceiptsHandler();
 
 signals:
     void PrintingFinished();
@@ -82,9 +84,11 @@ private:
     const QString * const latexHeaderName;                      //! The name of the chosen LaTeX header template
     QFile *paymentFile = nullptr;                               //! A pointer to the '*.pay' file being watched for existance and starting the printing process
     const bool * const printReceiptsForLocalClients;            //! Stores if receipts shall be printed for local clients
-    lcReceiptsPrinter *receiptsPrinter = nullptr;               //! Creates new thread for receipts printing
+    ReceiptsPrinter *receiptsPrinter = nullptr;                 //! Creates new thread for receipts printing
     QTimer *timer = nullptr;                                    //! Used for regular checking if the payment file was created
     const QString * const zTreeDataTargetPath;                  //! A reference to the data target path stored in the session class instance
 };
+
+}
 
 #endif // RECEIPTS_HANDLER_H

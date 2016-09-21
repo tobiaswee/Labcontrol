@@ -53,7 +53,7 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit MainWindow( QWidget *argParent = 0 );
+    explicit MainWindow( QWidget *argParent = nullptr );
     ~MainWindow();
 
 private slots:
@@ -103,7 +103,7 @@ private:
     QStandardItemModel *clients_view_model = nullptr;   //! The view storing all clients data
     QTimer *gui_update_timer = nullptr;         //! A QTimer triggering updates of the graphical user interface
     QPixmap *icons = nullptr;                   //! Array of pixmaps storing the icons indicating the clients' statuses
-    lcLablib *lablib = nullptr;                 //! Accumulator of all program logic being accessed by the GUI
+    Lablib *lablib = nullptr;                   //! Accumulator of all program logic being accessed by the GUI
     bool local_zLeaves_are_running = false;     //! Stores if a local zLeaf instance is running on the server ('true' if local zLeaf exists)
     QButtonGroup *userChooseButtonGroup = nullptr;      //! Used to group the radio buttons choosing which user shall be used for administrative client actions
     Ui::MainWindow *ui = nullptr;               //! Pointer storing all GUI items

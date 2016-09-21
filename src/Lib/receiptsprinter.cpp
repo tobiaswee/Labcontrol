@@ -19,7 +19,10 @@
 
 #include "receiptsprinter.h"
 
-lcReceiptsPrinter::lcReceiptsPrinter( const QString * const argDateString, const QString * const argWorkpath, const QVector< QString* > * const argSettingsItems, QObject *argParent ) :
+lc::ReceiptsPrinter::ReceiptsPrinter( const QString * const argDateString,
+                                      const QString * const argWorkpath,
+                                      const QVector< QString* > * const argSettingsItems,
+                                      QObject *argParent ) :
     QThread{ argParent },
     dateString{ argDateString },
     settingsItems{ argSettingsItems },

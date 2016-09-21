@@ -26,13 +26,15 @@
 
 #include "global.h"
 
+namespace lc {
+
 //! The ClientPinger class is used to do repetitive pings of the owning Client instance's client.
 /*!
   This class is just used for executing repetitive pings.
 */
-class lcClientPinger : public QObject
-{
+class ClientPinger : public QObject {
     Q_OBJECT
+
 public:
     //! ClientPinger's constructor
     /*!
@@ -40,9 +42,9 @@ public:
       @param argPingCommand     The path were the command to be executed for pings resides
       @param argParent          The ClientPinger's parent owning this instance of it
     */
-    explicit lcClientPinger( const QString * const argIP, const QString * const argPingCommand, QObject *argParent = nullptr );
+    explicit ClientPinger( const QString * const argIP, const QString * const argPingCommand, QObject *argParent = nullptr );
     //! ClientPinger's destructor
-    ~lcClientPinger();
+    ~ClientPinger();
 
 public slots:
     //! This slot executes a ping when called.
@@ -63,5 +65,7 @@ signals:
     //! This signal is emitted if the ping finished and the state of the client changed
     void PingFinished( state_t state );
 };
+
+}
 
 #endif // CLIENTPINGER_H

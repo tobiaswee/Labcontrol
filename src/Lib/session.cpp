@@ -19,9 +19,12 @@
 
 #include "session.h"
 
-lcSession::lcSession( QPlainTextEdit * const argDebugMessagesTextEdit, const QString &argZTreeDataTargetPath, const int argZTreePort,
-                 const QString &argZTreeVersionPath, bool argPrintReceiptsForLocalClients, const QString &argAnonymousReceiptsPlaceholder,
-                 const QString &argLatexHeaderName, const QVector<QString*> * const argSettingsItems ):
+lc::Session::Session( QPlainTextEdit * const argDebugMessagesTextEdit,
+                      const QString &argZTreeDataTargetPath, const int argZTreePort,
+                      const QString &argZTreeVersionPath, bool argPrintReceiptsForLocalClients,
+                      const QString &argAnonymousReceiptsPlaceholder,
+                      const QString &argLatexHeaderName,
+                      const QVector<QString*> * const argSettingsItems ):
     zTreePort{ argZTreePort },
     anonymousReceiptsPlaceholder{ argAnonymousReceiptsPlaceholder },
     debugMessagesTextEdit{ argDebugMessagesTextEdit },
@@ -47,12 +50,12 @@ lcSession::lcSession( QPlainTextEdit * const argDebugMessagesTextEdit, const QSt
     }
 }
 
-lcSession::~lcSession() {
+lc::Session::~Session() {
     delete receiptsHandler;
     delete zTreeInstance;
 }
 
-QVariant lcSession::GetDataItem( int argIndex ) {
+QVariant lc::Session::GetDataItem( int argIndex ) {
     switch ( argIndex ) {
     case 0:
         return QVariant{ zTreeVersionPath.split( '_', QString::KeepEmptyParts, Qt::CaseInsensitive )[ 1 ] };
@@ -63,7 +66,7 @@ QVariant lcSession::GetDataItem( int argIndex ) {
     }
 }
 
-void lcSession::InitializeClasses() {
+void lc::Session::InitializeClasses() {
     // Create the new data directory
     QDir dir{ zTreeDataTargetPath };
     QString date_string( QDateTime::currentDateTime().toString( "yyMMdd_hhmm" ) );
@@ -73,16 +76,20 @@ void lcSession::InitializeClasses() {
     zTreeDataTargetPath.append( "/" + date_string + "-" + QString::number( zTreePort ) );
     debugMessagesTextEdit->appendPlainText( "[DEBUG] New session's chosen_zTree_data_target_path: " + zTreeDataTargetPath );
 
-    zTreeInstance = new lcZTree{ debugMessagesTextEdit, zTreeDataTargetPath, zTreePort, zTreeVersionPath, settingsItems };
+    zTreeInstance = new ZTree{ debugMessagesTextEdit, zTreeDataTargetPath,
+                               zTreePort, zTreeVersionPath, settingsItems };
     // Only create a 'Receipts_Handler' instance, if all neccessary variables were set
     if ( latexHeaderName != "None found" && ( *settingsItems )[ ( int )settingsItems_t::DVIPS_COMMAND ] && ( *settingsItems )[ ( int )settingsItems_t::LATEX_COMMAND ] ) {
-        receiptsHandler = new lcReceiptsHandler{ debugMessagesTextEdit, zTreeDataTargetPath, printReceiptsForLocalClients, anonymousReceiptsPlaceholder, latexHeaderName, settingsItems };
+        receiptsHandler = new ReceiptsHandler{ debugMessagesTextEdit, zTreeDataTargetPath,
+                                               printReceiptsForLocalClients,
+                                               anonymousReceiptsPlaceholder,
+                                               latexHeaderName, settingsItems };
     } else {
         debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] No ReceiptsHandler instance was created." ) );
     }
 }
 
-void lcSession::RenameWindow() {
+void lc::Session::RenameWindow() {
     // Example: wmctrl -r <window name> -T <new name>
 
     QStringList arguments;

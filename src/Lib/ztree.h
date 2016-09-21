@@ -26,14 +26,20 @@
 
 #include "global.h"
 
+namespace lc {
+
 //! A class to contain running zTree instances.
 /*!
   This class is element of every session and is used to handle all zTree related data.
 */
-class lcZTree: public QObject {
+class ZTree: public QObject {
     Q_OBJECT
+
 public:
-    lcZTree( QPlainTextEdit *argDebugMessagesTextEdit, const QString &argZTreeDataTargetPath, const int &argZTreePort, const QString &argZTreeVersionPath, const QVector<QString*> * const argSettingsItems );
+    ZTree( QPlainTextEdit *argDebugMessagesTextEdit,
+           const QString &argZTreeDataTargetPath,
+           const int &argZTreePort, const QString &argZTreeVersionPath,
+           const QVector<QString*> * const argSettingsItems );
 
 signals:
     void ZTreeClosed();
@@ -45,5 +51,7 @@ private:
     qint64 pid = 0;
     QProcess zTreeInstance;
 };
+
+}
 
 #endif // ZTREE_H

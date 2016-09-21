@@ -26,12 +26,15 @@
 
 #include "global.h"
 
+namespace lc {
+
 //! A class for receipts creation.
 /*!
   This class is used to do the actual printing of the receipts in an own thread.
 */
-class lcReceiptsPrinter : public QThread {
+class ReceiptsPrinter : public QThread {
     Q_OBJECT
+
     void run() Q_DECL_OVERRIDE {
         // Compile the TeX file to dvi
         QStringList arguments;
@@ -118,8 +121,10 @@ class lcReceiptsPrinter : public QThread {
         // Clean up the zTree working path
         if ( ( *settingsItems )[ ( int )settingsItems_t::RM_COMMAND ] ) {
             arguments = QStringList{};
-            arguments << QString{ *workpath + "/" + *dateString + ".aux" } << QString{ *workpath + "/" + *dateString + ".dvi" }
-                      << QString{ *workpath + "/" + *dateString + ".log" } << QString{ *workpath + "/" + *dateString + ".tex" };
+            arguments << QString{ *workpath + "/" + *dateString + ".aux" }
+                      << QString{ *workpath + "/" + *dateString + ".dvi" }
+                      << QString{ *workpath + "/" + *dateString + ".log" }
+                      << QString{ *workpath + "/" + *dateString + ".tex" };
 
             process = new QProcess{};
             process->setProcessEnvironment( env );
@@ -135,7 +140,10 @@ class lcReceiptsPrinter : public QThread {
         emit PrintingFinished();
     }
 public:
-    explicit lcReceiptsPrinter( const QString * const argDateString, const QString * const argWorkpath, const QVector< QString* > * const argSettingsItems, QObject *argParent = nullptr );
+    explicit ReceiptsPrinter( const QString * const argDateString,
+                              const QString * const argWorkpath,
+                              const QVector< QString* > * const argSettingsItems,
+                              QObject *argParent = nullptr );
 
 signals:
     void ErrorOccurred(QString *error_message, QString *heading);
@@ -147,5 +155,7 @@ private:
     const QVector<QString*> * const settingsItems;              //! A QVector storing all needed command paths
     const QString * const workpath;                             //! The path were zTree was ordered to store all its data
 };
+
+}
 
 #endif // RECEIPTSPRINTER_H

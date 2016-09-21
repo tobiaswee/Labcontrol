@@ -24,18 +24,19 @@
 
 #include "session.h"
 
-class SessionsModel : public QAbstractTableModel
-{
+namespace lc {
+
+class SessionsModel : public QAbstractTableModel {
     Q_OBJECT
 public:
     explicit SessionsModel(QObject *parent = 0);
     ~SessionsModel();
     SessionsModel(const SessionsModel&) = delete;
-    lcSession *back() const;
+    Session *back() const;
     int columnCount(const QModelIndex &parent) const;
     QVariant data(const QModelIndex &index, int role) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
-    void push_back( lcSession *argSession );
+    void push_back( Session *argSession );
     int rowCount(const QModelIndex &parent) const;
 
 
@@ -44,7 +45,9 @@ signals:
 public slots:
 
 private:
-    QVector<lcSession*> *sessions_vector;
+    QVector< Session* > *sessions_vector = nullptr;
 };
+
+}
 
 #endif // SESSIONSMODEL_H

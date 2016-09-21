@@ -19,7 +19,10 @@
 
 #include "ztree.h"
 
-lcZTree::lcZTree( QPlainTextEdit *argDebugMessagesTextEdit, const QString &argZTreeDataTargetPath, const int &argZTreePort, const QString &argZTreeVersionPath, const QVector<QString*> * const argSettingsItems ) {
+lc::ZTree::ZTree( QPlainTextEdit *argDebugMessagesTextEdit,
+                  const QString &argZTreeDataTargetPath, const int &argZTreePort,
+                  const QString &argZTreeVersionPath,
+                  const QVector<QString*> * const argSettingsItems ) {
     QString program{ *( *argSettingsItems )[ ( int )settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ] + "/scripts/start_zTree_labcontrol2.sh" };
     QStringList arguments;
     arguments << *( *argSettingsItems )[ ( int )settingsItems_t::ZTREE_INSTALLATION_DIRECTORY ] << argZTreeVersionPath << argZTreeDataTargetPath << QString::number( static_cast<int>( argZTreePort ) - 7000 );
@@ -33,6 +36,6 @@ lcZTree::lcZTree( QPlainTextEdit *argDebugMessagesTextEdit, const QString &argZT
     argDebugMessagesTextEdit->appendPlainText( "[DEBUG] " + program + " " + arguments.join( " " ) );
 }
 
-void lcZTree::ZTreeInstanceClosed() {
+void lc::ZTree::ZTreeInstanceClosed() {
     emit ZTreeClosed();
 }

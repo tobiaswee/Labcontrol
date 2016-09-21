@@ -27,11 +27,12 @@
 #include <QMessageBox>
 #include <QtNetwork>
 
-class lcClientHelpNotificationServer : public QObject
-{
+namespace lc {
+
+class ClientHelpNotificationServer : public QObject {
     Q_OBJECT
 public:
-    explicit lcClientHelpNotificationServer( const QMap< QString, lcClient* > * const argClientIPsToClientsMap,
+    explicit ClientHelpNotificationServer( const QMap< QString, Client* > * const argClientIPsToClientsMap,
             const QString * const argServerIP, const unsigned short int &argServerPort, QObject *argParent = nullptr );
 
 signals:
@@ -39,7 +40,7 @@ signals:
 public slots:
 
 private:
-    const QMap< QString, lcClient* > * const clientIPsToClientsMap = nullptr;
+    const QMap< QString, Client* > * const clientIPsToClientsMap = nullptr;
     QTcpServer *helpMessageServer = nullptr;
     const QHostAddress hostAddress;
     QNetworkSession *networkSession = nullptr;
@@ -49,5 +50,7 @@ private slots:
     void OpenSession();
     void SendReply();
 };
+
+}
 
 #endif // CLIENTHELPNOTIFICATIONSERVER_H
