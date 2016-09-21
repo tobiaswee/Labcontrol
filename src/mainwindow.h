@@ -39,6 +39,8 @@ enum class icons_t : unsigned short int { UNKNOWN, OFF, DOWN, BOOT, ON, ZLEAF, I
 #include <QTimer>
 #include <QVector>
 
+namespace lc {
+
 namespace Ui {
 class MainWindow;
 }
@@ -47,13 +49,12 @@ class MainWindow;
 /*!
   This class represents the graphical user interface and all connected functionality.
 */
-class lcMainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit lcMainWindow( QWidget *argParent = 0 );
-    ~lcMainWindow();
+    explicit MainWindow( QWidget *argParent = 0 );
+    ~MainWindow();
 
 private slots:
     void on_CBWebcamChooser_activated(int index);
@@ -108,5 +109,7 @@ private:
     Ui::MainWindow *ui = nullptr;               //! Pointer storing all GUI items
     QVector<QStandardItem *> *valid_items = nullptr;    //! Stores all valid Client instances displayed by the table view, its main use is as iterable object for 'update_clients_table_view()'
 };
+
+}
 
 #endif // MAINWINDOW_H

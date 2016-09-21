@@ -23,20 +23,24 @@
 #include <QAbstractTableModel>
 #include <QWidget>
 
+namespace lc {
+
 namespace Ui {
 class SessionDisplay;
 }
 
-class lcSessionDisplay : public QWidget
-{
+class SessionDisplay : public QWidget {
     Q_OBJECT
 
 public:
-    explicit lcSessionDisplay( QAbstractTableModel *argSessionsModel, QWidget *argParent = nullptr );
-    ~lcSessionDisplay();
+    explicit SessionDisplay( QAbstractTableModel *argSessionsModel,
+                             QWidget *argParent = nullptr );
+    ~SessionDisplay();
 
 private:
     Ui::SessionDisplay *ui = nullptr;
 };
+
+}
 
 #endif // SESSIONDISPLAY_H

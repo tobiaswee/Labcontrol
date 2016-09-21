@@ -22,7 +22,7 @@
 #include <QtGlobal>
 #include <QInputDialog>
 
-lcMainWindow::lcMainWindow( QWidget *argParent ) :
+lc::MainWindow::MainWindow( QWidget *argParent ) :
     QMainWindow{ argParent },
     icons{ new QPixmap[ icons_t::ICON_QUANTITY ] },
     ui{ new Ui::MainWindow }
@@ -35,18 +35,19 @@ lcMainWindow::lcMainWindow( QWidget *argParent ) :
     SetupWidgets();
     if ( valid_items ) {
         gui_update_timer = new QTimer{ this };
-        connect(gui_update_timer, &QTimer::timeout, this, &lcMainWindow::UpdateClientsTableView );
+        connect( gui_update_timer, &QTimer::timeout,
+                 this, &MainWindow::UpdateClientsTableView );
         gui_update_timer->start( 500 );
     }
 }
 
-lcMainWindow::~lcMainWindow() {
+lc::MainWindow::~MainWindow() {
     delete ui;
     delete valid_items;
     delete[] icons;
 }
 
-bool lcMainWindow::CheckIfUserIsAdmin() {
+bool lc::MainWindow::CheckIfUserIsAdmin() {
     // Query the current user's name or give an error if this fails
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     QString userName{ "" };
@@ -81,7 +82,7 @@ bool lcMainWindow::CheckIfUserIsAdmin() {
     return false;
 }
 
-void lcMainWindow::DisableDisfunctionalWidgets() {
+void lc::MainWindow::DisableDisfunctionalWidgets() {
     // Disable all functions relying on the labcontrol installation directory if it is not available
     if ( !lablib->GetSettingsItem( settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ) ) {
         ui->CBClientNames->setEnabled( false );
@@ -192,7 +193,7 @@ void lcMainWindow::DisableDisfunctionalWidgets() {
     }
 }
 
-void lcMainWindow::LoadIconPixmaps() {
+void lc::MainWindow::LoadIconPixmaps() {
     if ( !lablib->GetSettingsItem( settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ) ) {
         return;
     }
@@ -214,7 +215,7 @@ void lcMainWindow::LoadIconPixmaps() {
     }
 }
 
-void lcMainWindow::on_CBWebcamChooser_activated( int index ) {
+void lc::MainWindow::on_CBWebcamChooser_activated( int index ) {
     if ( !( index == 0 ) ) {
         QString program{ *lablib->GetSettingsItem( settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ) + "/webcam_display" };
         QStringList arguments;
@@ -227,7 +228,7 @@ void lcMainWindow::on_CBWebcamChooser_activated( int index ) {
     }
 }
 
-void lcMainWindow::on_PBBeamFile_clicked() {
+void lc::MainWindow::on_PBBeamFile_clicked() {
     QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
     const QString * const publickeyPathUser = lablib->GetSettingsItem( settingsItems_t::PUBLICKEY_PATH_USER ), * const userNameOnClients = lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS );
     const QString fileToBeam{ ui->LEFilePath->text() };
@@ -239,7 +240,7 @@ void lcMainWindow::on_PBBeamFile_clicked() {
     }
 }
 
-void lcMainWindow::on_PBBoot_clicked() {
+void lc::MainWindow::on_PBBoot_clicked() {
     QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
     for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
@@ -249,7 +250,7 @@ void lcMainWindow::on_PBBoot_clicked() {
     }
 }
 
-void lcMainWindow::on_PBChooseFile_clicked() {
+void lc::MainWindow::on_PBChooseFile_clicked() {
     QFileDialog *file_dialog = new QFileDialog{ this, tr( "Choose a file to beam" ), QDir::homePath() };
     file_dialog->setFileMode( QFileDialog::Directory );
     file_dialog->setOption( QFileDialog::DontUseNativeDialog, true );
@@ -267,7 +268,7 @@ void lcMainWindow::on_PBChooseFile_clicked() {
     delete file_dialog;
 }
 
-void lcMainWindow::on_PBDeactivateScreensaver_clicked() {
+void lc::MainWindow::on_PBDeactivateScreensaver_clicked() {
     const QString * const publickey_path_user = lablib->GetSettingsItem( settingsItems_t::PUBLICKEY_PATH_USER ), * const user_name_on_clients = lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS );
     QVector< lcClient* > *clients = lablib->GetClients();
     for ( auto s : *clients ) {
@@ -276,7 +277,7 @@ void lcMainWindow::on_PBDeactivateScreensaver_clicked() {
     }
 }
 
-void lcMainWindow::on_PBExecute_clicked() {
+void lc::MainWindow::on_PBExecute_clicked() {
     // This will be set to false, if the command shall be executed only on the chosen clients (that's if not all clients are up)
     bool executeOnEveryClient = true;
 
@@ -334,7 +335,7 @@ void lcMainWindow::on_PBExecute_clicked() {
     clients = nullptr;
 }
 
-void lcMainWindow::on_PBKillLocalzLeaf_clicked() {
+void lc::MainWindow::on_PBKillLocalzLeaf_clicked() {
     QString program{ *lablib->GetSettingsItem( settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ) + "/scripts/kill_zLeaf_labcontrol2.sh" };
 
     // Start the process
@@ -349,7 +350,7 @@ void lcMainWindow::on_PBKillLocalzLeaf_clicked() {
     ui->PTEDebugMessages->appendPlainText( "[DEBUG] " + program );
 }
 
-void lcMainWindow::on_PBKillzLeaf_clicked() {
+void lc::MainWindow::on_PBKillzLeaf_clicked() {
     QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
     const QString * const publickeyPathUser = lablib->GetSettingsItem( settingsItems_t::PUBLICKEY_PATH_USER ), * const userNameOnClients = lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS );
     for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
@@ -360,7 +361,7 @@ void lcMainWindow::on_PBKillzLeaf_clicked() {
     }
 }
 
-void lcMainWindow::on_PBOpenFilesystem_clicked() {
+void lc::MainWindow::on_PBOpenFilesystem_clicked() {
     // Determine the correct user to be used
     QString * userToBeUsed = nullptr;
     if ( ui->RBUseUserRoot->isChecked() ) {
@@ -379,7 +380,7 @@ void lcMainWindow::on_PBOpenFilesystem_clicked() {
     delete userToBeUsed;
 }
 
-void lcMainWindow::on_PBOpenTerminal_clicked() {
+void lc::MainWindow::on_PBOpenTerminal_clicked() {
     QString *tempPublickeyPathUser = nullptr;
     if ( ui->RBUseUserRoot->isChecked() ) {
         tempPublickeyPathUser = lablib->GetSettingsItem( settingsItems_t::PUBLICKEY_PATH_ROOT );
@@ -397,7 +398,7 @@ void lcMainWindow::on_PBOpenTerminal_clicked() {
     }
 }
 
-void lcMainWindow::on_PBPrintPaymentFileManually_clicked() {
+void lc::MainWindow::on_PBPrintPaymentFileManually_clicked() {
     QFileDialog *fileDialog = new QFileDialog{ this, tr( "Please choose a payment file to print." ),
                                                 QDir::homePath(), "*.pay" };
     fileDialog->setFileMode( QFileDialog::ExistingFile );
@@ -416,7 +417,7 @@ void lcMainWindow::on_PBPrintPaymentFileManually_clicked() {
     delete fileDialog;
 }
 
-void lcMainWindow::on_PBRunzLeaf_clicked() {
+void lc::MainWindow::on_PBRunzLeaf_clicked() {
     // Show an error message, if no zTree version was chosen yet
     if ( ui->CBzLeafVersion->currentIndex() == 0 ) {
         QMessageBox messageBox{ QMessageBox::Warning, tr( "Unset z-Leaf version" ), tr( "There is no z-Leaf version chosen yet. Please choose one." ), QMessageBox::Ok, this };
@@ -451,22 +452,23 @@ void lcMainWindow::on_PBRunzLeaf_clicked() {
     }
 }
 
-void lcMainWindow::on_PBShowORSEE_clicked() {
+void lc::MainWindow::on_PBShowORSEE_clicked() {
     lablib->ShowOrsee();
 }
 
-void lcMainWindow::on_PBShowPreprints_clicked() {
+void lc::MainWindow::on_PBShowPreprints_clicked() {
     lablib->ShowPreprints();
 }
 
-void lcMainWindow::on_PBShowSessions_clicked() {
-    QWidget *sessionDisplay = new lcSessionDisplay{ lablib->GetSessionsModel(), this };
+void lc::MainWindow::on_PBShowSessions_clicked() {
+    QWidget *sessionDisplay = new SessionDisplay{ lablib->GetSessionsModel(), this };
     sessionDisplay->setWindowFlags( Qt::Window );
     sessionDisplay->show();
-    connect( sessionDisplay, &lcSessionDisplay::destroyed, sessionDisplay, &lcSessionDisplay::deleteLater );
+    connect( sessionDisplay, &SessionDisplay::destroyed,
+             sessionDisplay, &SessionDisplay::deleteLater );
 }
 
-void lcMainWindow::on_PBShutdown_clicked() {
+void lc::MainWindow::on_PBShutdown_clicked() {
     QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
     const QString * const publickeyPathUser = lablib->GetSettingsItem( settingsItems_t::PUBLICKEY_PATH_USER ),
                   * const userNameOnClients = lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS );
@@ -478,7 +480,7 @@ void lcMainWindow::on_PBShutdown_clicked() {
     }
 }
 
-void lcMainWindow::on_PBStartLocalzLeaf_clicked() {
+void lc::MainWindow::on_PBStartLocalzLeaf_clicked() {
     // Show an error message, if no z-Leaf version was chosen yet
     if ( ui->CBzLeafVersion->currentIndex() == 0 ) {
         QMessageBox::information( this, tr( "Unset z-Leaf version" ), tr( "There is no z-Leaf version chosen yet. Please choose one." ), QMessageBox::Ok );
@@ -518,7 +520,7 @@ void lcMainWindow::on_PBStartLocalzLeaf_clicked() {
     delete messageBox;
 }
 
-void lcMainWindow::on_PBStartzLeaf_clicked() {
+void lc::MainWindow::on_PBStartzLeaf_clicked() {
     // Show an error message, if no z-Leaf version was chosen yet
     if ( ui->CBzLeafVersion->currentIndex() == 0 ) {
         QMessageBox messageBox{ QMessageBox::Warning, tr( "Unset z-Leaf version" ), tr( "There is no z-Leaf version chosen yet. Please choose one." ), QMessageBox::Ok, this };
@@ -540,11 +542,12 @@ void lcMainWindow::on_PBStartzLeaf_clicked() {
     delete zLeafVersion;
 }
 
-void lcMainWindow::on_PBStartzTree_clicked() {
-    lcSessionStarter *sessionStarter = new lcSessionStarter{ lablib, ui->PTEDebugMessages, this };
+void lc::MainWindow::on_PBStartzTree_clicked() {
+    SessionStarter *sessionStarter = new SessionStarter{ lablib, ui->PTEDebugMessages, this };
     sessionStarter->setWindowFlags( Qt::Window );
     sessionStarter->show();
-    connect( sessionStarter, &lcSessionStarter::destroyed, sessionStarter, &lcSessionStarter::deleteLater );
+    connect( sessionStarter, &SessionStarter::destroyed,
+             sessionStarter, &SessionStarter::deleteLater );
 //    // Show an error message, if no zTree version was chosen yet
 //    if (ui->CBzTreeVersion->currentIndex() == 0) {
 //        QMessageBox messageBox{ QMessageBox::Warning, tr("Unset zTree version"), tr("There is no zTree version chosen yet. Please choose one."), QMessageBox::Ok, this };
@@ -586,7 +589,7 @@ void lcMainWindow::on_PBStartzTree_clicked() {
 //    lablib->StartNewZTreeInstance();
 }
 
-void lcMainWindow::on_PBViewDesktop_clicked() {
+void lc::MainWindow::on_PBViewDesktop_clicked() {
     QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
     for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
@@ -596,13 +599,13 @@ void lcMainWindow::on_PBViewDesktop_clicked() {
     }
 }
 
-void lcMainWindow::on_RBUseLocalUser_toggled(bool checked) {
+void lc::MainWindow::on_RBUseLocalUser_toggled(bool checked) {
     if ( checked ) {
         ui->PTEDebugMessages->appendPlainText( tr( "[DEBUG] RBUseLocalUser got toggled." ) );
     }
 }
 
-void lcMainWindow::SetupWidgets() {
+void lc::MainWindow::SetupWidgets() {
     // Fill the 'CBClientNames' with possible client names and the 'TVClients' with the clients
     const QVector< lcClient* > *clients = lablib->GetClients();
     if ( !( clients == nullptr ) ) {
@@ -732,7 +735,7 @@ void lcMainWindow::SetupWidgets() {
                        "This version of Labcontrol was compiled on " + date + " at " + time + "." );
 }
 
-void lcMainWindow::UpdateClientsTableView() {
+void lc::MainWindow::UpdateClientsTableView() {
     for ( auto s : *valid_items ) {
         state_t state = static_cast< lcClient * >( s->data( Qt::UserRole ).value<void *>() )->GetClientState();
         switch ( state ) {

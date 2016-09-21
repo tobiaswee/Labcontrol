@@ -20,7 +20,8 @@
 #include "sessiondisplay.h"
 #include "ui_sessiondisplay.h"
 
-lcSessionDisplay::lcSessionDisplay( QAbstractTableModel *argSessionsModel, QWidget *argParent ) :
+lc::SessionDisplay::SessionDisplay( QAbstractTableModel *argSessionsModel,
+                                    QWidget *argParent ) :
     QWidget{ argParent },
     ui{ new Ui::SessionDisplay }
 {
@@ -28,6 +29,6 @@ lcSessionDisplay::lcSessionDisplay( QAbstractTableModel *argSessionsModel, QWidg
     ui->TVSessions->setModel( argSessionsModel );
 }
 
-lcSessionDisplay::~lcSessionDisplay() {
+lc::SessionDisplay::~SessionDisplay() {
     delete ui;
 }

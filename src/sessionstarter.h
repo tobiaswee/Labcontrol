@@ -25,17 +25,18 @@
 #include <QFileDialog>
 #include <QWidget>
 
+namespace lc {
+
 namespace Ui {
-class lcSessionStarter;
+class SessionStarter;
 }
 
-class lcSessionStarter : public QWidget
-{
+class SessionStarter : public QWidget {
     Q_OBJECT
 
 public:
-    explicit lcSessionStarter( lcLablib *argLablib, QPlainTextEdit *argDebugMessagesTextEdit, QWidget *parent = nullptr );
-    ~lcSessionStarter();
+    explicit SessionStarter( lcLablib *argLablib, QPlainTextEdit *argDebugMessagesTextEdit, QWidget *parent = nullptr );
+    ~SessionStarter();
 
     //! This gets thrown as an exception if this class is created even if it shouldn't
     //! (because no installed z-Tree instances could be detected).
@@ -44,7 +45,7 @@ public:
 private:
     QPlainTextEdit * const debugMessagesTextEdit = nullptr;
     lcLablib * const lablib = nullptr;
-    Ui::lcSessionStarter *ui;
+    Ui::SessionStarter *ui = nullptr;
 
     void SetupWidgets();
 
@@ -63,5 +64,7 @@ signals:
     //! This signal becomes emitted if "Set new path" was chosen in the 'CBDataTargetPath'
     void NewDataTargetPathRequested();
 };
+
+}
 
 #endif // SESSIONSTARTER_H

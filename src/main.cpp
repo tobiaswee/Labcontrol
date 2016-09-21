@@ -21,8 +21,8 @@
 #include <QApplication>
 
 int main( int argc, char *argv[] ) {
-    QApplication a( argc, argv );
-    lcMainWindow w;
+    QApplication a{ argc, argv };
+    lc::MainWindow w;
     w.show();
     
     return a.exec();

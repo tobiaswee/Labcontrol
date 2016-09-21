@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>lcSessionStarter</class>
- <widget class="QWidget" name="lcSessionStarter">
+ <class>lc::SessionStarter</class>
+ <widget class="QWidget" name="lc::SessionStarter">
   <property name="geometry">
    <rect>
     <x>0</x>

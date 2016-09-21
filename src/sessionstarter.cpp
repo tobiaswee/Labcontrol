@@ -20,21 +20,21 @@
 #include "sessionstarter.h"
 #include "ui_sessionstarter.h"
 
-lcSessionStarter::lcSessionStarter( lcLablib *argLablib, QPlainTextEdit *argDebugMessagesTextEdit, QWidget *parent ) :
+lc::SessionStarter::SessionStarter( lcLablib *argLablib, QPlainTextEdit *argDebugMessagesTextEdit, QWidget *parent ) :
     QWidget{ parent },
     debugMessagesTextEdit { argDebugMessagesTextEdit },
     lablib{ argLablib },
-    ui{ new Ui::lcSessionStarter }
+    ui{ new Ui::SessionStarter }
 {
     ui->setupUi( this );
     this->SetupWidgets();
 }
 
-lcSessionStarter::~lcSessionStarter() {
+lc::SessionStarter::~SessionStarter() {
     delete ui;
 }
 
-void lcSessionStarter::GetNewDataTargetPath() {
+void lc::SessionStarter::GetNewDataTargetPath() {
     QFileDialog *file_dialog = new QFileDialog{ this };
     file_dialog->setFileMode( QFileDialog::Directory );
     file_dialog->setDirectory( QDir::homePath() );
@@ -49,7 +49,7 @@ void lcSessionStarter::GetNewDataTargetPath() {
     delete file_dialog;
 }
 
-void lcSessionStarter::on_CBDataTargetPath_activated(const QString &arg1) {
+void lc::SessionStarter::on_CBDataTargetPath_activated(const QString &arg1) {
     if ( ui->CBDataTargetPath->currentIndex() == 0 ) {
         emit NewDataTargetPathRequested();
         return;
@@ -58,21 +58,21 @@ void lcSessionStarter::on_CBDataTargetPath_activated(const QString &arg1) {
     lablib->SetChosenZTreeDataTargetPath( arg1 );
 }
 
-void lcSessionStarter::on_CBReceiptsHeader_activated(const QString &arg1) {
+void lc::SessionStarter::on_CBReceiptsHeader_activated(const QString &arg1) {
     ui->CBReceiptsHeader->setStyleSheet( "" );
     lablib->SetChosenLaTeXHeader( arg1 );
 }
 
-void lcSessionStarter::on_CBReplaceParticipantName_currentTextChanged(const QString &arg1) {
+void lc::SessionStarter::on_CBReplaceParticipantName_currentTextChanged(const QString &arg1) {
     lablib->SetAnonymousReceiptsPlaceholder( arg1 );
 }
 
-void lcSessionStarter::on_CBzTreeVersion_activated(const QString &arg1) {
+void lc::SessionStarter::on_CBzTreeVersion_activated(const QString &arg1) {
     ui->CBzTreeVersion->setStyleSheet( "" );
     lablib->SetChosenZTreeVersion( arg1 );
 }
 
-void lcSessionStarter::on_ChBPrintanonymousreceipts_clicked( bool checked ) {
+void lc::SessionStarter::on_ChBPrintanonymousreceipts_clicked( bool checked ) {
     // Enable or disable the corresponding widgets
     if ( checked ) {
         ui->LReplaceParticipantName->setEnabled( true );
@@ -90,17 +90,17 @@ void lcSessionStarter::on_ChBPrintanonymousreceipts_clicked( bool checked ) {
     ui->ChBPrintanonymousreceipts->setStyleSheet( "" );
 }
 
-void lcSessionStarter::on_ChBReceiptsforLocalClients_clicked( bool checked ) {
+void lc::SessionStarter::on_ChBReceiptsforLocalClients_clicked( bool checked ) {
     ui->ChBReceiptsforLocalClients->setStyleSheet( "" );
     lablib->SetPrintReceiptsForLocalClients( checked );
 }
 
-void lcSessionStarter::on_SBPort_editingFinished() {
+void lc::SessionStarter::on_SBPort_editingFinished() {
     ui->SBPort->setStyleSheet( "" );
     lablib->SetChosenZTreePort( ui->SBPort->value() );
 }
 
-void lcSessionStarter::SetupWidgets() {
+void lc::SessionStarter::SetupWidgets() {
     ui->SBPort->setValue( lablib->GetChosenZTreePort() );
 
     // Fill the 'CBzTreeVersion' combobox with known entries from the lablib class
@@ -138,7 +138,8 @@ void lcSessionStarter::SetupWidgets() {
     ui->CBDataTargetPath->addItem( QDir::homePath() );
     ui->CBDataTargetPath->addItem( QString{ QDir::homePath() + "/zTreeData" } );
     ui->CBDataTargetPath->setCurrentIndex( 2 );
-    connect( this, &lcSessionStarter::NewDataTargetPathRequested, this, &lcSessionStarter::GetNewDataTargetPath );
+    connect( this, &SessionStarter::NewDataTargetPathRequested,
+             this, &SessionStarter::GetNewDataTargetPath );
 
     // Since filling a QComboBox does not emit the 'activated' signal, initially set some variables manually
     lablib->SetChosenLaTeXHeader( ui->CBReceiptsHeader->currentText() );
