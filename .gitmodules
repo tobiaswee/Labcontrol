@@ -1,0 +1,3 @@
+[submodule "subprojects/WebcamDisplay"]
+	path = subprojects/WebcamDisplay
+	url = https://github.com/markuspg/WebcamDisplay.git
