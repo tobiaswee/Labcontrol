@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=2.0
+Name=Labcontrol
+GenericName=Labcontrol
+Comment=Control the EWF lab
+Type=Application
+Exec=/usr/local/bin/labcontrol
+TryExec=/usr/local/bin/labcontrol
+Terminal=false
+StartupNotify=true
+Icon=/usr/share/labcontrol/icons/icon.png
