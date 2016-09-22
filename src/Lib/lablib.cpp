@@ -144,6 +144,7 @@ void lc::Lablib::GotNetstatQueryResult( QStringList *argActiveZLeafConnections )
 
 void lc::Lablib::ReadSettings() {
     QStringList simpleLoadableItems = { QStringList{}
+                                         << "browser_command"
                                          << "dvips_command"
                                          << "file_manager"
                                          << "labcontrol_installation_directory"
@@ -171,6 +172,7 @@ void lc::Lablib::ReadSettings() {
                                          << "ztree_installation_directory" };
 
     QStringList theItemsErrorComplaints = { QStringList{}
+                                         << "Opening ORSEE in a browser will not work."
                                          << "Receipts creation will not work."
                                          << "The display of preprints will not work."
                                          << "Labcontrol will missbehave with high propability."
@@ -197,8 +199,9 @@ void lc::Lablib::ReadSettings() {
                                          << "Deactivating the screen saver on the clients will not be possible."
                                          << "zTree will not be available" };
 
-    bool is_file[] = { true, true, true, true, false, true, true, false, false, true, true, true, true,
-                       true, true, true, false, true, true, false, true, true, true, false, true };
+    bool is_file[] = { true, true, true, true, true, false, true, true, false, false,
+                       true, true, true, true, true, true, true, false, true, true,
+                       false, true, true, true, false, true };
 
     QString *tempItemStorage = nullptr;
     for ( int i = 0; i < ( int )settItms_t::SETT_ITMS_QUANT; i++ ) {
@@ -409,14 +412,15 @@ void lc::Lablib::SetUserNameOnServer( const QString &argUserName ) {
 }
 
 void lc::Lablib::ShowOrsee() {
-    // Start the process
     QProcess showOrseeProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     showOrseeProcess.setProcessEnvironment( env );
-    showOrseeProcess.startDetached( *( *settingsItems )[ ( int )settItms_t::ORSEE_COMMAND ] );
+    QString program{ *( *settingsItems )[ ( int )settItms_t::BROWSER_CMD ] };
+    QStringList arguments{ QStringList{} << *( *settingsItems )[ ( int )settItms_t::ORSEE_URL ] };
+    showOrseeProcess.startDetached( program, arguments );
 
     // Output message via the debug messages tab
-    debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] %1" ).arg( *( *settingsItems )[ ( int )settItms_t::ORSEE_COMMAND ] ) );
+    debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] %1 %2" ).arg( program ).arg( arguments.join( " " ) ) );
 }
 
 void lc::Lablib::ShowPreprints() {

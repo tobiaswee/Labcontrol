@@ -115,7 +115,8 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
     }
 
     // Disable 'PBShowORSEE', if 'orsee_command' was not set
-    if ( !lablib->GetSettingsItem( settItms_t::ORSEE_COMMAND ) ) {
+    if ( !lablib->GetSettingsItem( settItms_t::BROWSER_CMD )
+         || !lablib->GetSettingsItem( settItms_t::ORSEE_URL ) ) {
         ui->PBShowORSEE->setEnabled( false );
     }
 
