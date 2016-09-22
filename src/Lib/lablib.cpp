@@ -42,8 +42,8 @@ lc::Lablib::Lablib( QPlainTextEdit *argDebugMessagesTextEdit, QObject *argParent
     DetectInstalledZTreeVersionsAndLaTeXHeaders();
 
     // Initialize all 'netstat' query mechanisms
-    if ( ( *settingsItems )[ ( int )settItms_t::NETSTAT_CMD ] ) {
-        netstatAgent = new NetstatAgent{ ( *settingsItems )[ ( int )settItms_t::NETSTAT_CMD ] };
+    if ( !settings->netstatCmd.isEmpty() ) {
+        netstatAgent = new NetstatAgent{ settings->netstatCmd };
         netstatAgent->moveToThread( &netstatThread );
         connect( &netstatThread, &QThread::finished, netstatAgent, &QObject::deleteLater );
         connect( netstatAgent, &NetstatAgent::QueryFinished,
@@ -56,8 +56,11 @@ lc::Lablib::Lablib( QPlainTextEdit *argDebugMessagesTextEdit, QObject *argParent
     }
 
     // Initialize the server for client help requests retrieval
-    if ( clientHelpNotificationServerPort && ( *settingsItems )[ ( int )settItms_t::SERVER_IP ] ) {
-        clientHelpNotificationServer = new ClientHelpNotificationServer{ clientIPsToClientsMap,( *settingsItems )[ ( int )settItms_t::SERVER_IP ], clientHelpNotificationServerPort, this };
+    if ( clientHelpNotificationServerPort && !settings->serverIP.isEmpty() ) {
+        clientHelpNotificationServer = new ClientHelpNotificationServer{ clientIPsToClientsMap,
+                                                                         settings->serverIP,
+                                                                         clientHelpNotificationServerPort,
+                                                                         this };
     }
 }
 
@@ -86,16 +89,17 @@ lc::Lablib::~Lablib () {
 
 void lc::Lablib::DetectInstalledZTreeVersionsAndLaTeXHeaders() {
     // Detect the installed LaTeX headers
-    if ( ( *settingsItems )[ ( int )settItms_t::LC_INST_DIR ] ) {
-        QDir laTeXDirectory{ *( *settingsItems )[ ( int )settItms_t::LC_INST_DIR ], "*header.tex", QDir::Name, QDir::CaseSensitive | QDir::Files | QDir::Readable };
+    if ( !settings->lcInstDir.isEmpty() ) {
+        QDir laTeXDirectory{ settings->lcInstDir, "*header.tex", QDir::Name,
+                             QDir::CaseSensitive | QDir::Files | QDir::Readable };
         if ( !laTeXDirectory.exists() || laTeXDirectory.entryList().isEmpty() ) {
             QMessageBox messageBox{ QMessageBox::Critical, tr( "No LaTeX headers found" ),
                         tr( "No LaTeX headers could be found in '%1'. Receipts printing will not work" )
-                        .arg( *( *settingsItems )[ ( int )settItms_t::LC_INST_DIR ] ), QMessageBox::Ok };
+                        .arg( settings->lcInstDir ), QMessageBox::Ok };
             messageBox.exec();
             installedLaTeXHeaders = new QStringList{ "None found" };
             debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] No LaTeX headers could be found in '%1'." )
-                                                    .arg( *( *settingsItems )[ ( int )settItms_t::LC_INST_DIR ] ) );
+                                                    .arg( settings->lcInstDir ) );
         } else {
             installedLaTeXHeaders = new QStringList{ laTeXDirectory.entryList() };
             installedLaTeXHeaders->replaceInStrings( "_header.tex", "" );
@@ -104,15 +108,18 @@ void lc::Lablib::DetectInstalledZTreeVersionsAndLaTeXHeaders() {
     }
 
     // Detect the installed zTree versions
-    if ( ( *settingsItems )[ ( int )settItms_t::ZTREE_INST_DIR ] ) {
-        QDir zTreeDirectory{ *( *settingsItems )[ ( int )settItms_t::ZTREE_INST_DIR ], "zTree*", QDir::Name, QDir::NoDotAndDotDot | QDir::Dirs | QDir::Readable | QDir::CaseSensitive };
+    if ( !settings->zTreeInstDir.isEmpty() ) {
+        QDir zTreeDirectory{ settings->zTreeInstDir, "zTree*", QDir::Name,
+                             QDir::NoDotAndDotDot | QDir::Dirs
+                             | QDir::Readable | QDir::CaseSensitive };
         if ( zTreeDirectory.entryList().isEmpty() ) {
             QMessageBox messageBox{ QMessageBox::Critical, tr( "zTree not found" ),
                         tr( "No zTree installation found in '%1'. Running zTree will not be possible." )
-                        .arg( *( *settingsItems )[ ( int )settItms_t::ZTREE_INST_DIR ] ), QMessageBox::Ok };
+                        .arg( settings->zTreeInstDir ), QMessageBox::Ok };
             messageBox.exec();
 
-            debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] No zTree versions could be found in '%1'." ).arg( *( *settingsItems )[ ( int )settItms_t::ZTREE_INST_DIR ] ) );
+            debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] No zTree versions could be found in '%1'." )
+                                                    .arg( settings->zTreeInstDir ) );
         }
         else {
             InstalledZTreeVersions = new QStringList{ zTreeDirectory.entryList() };
@@ -323,8 +330,8 @@ void lc::Lablib::ShowPreprints() {
     QProcess showPreprintsProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     showPreprintsProcess.setProcessEnvironment( env );
-    QString program{ *( *settingsItems )[ ( int )settItms_t::FILE_MANAGER ] };
-    QStringList arguments{ QStringList{} << *( *settingsItems )[ ( int )settItms_t::LC_INST_DIR ] +  "/preprints" };
+    QString program{ settings->fileMngr };
+    QStringList arguments{ QStringList{} << settings->lcInstDir +  "/preprints" };
     showPreprintsProcess.startDetached( program, arguments );
 
     // Output message via the debug messages tab

@@ -19,11 +19,11 @@
 
 #include "netstatagent.h"
 
-lc::NetstatAgent::NetstatAgent( QString *argNetstatCommand, QObject *argParent ) :
+lc::NetstatAgent::NetstatAgent( const QString &argNetstatCommand, QObject *argParent ) :
     QObject{ argParent },
     extractionRegexp{ "\\d+\\.\\d+\\.\\d+\\.\\d+" },
     netstatArguments{ QStringList{} << "-anp" << "--tcp" },
-    netstatCommand{ *argNetstatCommand },
+    netstatCommand{ argNetstatCommand },
     netstatQueryProcess{ this },
     searchRegexp{ "\\W(ESTABLISHED|VERBUNDEN)( +)(\\d+)(/ztree.exe)\\W", QRegularExpression::CaseInsensitiveOption }
 {

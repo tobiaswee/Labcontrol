@@ -35,7 +35,7 @@ class NetstatAgent : public QObject {
     Q_OBJECT
 
 public:
-    explicit NetstatAgent( QString *argNetstatCommand, QObject *argParent = nullptr );
+    explicit NetstatAgent( const QString &argNetstatCommand, QObject *argParent = nullptr );
     
 signals:
     //! This signal is emitted if the query of the currently active zLeaf connections finished
@@ -47,7 +47,7 @@ public slots:
 private:
     const QRegularExpression extractionRegexp;
     const QStringList netstatArguments;
-    const QString netstatCommand;
+    const QString &netstatCommand;
     QProcess netstatQueryProcess;
     const QRegularExpression searchRegexp;
 };

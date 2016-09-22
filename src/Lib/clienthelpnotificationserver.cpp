@@ -20,10 +20,10 @@
 #include "clienthelpnotificationserver.h"
 
 lc::ClientHelpNotificationServer::ClientHelpNotificationServer( const QMap< QString, Client* > * const argClientIPsToClientsMap,
-                                const QString * const argServerIP, const unsigned short int &argServerPort, QObject *argParent ) :
+                                const QString &argServerIP, const unsigned short int &argServerPort, QObject *argParent ) :
     QObject{ argParent },
     clientIPsToClientsMap{ argClientIPsToClientsMap },
-    hostAddress{ *argServerIP },
+    hostAddress{ argServerIP },
     serverPort{ argServerPort }
 {
     QNetworkConfigurationManager manager;

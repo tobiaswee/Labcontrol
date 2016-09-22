@@ -33,7 +33,7 @@ class ClientHelpNotificationServer : public QObject {
     Q_OBJECT
 public:
     explicit ClientHelpNotificationServer( const QMap< QString, Client* > * const argClientIPsToClientsMap,
-            const QString * const argServerIP, const unsigned short int &argServerPort, QObject *argParent = nullptr );
+            const QString &argServerIP, const unsigned short int &argServerPort, QObject *argParent = nullptr );
 
 signals:
 
