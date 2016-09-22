@@ -84,18 +84,6 @@ lc::Lablib::~Lablib () {
     delete settingsItems;
 }
 
-bool lc::Lablib::CheckPathAndComplain( const QString * const argPath,
-                                       const QString &argVariableName,
-                                       const QString &argComplaint ) {
-    if ( !QFile::exists( *argPath ) ) {
-        QMessageBox::information( nullptr, tr( "Specified path '%1' does not exist" ).arg( argVariableName ), tr( "The path specified by '%1' does not exist. %2" ).arg( argVariableName ).arg( argComplaint ) );
-        debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] The path specified by '%1' does not exist. %2" ).arg( argVariableName ).arg( argComplaint ) );
-        return false;
-    }
-    debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] '%1': %2" ).arg( argVariableName ).arg( *argPath ) );
-    return true;
-}
-
 void lc::Lablib::DetectInstalledZTreeVersionsAndLaTeXHeaders() {
     // Detect the installed LaTeX headers
     if ( ( *settingsItems )[ ( int )settItms_t::LC_INST_DIR ] ) {
@@ -148,73 +136,6 @@ void lc::Lablib::GotNetstatQueryResult( QStringList *argActiveZLeafConnections )
 }
 
 void lc::Lablib::ReadSettings() {
-    QStringList simpleLoadableItems = { QStringList{}
-                                         << "browser_command"
-                                         << "dvips_command"
-                                         << "file_manager"
-                                         << "labcontrol_installation_directory"
-                                         << "latex_command"
-                                         << "local_zLeaf_name"
-                                         << "lpr_command"
-                                         << "netstat_command"
-                                         << "network_broadcast_address"
-                                         << "orsee_command"
-                                         << "ping_command"
-                                         << "postscript_viewer"
-                                         << "ps2pdf_command"
-                                         << "public_key_path_root"
-                                         << "public_key_path_user"
-                                         << "rcp_command"
-                                         << "rm_command"
-                                         << "server_ip"
-                                         << "ssh_command"
-                                         << "terminal_emulator_command"
-                                         << "user_name_on_clients"
-                                         << "vnc_viewer"
-                                         << "wakeonlan_command"
-                                         << "wmctrl_command"
-                                         << "xset_command"
-                                         << "ztree_installation_directory" };
-
-    QStringList theItemsErrorComplaints = { QStringList{}
-                                         << "Opening ORSEE in a browser will not work."
-                                         << "Receipts creation will not work."
-                                         << "The display of preprints will not work."
-                                         << "Labcontrol will missbehave with high propability."
-                                         << "Receipts creation will not work."
-                                         << "The local zLeaf default name will default to 'local'."
-                                         << "Receipts printing will not work."
-                                         << "Detection of active zLeaf connections will not work."
-                                         << "Booting the clients will not work."
-                                         << "Opening ORSEE in a browser will not work."
-                                         << "Status updates for the clients will not work."
-                                         << "Viewing the generated receipts postscript file will not work."
-                                         << "Converting and viewing the generated receipts file will not work."
-                                         << "Administration actions concerning the clients will not be available."
-                                         << "Many actions concerning the clients will not be available."
-                                         << "Beaming files to the clients will not be possible."
-                                         << "Cleanup of the zTree data target path will not work."
-                                         << "Starting zLeaves and retrieving client help messages will not work."
-                                         << "All actions concerning the clients will not be possible."
-                                         << "Conducting administrative tasks will not be possible."
-                                         << "All actions concerning the clients performed by the experiment user will not work."
-                                         << "Viewing the client's screens will not work."
-                                         << "Booting the clients will not work."
-                                         << "Setting zTree's window title to its port number will not work."
-                                         << "Deactivating the screen saver on the clients will not be possible."
-                                         << "zTree will not be available" };
-
-    bool is_file[] = { true, true, true, true, true, false, true, true, false, false,
-                       true, true, true, true, true, true, true, false, true, true,
-                       false, true, true, true, false, true };
-
-    QString *tempItemStorage = nullptr;
-    for ( int i = 0; i < ( int )settItms_t::SETT_ITMS_QUANT; i++ ) {
-        tempItemStorage = ReadSettingsItem( simpleLoadableItems[ i ], theItemsErrorComplaints[ i ], is_file[ i ] );
-        settingsItems->replace( i, tempItemStorage );
-    }
-    tempItemStorage = nullptr;
-
     // Let the local zLeaf name default to 'local' if none was given in the settings
     if ( !( *settingsItems )[ ( int )settItms_t::LOCAL_ZLEAF_NAME ] ) {
         settingsItems->replace( ( int )settItms_t::LOCAL_ZLEAF_NAME, new QString{ tr( "local" ) } );
@@ -350,29 +271,6 @@ void lc::Lablib::ReadSettings() {
     }
 }
 
-QString *lc::Lablib::ReadSettingsItem( const QString &argVariableName, const QString &argComplaint, bool argItemIsFile ) {
-    if ( !labSettings.contains( argVariableName ) ) {
-        QMessageBox::information( nullptr, tr( "'%1' not set" ).arg( argVariableName ), tr( "The '%1' variable was not set. %2" ).arg( argVariableName ).arg( argComplaint ) );
-        debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] '%1' was not set. %2" ).arg( argVariableName ).arg( argComplaint ) );
-
-        return nullptr;
-    }
-    else {
-        QString *tempString = new QString{ labSettings.value( argVariableName ).toString() };
-        if ( argItemIsFile && !CheckPathAndComplain( tempString, argVariableName, argComplaint ) ) {
-            delete tempString;
-            tempString = nullptr;
-        }
-        // Empty strings count as not set, so delete them for correct error handling in the rest of Labcontrol
-        if ( tempString && tempString->isEmpty() ) {
-            delete tempString;
-            tempString = nullptr;
-        }
-        return tempString;
-    }
-    return nullptr;
-}
-
 void lc::Lablib::SetAnonymousReceiptsPlaceholder( const QString &argPlaceHolder ) {
     anonymousReceiptsPlaceholder = argPlaceHolder;
     debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] anonymous_receipts_placeholder set to: '%1'" ).arg( anonymousReceiptsPlaceholder ) );
@@ -413,7 +311,7 @@ void lc::Lablib::ShowOrsee() {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     showOrseeProcess.setProcessEnvironment( env );
     QString program{ settings->browserCmd };
-    QStringList arguments{ QStringList{} << *( *settingsItems )[ ( int )settItms_t::ORSEE_URL ] };
+    QStringList arguments{ QStringList{} << settings->orseeUrl };
     showOrseeProcess.startDetached( program, arguments );
 
     // Output message via the debug messages tab

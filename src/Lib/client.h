@@ -75,13 +75,14 @@ public:
     /*!
       @param argNetworkBroadcastAddress     The network broadcast address of the lab
     */
-    void Boot( const QString * const argNetworkBroadcastAddress );
+    void Boot( const QString &argNetworkBroadcastAddress );
     //! Runs the 'deactivate_screensaver.sh' script on the client to deactivate the screensaver
     /*!
       @param argPublickeyPathUser           The path to the publickey for user login on the clients
       @param argUserNameOnClients           The name of the user on the clients
     */
-    void DeactiveScreensaver( const QString * const argPublickeyPathUser, const QString * const argUserNameOnClients );
+    void DeactiveScreensaver( const QString &argPublickeyPathUser,
+                              const QString &argUserNameOnClients );
     //! Returns the current state of the client
     /*!
       @return The current state of the client
@@ -92,7 +93,7 @@ public:
      @param argPublickeyPathUser            The path to the publickey for user login on the clients
      @param argUserNameOnClients            The name of the user on the clients
     */
-    void KillZLeaf( const QString * const argPublickeyPathUser, const QString * const argUserNameOnClients );
+    void KillZLeaf( const QString &argPublickeyPathUser, const QString &argUserNameOnClients );
     //! Opens a file manager for the client's file system
     /*!
      @param argUserToBeUsed                 The name of the user on the clients
@@ -105,7 +106,9 @@ public:
      @param argPublickeyPathUser            The path to the publickey for user login on the clients
      @param argUserNameOnClients            The name of the user on the clients
     */
-    void OpenTerminal( const QString &argCommand, const bool &argOpenAsRoot, const QString * const argPublickeyPathUser, const QString * const argUserNameOnClients );
+    void OpenTerminal( const QString &argCommand, const bool &argOpenAsRoot,
+                       const QString &argPublickeyPathUser,
+                       const QString &argUserNameOnClients );
     //! Shows the desktop of the given client
     void ShowDesktop();
     //! Shuts down the client
@@ -113,7 +116,7 @@ public:
      @param argPublickeyPathUser            The path to the publickey for user login on the clients
      @param argUserNameOnClients            The name of the user on the clients
     */
-    void Shutdown( const QString * const argPublickeyPathUser, const QString * const argUserNameOnClients );
+    void Shutdown( const QString &argPublickeyPathUser, const QString &argUserNameOnClients );
     //! Starts a zLeaf instance on the client
     /*!
      @param argPublickeyPathUser            The path to the publickey for user login on the clients
@@ -123,8 +126,9 @@ public:
      @param argPort                         The port zTree ist listening on on the server
      @param argFakeName                     The name the zLeaf instance shall have (if not the default, which is the hostname of the client)
     */
-    void StartZLeaf( const QString * const argPublickeyPathUser, const QString * const argUserNameOnClients, const QString * const argZTreeVersion,
-                     const QString * const argServerIP, unsigned short int argPort, const QString * const argFakeName = nullptr );
+    void StartZLeaf( const QString &argPublickeyPathUser, const QString &argUserNameOnClients,
+                     const QString * const argZTreeVersion, const QString &argServerIP,
+                     unsigned short int argPort, const QString * const argFakeName = nullptr );
 
 private:
     QPlainTextEdit * const debugMessagesTextEdit = nullptr;

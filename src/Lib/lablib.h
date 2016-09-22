@@ -161,27 +161,11 @@ private slots:
     void GotNetstatQueryResult( QStringList *argActiveZLeafConnections );
 
 private:
-    //! Checks if the specified path exists and complains if not so
-    /**
-     * @param argPath           The path which shall be check for existance
-     * @param argVariableName   The name of the QSettings variable referring the path
-     * @param argComplaint      The complaint which shall be added to debugging output
-     * @return                  True, if path exists, false if not
-     */
-    bool CheckPathAndComplain( const QString * const argPath, const QString &argVariableName, const QString &argComplaint );
     //! Detects installed zTree version and LaTeX headers
     void DetectInstalledZTreeVersionsAndLaTeXHeaders();
     /** Reads all settings from the QSettings 'labSettings' object.
      */
     void ReadSettings();
-    //! Loads a single settings item from the globally accessible QSettings instance
-    /**
-     * @param arg_variable_name The name of the variable to load
-     * @param arg_complaint The complaint to display if the variable could not be loaded
-     * @param arg_is_file If the existance of the file referenced by the setting's value shall be checked
-     * @return The settings data or a nullptr on failure
-     */
-    QString *ReadSettingsItem( const QString &argVariableName, const QString &argComplaint, bool argItemIsFile = false );
 
     QStringList *adminUsers = nullptr;         //! Stores all users with administrative rights
     QString anonymousReceiptsPlaceholder;    //! The placeholder which shall substitute the client names on anonymous receipts (if != "")
