@@ -17,6 +17,7 @@ SOURCES += src/main.cpp \
     src/Lib/receiptsprinter.cpp \
     src/Lib/session.cpp \
     src/Lib/sessionsmodel.cpp \
+    src/Lib/settings.cpp \
     src/Lib/ztree.cpp
 
 HEADERS  += src/mainwindow.h \
@@ -32,6 +33,7 @@ HEADERS  += src/mainwindow.h \
     src/Lib/receiptsprinter.h \
     src/Lib/session.h \
     src/Lib/sessionsmodel.h \
+    src/Lib/settings.h \
     src/Lib/ztree.h
 
 FORMS    += src/mainwindow.ui \

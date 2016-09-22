@@ -17,10 +17,15 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "mainwindow.h"
+#include <memory>
 
 #include <QtGlobal>
 #include <QInputDialog>
+
+#include "mainwindow.h"
+#include "Lib/settings.h"
+
+extern std::unique_ptr< lc::Settings > settings;
 
 lc::MainWindow::MainWindow( QWidget *argParent ) :
     QMainWindow{ argParent },
@@ -115,7 +120,7 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
     }
 
     // Disable 'PBShowORSEE', if 'orsee_command' was not set
-    if ( !lablib->GetSettingsItem( settItms_t::BROWSER_CMD )
+    if ( settings->browserCmd.isEmpty()
          || !lablib->GetSettingsItem( settItms_t::ORSEE_URL ) ) {
         ui->PBShowORSEE->setEnabled( false );
     }

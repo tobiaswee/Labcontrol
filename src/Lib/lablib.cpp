@@ -17,11 +17,16 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
+
 #include <QErrorMessage>
 #include <QFile>
 #include <QTextStream>
 
 #include "lablib.h"
+#include "settings.h"
+
+extern std::unique_ptr< lc::Settings > settings;
 
 lc::Lablib::Lablib( QPlainTextEdit *argDebugMessagesTextEdit, QObject *argParent ) :
     QObject{ argParent },
@@ -407,7 +412,7 @@ void lc::Lablib::ShowOrsee() {
     QProcess showOrseeProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     showOrseeProcess.setProcessEnvironment( env );
-    QString program{ *( *settingsItems )[ ( int )settItms_t::BROWSER_CMD ] };
+    QString program{ settings->browserCmd };
     QStringList arguments{ QStringList{} << *( *settingsItems )[ ( int )settItms_t::ORSEE_URL ] };
     showOrseeProcess.startDetached( program, arguments );
 

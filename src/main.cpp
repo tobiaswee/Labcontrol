@@ -17,11 +17,18 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "mainwindow.h"
+#include <memory>
+
 #include <QApplication>
+
+#include "mainwindow.h"
+#include "Lib/settings.h"
+
+std::unique_ptr< lc::Settings > settings;
 
 int main( int argc, char *argv[] ) {
     QApplication a{ argc, argv };
+    settings.reset( new lc::Settings{ QSettings{ "Economic Laboratory", "Labcontrol" } } );
     lc::MainWindow w;
     w.show();
     
