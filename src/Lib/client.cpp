@@ -21,9 +21,8 @@
 
 lc::Client::Client( QPlainTextEdit *argDebugMessagesTextEdit, QString *argIP, QString *argMAC,
                     QString *argName, unsigned short int argXPosition,
-                    unsigned short int argYPosition, bool argHasWebcam,
+                    unsigned short int argYPosition,
                     const QVector< QString* > * const argSettingsItems ):
-    hasWebcam{ argHasWebcam },
     ip{ *argIP },
     mac{ *argMAC },
     name{ *argName },
@@ -53,9 +52,9 @@ lc::Client::Client( QPlainTextEdit *argDebugMessagesTextEdit, QString *argIP, QS
         pingTimer->start( 3000 );
     }
 
-    debugMessagesTextEdit->appendPlainText( tr ( "[DEBUG] Created client %1\n\tMac: %2\tIP: %3\n\tPosition: %4x%5\t\tWebcam = %6" )
+    debugMessagesTextEdit->appendPlainText( tr ( "[DEBUG] Created client %1\n\tMac: %2\tIP: %3\n\tPosition: %4x%5" )
                                             .arg( name ).arg( mac ).arg( ip ).arg( QString::number( xPosition ) )
-                                            .arg( QString::number( yPosition ) ).arg( QString::number( hasWebcam ) ) );
+                                            .arg( QString::number( yPosition ) ) );
 }
 
 lc::Client::~Client() {

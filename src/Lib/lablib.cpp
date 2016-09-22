@@ -306,14 +306,6 @@ void lc::Lablib::ReadSettings() {
         return;
     }
     debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] Client names: %1" ).arg( clientNames.join( " / " ) ) );
-    QStringList clientWebcams = labSettings.value( "client_webcams" ).toString().split( '|', QString::SkipEmptyParts, Qt::CaseSensitive );
-    if ( clientWebcams.length() != clientQuantity ) {
-        QMessageBox messageBox{ QMessageBox::Critical, tr( "Wrong client webcam property quantity" ),
-                    tr( "The quantity of client webcam properties does not match the client quantity. Client creation will fail. No clients will be available for interaction." ), QMessageBox::Ok };
-        messageBox.exec();
-        return;
-    }
-    debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] Client webcams: %1").arg( clientWebcams.join( " / " ) ) );
     QStringList clientXPositions = labSettings.value( "client_xpos" ).toString().split( '|', QString::SkipEmptyParts, Qt::CaseSensitive );
     if ( clientXPositions.length() != clientQuantity ) {
         QMessageBox messageBox{ QMessageBox::Critical, tr( "Wrong client x positions quantity" ),
@@ -334,7 +326,7 @@ void lc::Lablib::ReadSettings() {
     clients = new QVector< Client* >;
     for ( int i = 0; i < clientQuantity; i++ ) {
         clients->append( new Client{ debugMessagesTextEdit, &clientIPs[ i ], &clientMACs[ i ], &clientNames[ i ], clientXPositions[ i ].toUShort(),
-                                       clientYPositions[ i ].toUShort(), clientWebcams[ i ].toInt(), settingsItems } );
+                                       clientYPositions[ i ].toUShort(), settingsItems } );
 
         // Add an corresponding entry to the 'client_ips_to_clients_map' std::map<QString, Client*>
         ( *clientIPsToClientsMap )[ clients->last()->ip ] = clients->last();

@@ -676,13 +676,6 @@ void lc::MainWindow::SetupWidgets() {
             ui->CBWebcamChooser->addItem( s, QVariant( 0 ) );
     }
 
-    // Append available client webcams to the 'CBWebcamChooser'
-    if ( !( clients == nullptr ) ) {
-        for ( auto *s : *clients ) {
-            if ( s->hasWebcam )
-                ui->CBWebcamChooser->addItem( s->name, QVariant( 1 ) );
-        }
-    }
     // Deactivate the webcam choosing interface, if no webcams are available (none mounted at clients and none mounted in the laboratory)
     if ( ui->CBWebcamChooser->count() == 1 ) {
         ui->LWebcamChooser->setEnabled( false );

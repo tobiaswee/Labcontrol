@@ -45,7 +45,6 @@ public slots:
     void SetStateToZLEAF_RUNNING( QString argClientIP );
 
 public:
-    const bool hasWebcam = false;
     const QString ip;
     const QString mac;
     const QString name;
@@ -60,10 +59,9 @@ public:
       @param argName                        The hostname of the represented client
       @param argXPosition                   The client's x coordinate in the lab
       @param argYPosition                   The client's y coordinate in the lab
-      @param argHasWebcam                   If the represented client has a webcam installed
       @param argSettingsItems               A QVector storing many needed data QStrings
     */
-    Client( QPlainTextEdit *argDebugMessagesTextEditPtr, QString *argIP, QString *argMAC, QString *argName, unsigned short int argXPosition, unsigned short int argYPosition, bool argHasWebcam, const QVector< QString* > * const argSettingsItems );
+    Client( QPlainTextEdit *argDebugMessagesTextEditPtr, QString *argIP, QString *argMAC, QString *argName, unsigned short int argXPosition, unsigned short int argYPosition, const QVector< QString* > * const argSettingsItems );
     //! Client's destructor
     ~Client();
     //! Beams the chosen file to the client's 'media4ztree' directory
