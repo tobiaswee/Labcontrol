@@ -49,30 +49,35 @@ lc::MainWindow::~MainWindow() {
 bool lc::MainWindow::CheckIfUserIsAdmin() {
     // Query the current user's name or give an error if this fails
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    QString userName{ "" };
+    QString userName;
     // For Linux
-    if ( env.contains( "USER" )) {
+    if ( env.contains( "USER" ) ) {
         userName = env.value( "USER", "" );
-    }
-    // For Windows
-    if ( env.contains( "USERNAME" )) {
+    } else if ( env.contains( "USERNAME" ) ) { // For Windows
         userName = env.value( "USERNAME", "" );
     }
+
     if ( userName == "" ) {
         QMessageBox messageBox{ QMessageBox::Warning, tr( "User not detectable" ),
-                    tr( "Your user name could not be queryed. The admin tab will be disabled. You won't be able to perform administrative actions but can conduct experiments normally." ), QMessageBox::Ok };
+                                tr( "Your user name could not be queryed. The admin tab will be"
+                                    " disabled. You won't be able to perform administrative"
+                                    " actions but can conduct experiments normally." ),
+                                QMessageBox::Ok };
         messageBox.exec();
         return false;
     }
-    ui->PTEDebugMessages->appendPlainText( tr( "[DEBUG] The user's name is %1." ).arg( userName ) );
+
+    ui->PTEDebugMessages->appendPlainText( tr( "[DEBUG] The user's name is %1." )
+                                           .arg( userName ) );
     lablib->SetUserNameOnServer( userName );
 
     QStringList *adminUsers = lablib->GetAdminUsers();
 
-    if ( !( adminUsers == nullptr ) ) {
+    if ( adminUsers != nullptr ) {
         for ( auto s : *adminUsers ) {
             if ( s == userName ) {
-                ui->PTEDebugMessages->appendPlainText( tr( "[DEBUG] '%1' has administrative rights." ).arg( userName ) );
+                ui->PTEDebugMessages->appendPlainText( tr( "[DEBUG] '%1' has administrative"
+                                                           " rights." ).arg( userName ) );
                 return true;
             }
         }
@@ -83,7 +88,7 @@ bool lc::MainWindow::CheckIfUserIsAdmin() {
 
 void lc::MainWindow::DisableDisfunctionalWidgets() {
     // Disable all functions relying on the labcontrol installation directory if it is not available
-    if ( !lablib->GetSettingsItem( settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ) ) {
+    if ( !lablib->GetSettingsItem( settItms_t::LC_INST_DIR ) ) {
         ui->CBClientNames->setEnabled( false );
         ui->CBWebcamChooser->setEnabled( false );
         ui->GBClientActions->setEnabled( false );
@@ -100,22 +105,23 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
     }
 
     // Disable 'PBShowPreprints', if 'file_manager' was not set
-    if ( !lablib->GetSettingsItem( settingsItems_t::FILE_MANAGER ) ) {
+    if ( !lablib->GetSettingsItem( settItms_t::FILE_MANAGER ) ) {
         ui->PBShowPreprints->setEnabled( false );
     }
 
     // Disable 'PBBoot', if 'network_broadcast_address' was not set
-    if ( !lablib->GetSettingsItem( settingsItems_t::NETWORK_BROADCAST_ADDRESS ) ) {
+    if ( !lablib->GetSettingsItem( settItms_t::NETW_BRDCAST_ADDR ) ) {
         ui->PBBoot->setEnabled( false );
     }
 
     // Disable 'PBShowORSEE', if 'orsee_command' was not set
-    if ( !lablib->GetSettingsItem( settingsItems_t::ORSEE_COMMAND ) ) {
+    if ( !lablib->GetSettingsItem( settItms_t::ORSEE_COMMAND ) ) {
         ui->PBShowORSEE->setEnabled( false );
     }
 
     // Disable all widgets needless if 'public_key_path_user' or 'user_name_on_clients' was not set
-    if ( !lablib->GetSettingsItem( settingsItems_t::PUBLICKEY_PATH_USER ) || !lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS ) ) {
+    if ( !lablib->GetSettingsItem( settItms_t::SSH_KEY_USER )
+         || !lablib->GetSettingsItem( settItms_t::USER_NAME_ON_CLIENTS ) ) {
         ui->CBClientNames->setEnabled( false );
         ui->LEFilePath->setEnabled( false );
         ui->LFakeName->setEnabled( false );
@@ -131,32 +137,33 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
     }
 
     // Disable  widgets needless if 'public_key_path_root' was not set
-    if ( !lablib->GetSettingsItem( settingsItems_t::PUBLICKEY_PATH_ROOT ) ) {
+    if ( !lablib->GetSettingsItem( settItms_t::SSH_KEY_ROOT ) ) {
         ui->RBUseUserRoot->setEnabled( false );
         ui->RBUseLocalUser->click();
     }
 
-    if ( !lablib->GetSettingsItem( settingsItems_t::PUBLICKEY_PATH_ROOT ) && !lablib->GetSettingsItem( settingsItems_t::PUBLICKEY_PATH_USER ) ) {
+    if ( !lablib->GetSettingsItem( settItms_t::SSH_KEY_ROOT )
+         && !lablib->GetSettingsItem( settItms_t::SSH_KEY_USER ) ) {
         ui->GBExecuteOnEveryClient->setEnabled( false );
         ui->GBOptionsForAdminActions->setEnabled( false );
         ui->PBOpenTerminal->setEnabled( false );
     }
 
     // Disable beam functionality if 'rcp_command' was not set
-    if ( !lablib->GetSettingsItem( settingsItems_t::RCP_COMMAND ) ) {
+    if ( !lablib->GetSettingsItem( settItms_t::RCP_CMD ) ) {
         ui->LEFilePath->setEnabled( false );
         ui->PBBeamFile->setEnabled( false );
         ui->PBChooseFile->setEnabled( false );
     }
 
     // Disable 'PBRunzLeaf' and 'PBStartzLeaf' if 'server_ip' was not set
-    if ( !lablib->GetSettingsItem( settingsItems_t::SERVER_IP ) ) {
+    if ( !lablib->GetSettingsItem( settItms_t::SERVER_IP ) ) {
         ui->PBRunzLeaf->setEnabled( false );
         ui->PBStartzLeaf->setEnabled( false );
     }
 
     // Disable any actions concerning the clients if 'ssh_command' was not set
-    if ( !lablib->GetSettingsItem( settingsItems_t::SSH_COMMAND ) ) {
+    if ( !lablib->GetSettingsItem( settItms_t::SSH_CMD ) ) {
         ui->CBClientNames->setEnabled( false );
         ui->GBClientActions->setEnabled( false );
         ui->LFakeName->setEnabled( false );
@@ -171,29 +178,29 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
     }
 
     // Disable 'PBOpenTerminal' if 'terminal_emulator_command' was not set
-    if ( !lablib->GetSettingsItem( settingsItems_t::TERMINAL_EMULATOR_COMMAND ) ) {
+    if ( !lablib->GetSettingsItem( settItms_t::TERM_EMUL_CMD ) ) {
         ui->GBExecuteOnEveryClient->setEnabled( false );
         ui->PBOpenTerminal->setEnabled( false );
     }
 
     // Disable 'PBViewDesktop' if 'vnc_viewer' was not set
-    if ( !lablib->GetSettingsItem( settingsItems_t::VNC_VIEWER ) ) {
+    if ( !lablib->GetSettingsItem( settItms_t::VNC_VIEWER ) ) {
         ui->PBViewDesktop->setEnabled( false );
     }
 
     // Disable 'PBBoot' if 'wakeonlan_command' was not set
-    if ( !lablib->GetSettingsItem( settingsItems_t::WAKEONLAN_COMMAND ) ) {
+    if ( !lablib->GetSettingsItem( settItms_t::WAKEONLAN_CMD ) ) {
         ui->PBBoot->setEnabled( false );
     }
 
     // Disable the disable screensaver function if the 'xset_command' was not set
-    if ( !lablib->GetSettingsItem( settingsItems_t::XSET_COMMAND ) ) {
+    if ( !lablib->GetSettingsItem( settItms_t::XSET_CMD ) ) {
         ui->PBDeactivateScreensaver->setEnabled( false );
     }
 }
 
 void lc::MainWindow::LoadIconPixmaps() {
-    if ( !lablib->GetSettingsItem( settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ) ) {
+    if ( !lablib->GetSettingsItem( settItms_t::LC_INST_DIR ) ) {
         return;
     }
 
@@ -206,17 +213,17 @@ void lc::MainWindow::LoadIconPixmaps() {
                          << "zLeaf.png" };
 
     for ( int i = 0; i < ( int )icons_t::ICON_QUANTITY; i++ ) {
-        if ( !icons[ i ].load( *lablib->GetSettingsItem( settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ) + "/icons/" + iconNames[ i ] ) ) {
+        if ( !icons[ i ].load( *lablib->GetSettingsItem( settItms_t::LC_INST_DIR ) + "/icons/" + iconNames[ i ] ) ) {
             QMessageBox::information( this, tr( "Could not load icon '%1'" ).arg( iconNames[ i ] ),
                                       tr( "The icon in '%1/icons/%2' could not be loaded." )
-                                      .arg( *lablib->GetSettingsItem( settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ) ).arg( iconNames[ i ] ), QMessageBox::Ok );
+                                      .arg( *lablib->GetSettingsItem( settItms_t::LC_INST_DIR ) ).arg( iconNames[ i ] ), QMessageBox::Ok );
         }
     }
 }
 
-void lc::MainWindow::on_CBWebcamChooser_activated( int index ) {
-    if ( !( index == 0 ) ) {
-        QString program{ *lablib->GetSettingsItem( settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ) + "/webcam_display" };
+void lc::MainWindow::on_CBWebcamChooser_activated( int argIndex ) {
+    if (  argIndex != 0 ) {
+        QString program{ *lablib->GetSettingsItem( settItms_t::LC_INST_DIR ) + "/webcam_display" };
         QStringList arguments;
         arguments << ui->CBWebcamChooser->currentText();
 
@@ -229,7 +236,8 @@ void lc::MainWindow::on_CBWebcamChooser_activated( int index ) {
 
 void lc::MainWindow::on_PBBeamFile_clicked() {
     QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
-    const QString * const publickeyPathUser = lablib->GetSettingsItem( settingsItems_t::PUBLICKEY_PATH_USER ), * const userNameOnClients = lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS );
+    const QString * const publickeyPathUser{ lablib->GetSettingsItem( settItms_t::SSH_KEY_USER ) };
+    const QString * const userNameOnClients{ lablib->GetSettingsItem( settItms_t::USER_NAME_ON_CLIENTS ) };
     const QString fileToBeam{ ui->LEFilePath->text() };
     for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
@@ -244,7 +252,7 @@ void lc::MainWindow::on_PBBoot_clicked() {
     for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
             Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            client->Boot( lablib->GetSettingsItem( settingsItems_t::NETWORK_BROADCAST_ADDRESS ) );
+            client->Boot( lablib->GetSettingsItem( settItms_t::NETW_BRDCAST_ADDR ) );
         }
     }
 }
@@ -268,7 +276,8 @@ void lc::MainWindow::on_PBChooseFile_clicked() {
 }
 
 void lc::MainWindow::on_PBDeactivateScreensaver_clicked() {
-    const QString * const publickey_path_user = lablib->GetSettingsItem( settingsItems_t::PUBLICKEY_PATH_USER ), * const user_name_on_clients = lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS );
+    const QString * const publickey_path_user{ lablib->GetSettingsItem( settItms_t::SSH_KEY_USER ) };
+    const QString * const user_name_on_clients{ lablib->GetSettingsItem( settItms_t::USER_NAME_ON_CLIENTS ) };
     QVector< Client* > *clients = lablib->GetClients();
     for ( auto s : *clients ) {
         if ( s->GetClientState() >= state_t::RESPONDING )
@@ -306,9 +315,9 @@ void lc::MainWindow::on_PBExecute_clicked() {
     // Set the correct public key
     QString *tempPublickeyPathUser = nullptr;
     if ( ui->RBUseUserRoot->isChecked() ) {
-        tempPublickeyPathUser = lablib->GetSettingsItem( settingsItems_t::PUBLICKEY_PATH_ROOT );
+        tempPublickeyPathUser = lablib->GetSettingsItem( settItms_t::SSH_KEY_ROOT );
     } else {
-        tempPublickeyPathUser = lablib->GetSettingsItem( settingsItems_t::PUBLICKEY_PATH_USER );
+        tempPublickeyPathUser = lablib->GetSettingsItem( settItms_t::SSH_KEY_USER );
     }
     const QString * const publickeyPathUser = tempPublickeyPathUser;
 
@@ -317,7 +326,8 @@ void lc::MainWindow::on_PBExecute_clicked() {
         ui->PTEDebugMessages->appendPlainText( tr( "[DEBUG] Executing command '%1' on every client." ).arg( command ) );
         for ( auto s: *clients ) {
             if ( !( s->name.contains( "backup", Qt::CaseInsensitive ) ) ) {
-                s->OpenTerminal( command, ui->RBUseUserRoot->isChecked(), publickeyPathUser, lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS ) );
+                s->OpenTerminal( command, ui->RBUseUserRoot->isChecked(), publickeyPathUser,
+                                 lablib->GetSettingsItem( settItms_t::USER_NAME_ON_CLIENTS ) );
             }
         }
     } else {
@@ -326,7 +336,8 @@ void lc::MainWindow::on_PBExecute_clicked() {
         for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
             if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
                 Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-                client->OpenTerminal( command, ui->RBUseUserRoot->isChecked(), publickeyPathUser, lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS ) );
+                client->OpenTerminal( command, ui->RBUseUserRoot->isChecked(), publickeyPathUser,
+                                      lablib->GetSettingsItem( settItms_t::USER_NAME_ON_CLIENTS ) );
             }
         }
     }
@@ -335,7 +346,7 @@ void lc::MainWindow::on_PBExecute_clicked() {
 }
 
 void lc::MainWindow::on_PBKillLocalzLeaf_clicked() {
-    QString program{ *lablib->GetSettingsItem( settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ) + "/scripts/kill_zLeaf_labcontrol2.sh" };
+    QString program{ *lablib->GetSettingsItem( settItms_t::LC_INST_DIR ) + "/scripts/kill_zLeaf_labcontrol2.sh" };
 
     // Start the process
     QProcess kill_zleaf_process;
@@ -351,7 +362,8 @@ void lc::MainWindow::on_PBKillLocalzLeaf_clicked() {
 
 void lc::MainWindow::on_PBKillzLeaf_clicked() {
     QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
-    const QString * const publickeyPathUser = lablib->GetSettingsItem( settingsItems_t::PUBLICKEY_PATH_USER ), * const userNameOnClients = lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS );
+    const QString * const publickeyPathUser{ lablib->GetSettingsItem( settItms_t::SSH_KEY_USER ) };
+    const QString * const userNameOnClients{ lablib->GetSettingsItem( settItms_t::USER_NAME_ON_CLIENTS ) };
     for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
             Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
@@ -366,7 +378,7 @@ void lc::MainWindow::on_PBOpenFilesystem_clicked() {
     if ( ui->RBUseUserRoot->isChecked() ) {
         userToBeUsed = new QString{ "root" };
     } else  {
-        userToBeUsed = new QString{ *lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS ) };
+        userToBeUsed = new QString{ *lablib->GetSettingsItem( settItms_t::USER_NAME_ON_CLIENTS ) };
     }
 
     QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
@@ -382,17 +394,18 @@ void lc::MainWindow::on_PBOpenFilesystem_clicked() {
 void lc::MainWindow::on_PBOpenTerminal_clicked() {
     QString *tempPublickeyPathUser = nullptr;
     if ( ui->RBUseUserRoot->isChecked() ) {
-        tempPublickeyPathUser = lablib->GetSettingsItem( settingsItems_t::PUBLICKEY_PATH_ROOT );
+        tempPublickeyPathUser = lablib->GetSettingsItem( settItms_t::SSH_KEY_ROOT );
     } else {
-        tempPublickeyPathUser = lablib->GetSettingsItem( settingsItems_t::PUBLICKEY_PATH_USER );
+        tempPublickeyPathUser = lablib->GetSettingsItem( settItms_t::SSH_KEY_USER );
     }
-    const QString * const publickeyPathUser = tempPublickeyPathUser,
-                  * const userNameOnClients = lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS );
+    const QString * const publickeyPathUser{ tempPublickeyPathUser };
+    const QString * const userNameOnClients{ lablib->GetSettingsItem( settItms_t::USER_NAME_ON_CLIENTS ) };
     QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
     for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
             Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            client->OpenTerminal( QString{}, ui->RBUseUserRoot->isChecked(), publickeyPathUser, userNameOnClients );
+            client->OpenTerminal( QString{}, ui->RBUseUserRoot->isChecked(),
+                                  publickeyPathUser, userNameOnClients );
         }
     }
 }
@@ -404,7 +417,8 @@ void lc::MainWindow::on_PBPrintPaymentFileManually_clicked() {
     fileDialog->setOption( QFileDialog::ReadOnly, true );
     if( fileDialog->exec() ) {
         QString fileName = fileDialog->selectedFiles().at( 0 );
-        QString *dateString = new QString{ fileName.split( '/', QString::KeepEmptyParts, Qt::CaseInsensitive ).last()
+        QString *dateString = new QString{ fileName.split( '/', QString::KeepEmptyParts,
+                                                           Qt::CaseInsensitive ).last()
         .split( '.', QString::KeepEmptyParts, Qt::CaseInsensitive ).first() };
         QString *workPath = new QString{ fileName };
         workPath->truncate( workPath->lastIndexOf( '/' ) );
@@ -419,7 +433,9 @@ void lc::MainWindow::on_PBPrintPaymentFileManually_clicked() {
 void lc::MainWindow::on_PBRunzLeaf_clicked() {
     // Show an error message, if no zTree version was chosen yet
     if ( ui->CBzLeafVersion->currentIndex() == 0 ) {
-        QMessageBox messageBox{ QMessageBox::Warning, tr( "Unset z-Leaf version" ), tr( "There is no z-Leaf version chosen yet. Please choose one." ), QMessageBox::Ok, this };
+        QMessageBox messageBox{ QMessageBox::Warning, tr( "Unset z-Leaf version" ),
+                    tr( "There is no z-Leaf version chosen yet. Please choose one." ),
+                    QMessageBox::Ok, this };
         messageBox.exec();
         return;
     }
@@ -438,12 +454,13 @@ void lc::MainWindow::on_PBRunzLeaf_clicked() {
         messageBox.exec();
     } else {
         const QString * const fakeName = new QString{ ui->CBClientNames->currentText() }, * const zLeafVersion = new QString{ ui->CBzLeafVersion->currentText() },
-                * const publickeyPathUser = lablib->GetSettingsItem( settingsItems_t::PUBLICKEY_PATH_USER ), * const serverIP = lablib->GetSettingsItem( settingsItems_t::SERVER_IP ),
-                * const userNameOnClients = lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS );
+                * const publickeyPathUser = lablib->GetSettingsItem( settItms_t::SSH_KEY_USER ), * const serverIP = lablib->GetSettingsItem( settItms_t::SERVER_IP ),
+                * const userNameOnClients = lablib->GetSettingsItem( settItms_t::USER_NAME_ON_CLIENTS );
         for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
             if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
                 Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-                client->StartZLeaf( publickeyPathUser, userNameOnClients, zLeafVersion, serverIP, ui->SBzLeafPort->value(), fakeName );
+                client->StartZLeaf( publickeyPathUser, userNameOnClients, zLeafVersion, serverIP,
+                                    ui->SBzLeafPort->value(), fakeName );
             }
         }
         delete fakeName;
@@ -469,8 +486,8 @@ void lc::MainWindow::on_PBShowSessions_clicked() {
 
 void lc::MainWindow::on_PBShutdown_clicked() {
     QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
-    const QString * const publickeyPathUser = lablib->GetSettingsItem( settingsItems_t::PUBLICKEY_PATH_USER ),
-                  * const userNameOnClients = lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS );
+    const QString * const publickeyPathUser = lablib->GetSettingsItem( settItms_t::SSH_KEY_USER ),
+                  * const userNameOnClients = lablib->GetSettingsItem( settItms_t::USER_NAME_ON_CLIENTS );
     for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
             Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
@@ -501,7 +518,7 @@ void lc::MainWindow::on_PBStartLocalzLeaf_clicked() {
                                              QLineEdit::Normal, *lablib->GetLocalZLeafDefaultName() );
         lablib->SetLocalZLeafDefaultName( name );
 
-        QString program = QString{ *lablib->GetSettingsItem( settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ) + "/scripts/start_zLeaf_labcontrol2.sh" };
+        QString program = QString{ *lablib->GetSettingsItem( settItms_t::LC_INST_DIR ) + "/scripts/start_zLeaf_labcontrol2.sh" };
         QStringList arguments;
         arguments << ui->CBzLeafVersion->currentText() << "127.0.0.1" << QString::number( ui->SBzLeafPort->value() - 7000 ) << name;
 
@@ -528,9 +545,9 @@ void lc::MainWindow::on_PBStartzLeaf_clicked() {
     }
 
     QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
-    const QString * const publickeyPathUser = lablib->GetSettingsItem( settingsItems_t::PUBLICKEY_PATH_USER ),
-                  * const serverIP = lablib->GetSettingsItem( settingsItems_t::SERVER_IP ),
-                  * const userNameOnClients = lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS ),
+    const QString * const publickeyPathUser = lablib->GetSettingsItem( settItms_t::SSH_KEY_USER ),
+                  * const serverIP = lablib->GetSettingsItem( settItms_t::SERVER_IP ),
+                  * const userNameOnClients = lablib->GetSettingsItem( settItms_t::USER_NAME_ON_CLIENTS ),
                   * const zLeafVersion = new QString{ ui->CBzLeafVersion->currentText() };
     for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
@@ -701,8 +718,8 @@ void lc::MainWindow::SetupWidgets() {
         ui->LAdministrativeRights->setText( tr( "You don't have administrative rights." ) );
     }
     ui->LUserName->setText( tr( "You are user %1" ).arg( lablib->GetUserNameOnServer() ) );
-    if ( lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS ) ) {
-        ui->RBUseLocalUser->setText( *lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS ) );
+    if ( lablib->GetSettingsItem( settItms_t::USER_NAME_ON_CLIENTS ) ) {
+        ui->RBUseLocalUser->setText( *lablib->GetSettingsItem( settItms_t::USER_NAME_ON_CLIENTS ) );
     } else {
         ui->RBUseUserRoot->click();
     }
@@ -715,8 +732,8 @@ void lc::MainWindow::SetupWidgets() {
     ui->RBUseLocalUser->click();
 
     // Fill the CBCommandToExecute QComboBox
-    if ( lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS ) ) {
-        ui->CBCommandToExecute->addItems( QStringList{} << "" << "apt update" << "apt full-upgrade -y" << "reboot" << "rm -rfv /home/" + *lablib->GetSettingsItem( settingsItems_t::USER_NAME_ON_CLIENTS ) + "/.mozilla" << "uname -a" );
+    if ( lablib->GetSettingsItem( settItms_t::USER_NAME_ON_CLIENTS ) ) {
+        ui->CBCommandToExecute->addItems( QStringList{} << "" << "apt update" << "apt full-upgrade -y" << "reboot" << "rm -rfv /home/" + *lablib->GetSettingsItem( settItms_t::USER_NAME_ON_CLIENTS ) + "/.mozilla" << "uname -a" );
     } else {
         ui->CBCommandToExecute->addItems( QStringList{} << "" << "apt update" << "apt full-upgrade -y" << "reboot" << "uname -a" );
     }

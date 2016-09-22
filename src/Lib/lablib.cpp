@@ -30,16 +30,15 @@ lc::Lablib::Lablib( QPlainTextEdit *argDebugMessagesTextEdit, QObject *argParent
     labSettings{ "Economic Laboratory", "Labcontrol", this },
     occupiedPorts{ new QVector< int > },
     sessionsModel{ new SessionsModel{ this } },
-    settingsItems{ new QVector< QString* >{ ( int )settingsItems_t::SETTINGS_ITEMS_QUANTITY, nullptr } }
+    settingsItems{ new QVector< QString* >{ ( int )settItms_t::SETT_ITMS_QUANT, nullptr } }
 {
-
     ReadSettings();
 
     DetectInstalledZTreeVersionsAndLaTeXHeaders();
 
     // Initialize all 'netstat' query mechanisms
-    if ( ( *settingsItems )[ ( int )settingsItems_t::NETSTAT_COMMAND ] ) {
-        netstatAgent = new NetstatAgent{ ( *settingsItems )[ ( int )settingsItems_t::NETSTAT_COMMAND ] };
+    if ( ( *settingsItems )[ ( int )settItms_t::NETSTAT_CMD ] ) {
+        netstatAgent = new NetstatAgent{ ( *settingsItems )[ ( int )settItms_t::NETSTAT_CMD ] };
         netstatAgent->moveToThread( &netstatThread );
         connect( &netstatThread, &QThread::finished, netstatAgent, &QObject::deleteLater );
         connect( netstatAgent, &NetstatAgent::QueryFinished,
@@ -52,8 +51,8 @@ lc::Lablib::Lablib( QPlainTextEdit *argDebugMessagesTextEdit, QObject *argParent
     }
 
     // Initialize the server for client help requests retrieval
-    if ( clientHelpNotificationServerPort && ( *settingsItems )[ ( int )settingsItems_t::SERVER_IP ] ) {
-        clientHelpNotificationServer = new ClientHelpNotificationServer{ clientIPsToClientsMap,( *settingsItems )[ ( int )settingsItems_t::SERVER_IP ], clientHelpNotificationServerPort, this };
+    if ( clientHelpNotificationServerPort && ( *settingsItems )[ ( int )settItms_t::SERVER_IP ] ) {
+        clientHelpNotificationServer = new ClientHelpNotificationServer{ clientIPsToClientsMap,( *settingsItems )[ ( int )settItms_t::SERVER_IP ], clientHelpNotificationServerPort, this };
     }
 }
 
@@ -94,16 +93,16 @@ bool lc::Lablib::CheckPathAndComplain( const QString * const argPath,
 
 void lc::Lablib::DetectInstalledZTreeVersionsAndLaTeXHeaders() {
     // Detect the installed LaTeX headers
-    if ( ( *settingsItems )[ ( int )settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ] ) {
-        QDir laTeXDirectory{ *( *settingsItems )[ ( int )settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ], "*header.tex", QDir::Name, QDir::CaseSensitive | QDir::Files | QDir::Readable };
+    if ( ( *settingsItems )[ ( int )settItms_t::LC_INST_DIR ] ) {
+        QDir laTeXDirectory{ *( *settingsItems )[ ( int )settItms_t::LC_INST_DIR ], "*header.tex", QDir::Name, QDir::CaseSensitive | QDir::Files | QDir::Readable };
         if ( !laTeXDirectory.exists() || laTeXDirectory.entryList().isEmpty() ) {
             QMessageBox messageBox{ QMessageBox::Critical, tr( "No LaTeX headers found" ),
                         tr( "No LaTeX headers could be found in '%1'. Receipts printing will not work" )
-                        .arg( *( *settingsItems )[ ( int )settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ] ), QMessageBox::Ok };
+                        .arg( *( *settingsItems )[ ( int )settItms_t::LC_INST_DIR ] ), QMessageBox::Ok };
             messageBox.exec();
             installedLaTeXHeaders = new QStringList{ "None found" };
             debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] No LaTeX headers could be found in '%1'." )
-                                                    .arg( *( *settingsItems )[ ( int )settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ] ) );
+                                                    .arg( *( *settingsItems )[ ( int )settItms_t::LC_INST_DIR ] ) );
         } else {
             installedLaTeXHeaders = new QStringList{ laTeXDirectory.entryList() };
             installedLaTeXHeaders->replaceInStrings( "_header.tex", "" );
@@ -112,15 +111,15 @@ void lc::Lablib::DetectInstalledZTreeVersionsAndLaTeXHeaders() {
     }
 
     // Detect the installed zTree versions
-    if ( ( *settingsItems )[ ( int )settingsItems_t::ZTREE_INSTALLATION_DIRECTORY ] ) {
-        QDir zTreeDirectory{ *( *settingsItems )[ ( int )settingsItems_t::ZTREE_INSTALLATION_DIRECTORY ], "zTree*", QDir::Name, QDir::NoDotAndDotDot | QDir::Dirs | QDir::Readable | QDir::CaseSensitive };
+    if ( ( *settingsItems )[ ( int )settItms_t::ZTREE_INST_DIR ] ) {
+        QDir zTreeDirectory{ *( *settingsItems )[ ( int )settItms_t::ZTREE_INST_DIR ], "zTree*", QDir::Name, QDir::NoDotAndDotDot | QDir::Dirs | QDir::Readable | QDir::CaseSensitive };
         if ( zTreeDirectory.entryList().isEmpty() ) {
             QMessageBox messageBox{ QMessageBox::Critical, tr( "zTree not found" ),
                         tr( "No zTree installation found in '%1'. Running zTree will not be possible." )
-                        .arg( *( *settingsItems )[ ( int )settingsItems_t::ZTREE_INSTALLATION_DIRECTORY ] ), QMessageBox::Ok };
+                        .arg( *( *settingsItems )[ ( int )settItms_t::ZTREE_INST_DIR ] ), QMessageBox::Ok };
             messageBox.exec();
 
-            debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] No zTree versions could be found in '%1'." ).arg( *( *settingsItems )[ ( int )settingsItems_t::ZTREE_INSTALLATION_DIRECTORY ] ) );
+            debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] No zTree versions could be found in '%1'." ).arg( *( *settingsItems )[ ( int )settItms_t::ZTREE_INST_DIR ] ) );
         }
         else {
             InstalledZTreeVersions = new QStringList{ zTreeDirectory.entryList() };
@@ -202,15 +201,15 @@ void lc::Lablib::ReadSettings() {
                        true, true, true, false, true, true, false, true, true, true, false, true };
 
     QString *tempItemStorage = nullptr;
-    for ( int i = 0; i < ( int )settingsItems_t::SETTINGS_ITEMS_QUANTITY; i++ ) {
+    for ( int i = 0; i < ( int )settItms_t::SETT_ITMS_QUANT; i++ ) {
         tempItemStorage = ReadSettingsItem( simpleLoadableItems[ i ], theItemsErrorComplaints[ i ], is_file[ i ] );
         settingsItems->replace( i, tempItemStorage );
     }
     tempItemStorage = nullptr;
 
     // Let the local zLeaf name default to 'local' if none was given in the settings
-    if ( !( *settingsItems )[ ( int )settingsItems_t::LOCAL_ZLEAF_NAME ] ) {
-        settingsItems->replace( ( int )settingsItems_t::LOCAL_ZLEAF_NAME, new QString{ tr( "local" ) } );
+    if ( !( *settingsItems )[ ( int )settItms_t::LOCAL_ZLEAF_NAME ] ) {
+        settingsItems->replace( ( int )settItms_t::LOCAL_ZLEAF_NAME, new QString{ tr( "local" ) } );
     }
 
     // Read the list of users with administrative rights
@@ -414,10 +413,10 @@ void lc::Lablib::ShowOrsee() {
     QProcess showOrseeProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     showOrseeProcess.setProcessEnvironment( env );
-    showOrseeProcess.startDetached( *( *settingsItems )[ ( int )settingsItems_t::ORSEE_COMMAND ] );
+    showOrseeProcess.startDetached( *( *settingsItems )[ ( int )settItms_t::ORSEE_COMMAND ] );
 
     // Output message via the debug messages tab
-    debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] %1" ).arg( *( *settingsItems )[ ( int )settingsItems_t::ORSEE_COMMAND ] ) );
+    debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] %1" ).arg( *( *settingsItems )[ ( int )settItms_t::ORSEE_COMMAND ] ) );
 }
 
 void lc::Lablib::ShowPreprints() {
@@ -425,8 +424,8 @@ void lc::Lablib::ShowPreprints() {
     QProcess showPreprintsProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     showPreprintsProcess.setProcessEnvironment( env );
-    QString program{ *( *settingsItems )[ ( int )settingsItems_t::FILE_MANAGER ] };
-    QStringList arguments{ QStringList{} << *( *settingsItems )[ ( int )settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ] +  "/preprints" };
+    QString program{ *( *settingsItems )[ ( int )settItms_t::FILE_MANAGER ] };
+    QStringList arguments{ QStringList{} << *( *settingsItems )[ ( int )settItms_t::LC_INST_DIR ] +  "/preprints" };
     showPreprintsProcess.startDetached( program, arguments );
 
     // Output message via the debug messages tab
@@ -469,7 +468,7 @@ void lc::Lablib::StartNewZTreeInstance() {
 }
 
 void lc::Lablib::SetLocalZLeafDefaultName( const QString &argName ) {
-    delete ( *settingsItems )[ ( int )settingsItems_t::LOCAL_ZLEAF_NAME ];
-    ( *settingsItems )[ ( int )settingsItems_t::LOCAL_ZLEAF_NAME ] = new QString{ argName };
+    delete ( *settingsItems )[ ( int )settItms_t::LOCAL_ZLEAF_NAME ];
+    ( *settingsItems )[ ( int )settItms_t::LOCAL_ZLEAF_NAME ] = new QString{ argName };
     labSettings.setValue( "local_zLeaf_name", argName );
 }

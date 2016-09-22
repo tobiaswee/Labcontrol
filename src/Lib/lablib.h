@@ -91,7 +91,7 @@ public:
      *
      * @return A pointer to the QString storing the default name for local zLeafs
      */
-    QString *GetLocalZLeafDefaultName() const { return ( *settingsItems )[ ( int )settingsItems_t::LOCAL_ZLEAF_NAME ]; }
+    QString *GetLocalZLeafDefaultName() const { return ( *settingsItems )[ ( int )settItms_t::LOCAL_ZLEAF_NAME ]; }
     /** Returns a pointer to a QVector<unsigned int> containing all by sessions occupied ports
      *
      * @return A pointer to a QVector<unsigned int> containing all occupied ports
@@ -111,7 +111,7 @@ public:
      *
      * @return A pointer to to a specified QString stored in 'settings_items' storing all command QString pointers
      */
-    QString *GetSettingsItem( settingsItems_t argItem ) const { return ( *settingsItems )[ ( int )argItem ]; }
+    QString *GetSettingsItem( settItms_t argItem ) const { return ( *settingsItems )[ ( int )argItem ]; }
     /** Returns a pointer to the 'settingsItems' storing all command QString pointers
      *
      * @return A pointer to the 'settingsItems' storing all command QString pointers

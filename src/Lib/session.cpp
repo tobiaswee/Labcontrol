@@ -45,7 +45,7 @@ lc::Session::Session( QPlainTextEdit * const argDebugMessagesTextEdit,
         InitializeClasses();
     }
 
-    if ( ( *settingsItems )[ ( int )settingsItems_t::WMCTRL_COMMAND ] ) {
+    if ( ( *settingsItems )[ ( int )settItms_t::WMCTRL_CMD ] ) {
         QTimer::singleShot( 5000, this, SLOT( RenameWindow() ) );
     }
 }
@@ -79,7 +79,7 @@ void lc::Session::InitializeClasses() {
     zTreeInstance = new ZTree{ debugMessagesTextEdit, zTreeDataTargetPath,
                                zTreePort, zTreeVersionPath, settingsItems };
     // Only create a 'Receipts_Handler' instance, if all neccessary variables were set
-    if ( latexHeaderName != "None found" && ( *settingsItems )[ ( int )settingsItems_t::DVIPS_COMMAND ] && ( *settingsItems )[ ( int )settingsItems_t::LATEX_COMMAND ] ) {
+    if ( latexHeaderName != "None found" && ( *settingsItems )[ ( int )settItms_t::DVIPS_CMD ] && ( *settingsItems )[ ( int )settItms_t::LATEX_CMD ] ) {
         receiptsHandler = new ReceiptsHandler{ debugMessagesTextEdit, zTreeDataTargetPath,
                                                printReceiptsForLocalClients,
                                                anonymousReceiptsPlaceholder,
@@ -99,7 +99,7 @@ void lc::Session::RenameWindow() {
     QProcess renameZTreeWindowProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     renameZTreeWindowProcess.setProcessEnvironment( env );
-    renameZTreeWindowProcess.startDetached( *( *settingsItems )[ ( int )settingsItems_t::WMCTRL_COMMAND ], arguments );
+    renameZTreeWindowProcess.startDetached( *( *settingsItems )[ ( int )settItms_t::WMCTRL_CMD ], arguments );
 
     debugMessagesTextEdit->appendPlainText( "[DEBUG] Renamed window" );
 

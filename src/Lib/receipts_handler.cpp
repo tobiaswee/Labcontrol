@@ -273,10 +273,10 @@ QVector<QString> *lc::ReceiptsHandler::GetParticipantsDataFromPaymentFile() {
 
 QString *lc::ReceiptsHandler::LoadLatexHeader() {
     // Prepare all facilities to read the latex header file
-    QFile latexHeaderFile( *( *settingsItems )[ ( int )settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ] + "/" + *latexHeaderName + "_header.tex" );
+    QFile latexHeaderFile( *( *settingsItems )[ ( int )settItms_t::LC_INST_DIR ] + "/" + *latexHeaderName + "_header.tex" );
     if ( !latexHeaderFile.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
         QMessageBox messageBox{ QMessageBox::Critical, tr( "LaTeX header could not be loaded" ), tr( "The LaTeX header at '%1/%2_header.tex' could not be loaded. Receipts printing will not work." )
-                                .arg( *( *settingsItems )[ ( int )settingsItems_t::LABCONTROL_INSTALLATION_DIRECTORY ] ).arg( *latexHeaderName ), QMessageBox::Ok };
+                                .arg( *( *settingsItems )[ ( int )settItms_t::LC_INST_DIR ] ).arg( *latexHeaderName ), QMessageBox::Ok };
         messageBox.exec();
         return nullptr;
     }
