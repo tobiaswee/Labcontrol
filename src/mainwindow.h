@@ -102,7 +102,7 @@ private:
 
     QStandardItemModel *clients_view_model = nullptr;   //! The view storing all clients data
     QTimer *gui_update_timer = nullptr;         //! A QTimer triggering updates of the graphical user interface
-    QPixmap *icons = nullptr;                   //! Array of pixmaps storing the icons indicating the clients' statuses
+    QVector< QPixmap > icons;                   //! Vector of pixmaps storing the icons indicating the clients' statuses
     Lablib *lablib = nullptr;                   //! Accumulator of all program logic being accessed by the GUI
     bool local_zLeaves_are_running = false;     //! Stores if a local zLeaf instance is running on the server ('true' if local zLeaf exists)
     QButtonGroup *userChooseButtonGroup = nullptr;      //! Used to group the radio buttons choosing which user shall be used for administrative client actions

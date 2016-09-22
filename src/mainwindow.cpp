@@ -24,7 +24,7 @@
 
 lc::MainWindow::MainWindow( QWidget *argParent ) :
     QMainWindow{ argParent },
-    icons{ new QPixmap[ icons_t::ICON_QUANTITY ] },
+    icons( static_cast< int >( icons_t::ICON_QUANTITY ) ),
     ui{ new Ui::MainWindow }
 {
     ui->setupUi( this );
@@ -44,7 +44,6 @@ lc::MainWindow::MainWindow( QWidget *argParent ) :
 lc::MainWindow::~MainWindow() {
     delete ui;
     delete valid_items;
-    delete[] icons;
 }
 
 bool lc::MainWindow::CheckIfUserIsAdmin() {
