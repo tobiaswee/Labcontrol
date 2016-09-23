@@ -38,10 +38,12 @@ public:
     const QString scpCmd;
     const QString serverIP;
     const QString sshCmd;
+    const QString tasksetCmd;
     const QString termEmulCmd;
     const QString userNameOnClients;
     const QString vncViewer;
     const QString wakeonlanCmd;
+    const QString wineCmd;
     const QString wmctrlCmd;
     const QString xsetCmd;
     const QString zTreeInstDir;

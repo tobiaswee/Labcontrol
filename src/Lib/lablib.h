@@ -145,7 +145,11 @@ public:
     void SetUserNameOnServer( const QString &argUserName );
     void ShowOrsee();
     void ShowPreprints();
-    void StartNewZTreeInstance();
+
+public slots:
+    void StartNewZTreeInstance( QString argDataTargetPath, int argPort, QString argzTreeVersion,
+                                bool argReceiptsForLocalClients, QString argAnonReceiptPlaceholder,
+                                QString argChosenLatexHeader );
 
 signals:
     void ZLEAF_RUNNING( QString argClientIP );

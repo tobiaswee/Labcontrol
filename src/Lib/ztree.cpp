@@ -27,15 +27,22 @@ extern std::unique_ptr< lc::Settings > settings;
 lc::ZTree::ZTree( QPlainTextEdit *argDebugMessagesTextEdit,
                   const QString &argZTreeDataTargetPath, const int &argZTreePort,
                   const QString &argZTreeVersionPath ) {
-    QString program{ settings->lcInstDir + "/scripts/start_zTree_labcontrol2.sh" };
-    QStringList arguments;
-    arguments << settings->zTreeInstDir << argZTreeVersionPath << argZTreeDataTargetPath
-              << QString::number( static_cast< int >( argZTreePort ) - 7000 );
+    QString program{ settings->tasksetCmd };
+    QStringList arguments{ QStringList{} << "0x00000001" << settings->wineCmd
+                                         << QString{ settings->zTreeInstDir + "/zTree_"
+                                            + argZTreeVersionPath + "/ztree.exe" }
+                                         << "/datadir" << QString{ "Z:/" + argZTreeDataTargetPath }
+                                         << "/privdir" << QString{ "Z:/" + argZTreeDataTargetPath }
+                                         << "/gsfdir" << QString{ "Z:/" + argZTreeDataTargetPath }
+                                         << "/tempdir" << QString{ "Z:/" + argZTreeDataTargetPath }
+                                         << "/leafdir" << QString{ "Z:/" + argZTreeDataTargetPath }
+                                         << "/channel" << QString::number( argZTreePort - 7000 ) };
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     zTreeInstance.setProcessEnvironment( env );
     zTreeInstance.startDetached( program, arguments, QDir::currentPath(), &pid );
-    connect( &zTreeInstance, SIGNAL( finished( int ) ), SLOT( ZTreeInstanceClosed() ) );
+    connect( &zTreeInstance, SIGNAL( finished( int ) ),
+             this, SLOT( ZTreeInstanceClosed() ) );
 
     // Output message via the debug messages tab
     argDebugMessagesTextEdit->appendPlainText( "[DEBUG] " + program + " " + arguments.join( " " ) );

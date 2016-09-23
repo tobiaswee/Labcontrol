@@ -95,6 +95,15 @@ void lc::SessionStarter::on_ChBReceiptsforLocalClients_clicked( bool checked ) {
     lablib->SetPrintReceiptsForLocalClients( checked );
 }
 
+void lc::SessionStarter::on_PBStartzTree_clicked() {
+    emit SessionRequested( ui->CBDataTargetPath->currentText(), ui->SBPort->value(),
+                           ui->CBzTreeVersion->currentText(),
+                           ui->ChBReceiptsforLocalClients->isChecked(),
+                           ui->CBReplaceParticipantName->currentText(),
+                           ui->CBReceiptsHeader->currentText() );
+    close();
+}
+
 void lc::SessionStarter::on_SBPort_editingFinished() {
     ui->SBPort->setStyleSheet( "" );
     lablib->SetChosenZTreePort( ui->SBPort->value() );

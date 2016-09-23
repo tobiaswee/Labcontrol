@@ -43,6 +43,11 @@ public:
     //! (because no installed z-Tree instances could be detected).
     class lcForbiddenCall {};
 
+signals:
+    void SessionRequested( QString argDataTargetPath, int argPort, QString argzTreeVersion,
+                           bool argReceiptsForLocalClients, QString argAnonReceiptPlaceholder,
+                           QString argChosenLatexHeader );
+
 private:
     QPlainTextEdit * const debugMessagesTextEdit = nullptr;
     Lablib * const lablib = nullptr;
@@ -59,6 +64,7 @@ private slots:
     void on_CBzTreeVersion_activated(const QString &arg1);
     void on_ChBPrintanonymousreceipts_clicked( bool checked );
     void on_ChBReceiptsforLocalClients_clicked(bool checked);
+    void on_PBStartzTree_clicked();
     void on_SBPort_editingFinished();
 
 signals:

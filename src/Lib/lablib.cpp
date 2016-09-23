@@ -329,37 +329,51 @@ void lc::Lablib::ShowPreprints() {
     debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] %1 %2" ).arg( program ).arg( arguments.join( " " ) ) );
 }
 
-void lc::Lablib::StartNewZTreeInstance() {
-    if ( !QDir( chosenZTreeDataTargetPath ).exists() ) {
+void lc::Lablib::StartNewZTreeInstance( QString argDataTargetPath, int argPort,
+                                        QString argzTreeVersion,
+                                        bool argReceiptsForLocalClients,
+                                        QString argAnonReceiptPlaceholder,
+                                        QString argChosenLatexHeader ) {
+    if ( !QDir( argDataTargetPath ).exists() ) {
         QMessageBox messageBox{ QMessageBox::Critical, tr( "Data target path does not exist" ),
-                    tr( "Your chosen data target path does not exist. Do you want it to be created automatically?" ), QMessageBox::Yes | QMessageBox::No };
+                    tr( "Your chosen data target path does not exist."
+                        " Do you want it to be created automatically?" ),
+                    QMessageBox::Yes | QMessageBox::No };
         messageBox.exec();
         if ( messageBox.clickedButton() == messageBox.button( QMessageBox::No ) ) {
-            QMessageBox messageBox{ QMessageBox::Critical, tr( "Data target directory will not be created" ),
-                        tr( "Your chosen data target directory does not exist and will not be created. Please chose another one." ), QMessageBox::Ok };
+            QMessageBox messageBox{ QMessageBox::Critical, tr( "Data target directory will not"
+                                                               " be created" ),
+                                    tr( "Your chosen data target directory does not exist and"
+                                        " will not be created. Please choose another one." ),
+                                    QMessageBox::Ok };
             messageBox.exec();
             return;
-        }
-        else {
-            if ( !QDir().mkpath( chosenZTreeDataTargetPath ) ) {
-                QMessageBox messageBox{ QMessageBox::Critical, tr( "Data target directory could not be created" ),
-                            tr( "Your chosen data target directory does not exist and could not be created. Please chose another one." ), QMessageBox::Ok };
+        } else {
+            if ( !QDir().mkpath( argDataTargetPath ) ) {
+                QMessageBox messageBox{ QMessageBox::Critical, tr( "Data target directory could"
+                                                                   " not be created" ),
+                                        tr( "Your chosen data target directory does not exist"
+                                            " and could not be created. Please choose another"
+                                            " one." ), QMessageBox::Ok };
                 messageBox.exec();
                 return;
             }
         }
     }
     try {
-        sessionsModel->push_back( new Session{ debugMessagesTextEdit, chosenZTreeDataTargetPath,
-                                               chosenZTreePort, chosenZTreeVersion,
-                                               PrintReceiptsForLocalClients,
-                                               anonymousReceiptsPlaceholder, chosenLaTeXHeader } );
+        sessionsModel->push_back( new Session{ debugMessagesTextEdit, argDataTargetPath,
+                                               argPort, argzTreeVersion,
+                                               argReceiptsForLocalClients,
+                                               argAnonReceiptPlaceholder,
+                                               argChosenLatexHeader } );
         occupiedPorts->append( sessionsModel->back()->zTreePort );
     }
     catch ( Session::lcDataTargetPathCreationFailed ) {
         QMessageBox::information( nullptr, tr( "Chosen data target path could not be created" ),
-                                  tr( "The path specified by your chosen data target path '%1' could not be created. Please check if it is a valid location and you have all needed permissions." )
-                                  .arg( chosenZTreeDataTargetPath ) );
+                                  tr( "The path specified by your chosen data target path '%1'"
+                                      " could not be created. Please check if it is a valid"
+                                      " location and you have all needed permissions." )
+                                  .arg( argDataTargetPath ) );
     }
 }
 
