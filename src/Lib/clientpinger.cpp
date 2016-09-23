@@ -19,12 +19,11 @@
 
 #include "clientpinger.h"
 
-lc::ClientPinger::ClientPinger( const QString * const argIP,
-                                const QString * const argPingCommand, QObject *argParent ) :
+lc::ClientPinger::ClientPinger( const QString &argIP,
+                                const QString &argPingCommand, QObject *argParent ) :
     QObject{ argParent },
-    ip{ argIP },
     // Arguments: -c 1 (send 1 ECHO_REQUEST packet) -w 1 (timeout after 1 second) -q (quiet output)
-    pingArguments{ new QStringList{ QStringList{} << "-c" << "1" << "-w" << "1" << "-q" << *ip } },
+    pingArguments{ QStringList{} << "-c" << "1" << "-w" << "1" << "-q" << argIP },
     pingCommand{ argPingCommand },
     pingProcess{ new QProcess{ this } },
     state{ state_t::UNINITIALIZED }
@@ -36,7 +35,6 @@ lc::ClientPinger::ClientPinger( const QString * const argIP,
 
 lc::ClientPinger::~ClientPinger() {
     delete pingProcess;
-    delete pingArguments;
 }
 
 void lc::ClientPinger::doPing() {
@@ -44,7 +42,7 @@ void lc::ClientPinger::doPing() {
     state_t newState = state_t::UNINITIALIZED;
 
     // Query the current state of the client
-    pingProcess->start( *pingCommand, *pingArguments );
+    pingProcess->start( pingCommand, pingArguments );
     if ( !pingProcess->waitForFinished( 2500 ) )
         newState = state_t::ERROR;
     else {

@@ -42,7 +42,8 @@ public:
       @param argPingCommand     The path were the command to be executed for pings resides
       @param argParent          The ClientPinger's parent owning this instance of it
     */
-    explicit ClientPinger( const QString * const argIP, const QString * const argPingCommand, QObject *argParent = nullptr );
+    explicit ClientPinger( const QString &argIP, const QString &argPingCommand,
+                           QObject *argParent = nullptr );
     //! ClientPinger's destructor
     ~ClientPinger();
 
@@ -53,9 +54,8 @@ public slots:
     void setStateToZLEAF_RUNNING();
 
 private:
-    const QString * const       ip;                     //! Stores a pointer to the to be pinged client's ip
-    const QStringList * const   pingArguments;          //! The arguments for the 'ping' command
-    const QString * const       pingCommand;            //! The 'ping' command itself
+    const QStringList           pingArguments;          //! The arguments for the 'ping' command
+    const QString               pingCommand;            //! The 'ping' command itself
     QProcess *                  pingProcess;            //! The 'ping' process which will be executed on every call of 'do_ping()'
     state_t                     state;                  //! Stores the current state of the client
 

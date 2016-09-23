@@ -61,7 +61,8 @@ public:
       @param argYPosition                   The client's y coordinate in the lab
       @param argSettingsItems               A QVector storing many needed data QStrings
     */
-    Client( QPlainTextEdit *argDebugMessagesTextEditPtr, QString *argIP, QString *argMAC, QString *argName, unsigned short int argXPosition, unsigned short int argYPosition, const QVector< QString* > * const argSettingsItems );
+    Client( QPlainTextEdit *argDebugMessagesTextEditPtr, QString *argIP, QString *argMAC,
+            QString *argName, unsigned short int argXPosition, unsigned short int argYPosition );
     //! Client's destructor
     ~Client();
     //! Beams the chosen file to the client's 'media4ztree' directory
@@ -135,7 +136,6 @@ private:
     unsigned short int protectedCycles;
     ClientPinger *pinger = nullptr;
     QThread pingerThread;
-    const QVector<QString*> * const settingsItems;
     state_t state = state_t::UNINITIALIZED;
     QTimer *pingTimer = nullptr;                       //! QTimer used to trigger pings by pinger's ClientPinger instance
 

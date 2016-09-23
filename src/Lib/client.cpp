@@ -17,25 +17,28 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
+
 #include "client.h"
+#include "settings.h"
+
+extern std::unique_ptr< lc::Settings > settings;
 
 lc::Client::Client( QPlainTextEdit *argDebugMessagesTextEdit, QString *argIP, QString *argMAC,
                     QString *argName, unsigned short int argXPosition,
-                    unsigned short int argYPosition,
-                    const QVector< QString* > * const argSettingsItems ):
+                    unsigned short int argYPosition ):
     ip{ *argIP },
     mac{ *argMAC },
     name{ *argName },
     xPosition{ argXPosition },
     yPosition{ argYPosition },
     debugMessagesTextEdit{ argDebugMessagesTextEdit },
-    protectedCycles{ 0 },
-    settingsItems{ argSettingsItems }
+    protectedCycles{ 0 }
 {
     qRegisterMetaType< state_t >( "STATE" );
 
-    if ( ( *settingsItems )[ ( int )settItms_t::PING_COMMAND ] ) {
-        pinger = new ClientPinger{ &ip, ( *settingsItems )[ ( int )settItms_t::PING_COMMAND ] };
+    if ( !settings->pingCmd.isEmpty() ) {
+        pinger = new ClientPinger{ ip, settings->pingCmd };
         pinger->moveToThread( &pingerThread );
         connect( &pingerThread, &QThread::finished,
                  pinger, &QObject::deleteLater );
@@ -72,15 +75,16 @@ void lc::Client::BeamFile( const QString &argFileToBeam, const QString * const a
     }
 
     QStringList arguments;
-    arguments << "-2" << "-i" << *argPublickeyPathUser << "-l" << "32768" << "-r" << argFileToBeam << QString{ *argUserNameOnClients + "@" + name + ":media4ztree" };
+    arguments << "-2" << "-i" << *argPublickeyPathUser << "-l" << "32768" << "-r"
+              << argFileToBeam << QString{ *argUserNameOnClients + "@" + name + ":media4ztree" };
 
     // Start the process
     QProcess beamFileProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     beamFileProcess.setProcessEnvironment( env );
-    beamFileProcess.startDetached( *( *settingsItems )[ ( int )settItms_t::RCP_CMD ], arguments );
+    beamFileProcess.startDetached( settings->scpCmd, arguments );
 
-    debugMessagesTextEdit->appendPlainText( "[DEBUG] " + *( *settingsItems )[ ( int )settItms_t::RCP_CMD ] + " " +  arguments.join( " " ) );
+    debugMessagesTextEdit->appendPlainText( "[DEBUG] " + settings->scpCmd + " " +  arguments.join( " " ) );
 }
 
 void lc::Client::Boot( const QString &argNetworkBroadcastAddress ) {
@@ -94,11 +98,11 @@ void lc::Client::Boot( const QString &argNetworkBroadcastAddress ) {
     QProcess wakeonlanProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     wakeonlanProcess.setProcessEnvironment( env );
-    wakeonlanProcess.startDetached( *( *settingsItems )[ ( int )settItms_t::WAKEONLAN_CMD ], arguments );
+    wakeonlanProcess.startDetached( settings->wakeonlanCmd, arguments );
 
     // Output message via the debug messages tab
     debugMessagesTextEdit->appendPlainText( "[DEBUG] " +
-                                            *( *settingsItems )[ ( int )settItms_t::WAKEONLAN_CMD ] +" " + arguments.join( " " ) );
+                                            settings->wakeonlanCmd +" " + arguments.join( " " ) );
 
     pingTimer->start( 3000 );
 
@@ -110,16 +114,16 @@ void lc::Client::DeactiveScreensaver( const QString &argPublickeyPathUser,
                                       const QString &argUserNameOnClients ) {
     QStringList arguments;
     arguments << "-i" << argPublickeyPathUser << QString{ argUserNameOnClients + "@" + name }
-              << *( *settingsItems )[ ( int )settItms_t::XSET_CMD ] << "-display" << ":0.0" << "dpms" << "force" <<  "on";
+              << settings->xsetCmd << "-display" << ":0.0" << "dpms" << "force" <<  "on";
 
     // Start the process
     QProcess deactiveScreensaverProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     deactiveScreensaverProcess.setProcessEnvironment( env );
-    deactiveScreensaverProcess.startDetached( *( *settingsItems )[ ( int )settItms_t::SSH_CMD ], arguments );
+    deactiveScreensaverProcess.startDetached( settings->sshCmd, arguments );
 
     // Output message via the debug messages tab
-    debugMessagesTextEdit->appendPlainText("[DEBUG] " + *( *settingsItems )[ ( int )settItms_t::SSH_CMD ] + " " +  arguments.join(" "));
+    debugMessagesTextEdit->appendPlainText("[DEBUG] " + settings->sshCmd + " " +  arguments.join(" "));
 }
 
 // void Client::display_ping_string(QString *ping_string) {
@@ -142,16 +146,16 @@ void lc::Client::KillZLeaf( const QString &argPublickeyPathUser,
                             const QString &argUserNameOnClients ) {
     QStringList arguments;
     arguments << "-i" << argPublickeyPathUser << QString{ argUserNameOnClients + "@" + name }
-              << QString{ *( *settingsItems )[ ( int )settItms_t::LC_INST_DIR ] + "/scripts/kill_zLeaf_labcontrol2.sh" };
+              << QString{ settings->lcInstDir + "/scripts/kill_zLeaf_labcontrol2.sh" };
 
     // Start the process
     QProcess killZLeafProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     killZLeafProcess.setProcessEnvironment( env );
-    killZLeafProcess.startDetached( *( *settingsItems )[ ( int )settItms_t::SSH_CMD ], arguments );
+    killZLeafProcess.startDetached( settings->sshCmd, arguments );
 
     // Output message via the debug messages tab
-    debugMessagesTextEdit->appendPlainText( "[DEBUG] " + *( *settingsItems )[ ( int )settItms_t::SSH_CMD ] + " " +  arguments.join( " " ) );
+    debugMessagesTextEdit->appendPlainText( "[DEBUG] " + settings->sshCmd + " " +  arguments.join( " " ) );
 
     // Restart the ping_timer, because it is stopped when a zLeaf is started
     pingTimer->start( 3000 );
@@ -166,14 +170,14 @@ void lc::Client::OpenFilesystem( const QString * const argUserToBeUsed ) {
     QProcess openFilesystemProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     openFilesystemProcess.setProcessEnvironment( env );
-    openFilesystemProcess.startDetached( *( *settingsItems )[ ( int )settItms_t::FILE_MANAGER ], arguments );
-    debugMessagesTextEdit->appendPlainText( "[DEBUG] " + *( *settingsItems )[ ( int )settItms_t::FILE_MANAGER ] + " " + arguments.join( " " ) );
+    openFilesystemProcess.startDetached( settings->fileMngr, arguments );
+    debugMessagesTextEdit->appendPlainText( "[DEBUG] " + settings->fileMngr + " " + arguments.join( " " ) );
 }
 
 void lc::Client::OpenTerminal( const QString &argCommand, const bool &argOpenAsRoot,
                                const QString & argPublickeyPathUser,
                                const QString &argUserNameOnClients ) {
-    if ( ( *settingsItems )[ ( int )settItms_t::TERM_EMUL_CMD ] ) {
+    if ( !settings->termEmulCmd.isEmpty() ) {
         if ( state < state_t::RESPONDING ) {
             return;
         }
@@ -182,17 +186,18 @@ void lc::Client::OpenTerminal( const QString &argCommand, const bool &argOpenAsR
         arguments = new QStringList;
         if ( !argOpenAsRoot ) {
             *arguments << "--title" << name << "-e" <<
-                          QString{ *( *settingsItems )[ ( int )settItms_t::SSH_CMD ] + " -i " + argPublickeyPathUser + " " + argUserNameOnClients + "@" + name };
+                          QString{ settings->sshCmd + " -i " + argPublickeyPathUser + " "
+                                   + argUserNameOnClients + "@" + name };
         } else {
             *arguments << "--title" << name << "-e" <<
-                          QString{ *( *settingsItems )[ ( int )settItms_t::SSH_CMD ] + " -i " + argPublickeyPathUser + " " + "root@" + name };
+                          QString{ settings->sshCmd + " -i " + argPublickeyPathUser + " " + "root@" + name };
         }
 
-        if ( ( *settingsItems )[ ( int )settItms_t::TERM_EMUL_CMD ]->contains( "konsole" ) ) {
+        if ( settings->termEmulCmd.contains( "konsole" ) ) {
             arguments->prepend( "--new-tab" );
             arguments->prepend( "--show-tabbar" );
         } else {
-            if ( ( *settingsItems )[ ( int )settItms_t::TERM_EMUL_CMD ]->contains( "gnome-terminal" ) ) {
+            if ( settings->termEmulCmd.contains( "gnome-terminal" ) ) {
                 arguments->prepend( "--tab" );
             }
         }
@@ -204,9 +209,9 @@ void lc::Client::OpenTerminal( const QString &argCommand, const bool &argOpenAsR
         QProcess openTerminalProcess;
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
         openTerminalProcess.setProcessEnvironment( env );
-        openTerminalProcess.startDetached( *( *settingsItems )[ ( int )settItms_t::TERM_EMUL_CMD ], *arguments );
-        debugMessagesTextEdit->appendPlainText("[DEBUG] " +
-                                               *( *settingsItems )[ ( int )settItms_t::TERM_EMUL_CMD ] + " " + arguments->join(" "));
+        openTerminalProcess.startDetached( settings->termEmulCmd, *arguments );
+        debugMessagesTextEdit->appendPlainText( "[DEBUG] " + settings->termEmulCmd
+                                                + " " + arguments->join(" "));
         delete arguments;
     }
 }
@@ -238,10 +243,10 @@ void lc::Client::ShowDesktop() {
     QProcess showDesktopProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     showDesktopProcess.setProcessEnvironment( env );
-    showDesktopProcess.startDetached( *( *settingsItems )[ ( int )settItms_t::VNC_VIEWER ], arguments );
+    showDesktopProcess.startDetached( settings->vncViewer, arguments );
 
     // Output message via the debug messages tab
-    debugMessagesTextEdit->appendPlainText( "[DEBUG] " + *( *settingsItems )[ ( int )settItms_t::VNC_VIEWER ] + " " +  arguments.join( " " ) );
+    debugMessagesTextEdit->appendPlainText( "[DEBUG] " + settings->vncViewer + " " +  arguments.join( " " ) );
 }
 
 void lc::Client::Shutdown( const QString &argPublickeyPathUser, const QString &argUserNameOnClients ) {
@@ -255,10 +260,10 @@ void lc::Client::Shutdown( const QString &argPublickeyPathUser, const QString &a
     QProcess shutdownProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     shutdownProcess.setProcessEnvironment( env );
-    shutdownProcess.startDetached( *( *settingsItems )[ ( int )settItms_t::SSH_CMD ], arguments );
+    shutdownProcess.startDetached( settings->sshCmd, arguments );
 
     // Output message via the debug messages tab
-    debugMessagesTextEdit->appendPlainText( "[DEBUG] " + *( *settingsItems )[ ( int )settItms_t::SSH_CMD ] + " " +  arguments.join( " " ) );
+    debugMessagesTextEdit->appendPlainText( "[DEBUG] " + settings->sshCmd + " " +  arguments.join( " " ) );
 
     // This additional 'ping_timer' start is needed for the case that the clients are shut down without prior closing of zLeaves
     pingTimer->start( 3000 );
@@ -308,10 +313,10 @@ void lc::Client::StartZLeaf( const QString &argPublickeyPathUser,
         QProcess startZLeafProcess;
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
         startZLeafProcess.setProcessEnvironment( env );
-        startZLeafProcess.startDetached( *( *settingsItems )[ ( int )settItms_t::SSH_CMD ], arguments );
+        startZLeafProcess.startDetached( settings->sshCmd, arguments );
 
         // Output message via the debug messages tab
-        debugMessagesTextEdit->appendPlainText( "[DEBUG] " + *( *settingsItems )[ ( int )settItms_t::SSH_CMD ] + " " +  arguments.join( " " ) );
+        debugMessagesTextEdit->appendPlainText( "[DEBUG] " + settings->sshCmd + " " +  arguments.join( " " ) );
     }
     delete messageBoxRunningZLeafFound;
 }
