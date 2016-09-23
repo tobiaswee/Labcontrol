@@ -59,9 +59,8 @@ private slots:
     //! Opens a 'QFileDialog' and tries to choose a new zTree data target path
     void GetNewDataTargetPath();
     void on_CBDataTargetPath_activated(const QString &arg1);
-    void on_CBReceiptsHeader_activated(const QString &arg1);
-    void on_CBReplaceParticipantName_currentTextChanged(const QString &arg1);
-    void on_CBzTreeVersion_activated(const QString &arg1);
+    void on_CBReceiptsHeader_activated( const QString &argHeader );
+    void on_CBzTreeVersion_activated( const QString &argVersion );
     void on_ChBPrintanonymousreceipts_clicked( bool checked );
     void on_ChBReceiptsforLocalClients_clicked(bool checked);
     void on_PBStartzTree_clicked();

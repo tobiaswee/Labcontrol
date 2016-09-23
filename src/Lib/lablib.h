@@ -71,11 +71,6 @@ public:
      * @return The users with administrative rights
      */
     QStringList *GetAdminUsers() const { return adminUsers; }
-    /*! Returns the placeholder for anonymous receipts
-     *
-     * @return The placeholder for anonymous receipts
-     */
-    QString GetAnonymousReceiptsPlaceholder() const { return anonymousReceiptsPlaceholder; }
     /*! Returns the currently set port number of zTree
      *
      * @return The currently set port number for zTree
@@ -131,11 +126,8 @@ public:
      * @return A pointer to a QStringList containing all available webcams
      */
     QStringList *GetWebcams () const { return webcams; }
-    void SetAnonymousReceiptsPlaceholder( const QString &argPlaceHolder );
-    void SetChosenLaTeXHeader( const QString &argLatexHeader );
     void SetChosenZTreeDataTargetPath( const QString &argZTreeDataTargetPath );
     void SetChosenZTreePort( const int &argPort );
-    void SetChosenZTreeVersion( const QString &argZTreeVersion );
     //! Sets the default name of local zLeaf instances
     /**
      * @param argName   The default name local zLeaf instances shall have
@@ -166,11 +158,8 @@ private:
     void ReadSettings();
 
     QStringList *adminUsers = nullptr;         //! Stores all users with administrative rights
-    QString anonymousReceiptsPlaceholder;    //! The placeholder which shall substitute the client names on anonymous receipts (if != "")
-    QString chosenLaTeXHeader;
     QString chosenZTreeDataTargetPath;
     int chosenZTreePort = 7000;               //! Stores the currently chosen port for new zTree instances
-    QString chosenZTreeVersion;
     ClientHelpNotificationServer *clientHelpNotificationServer = nullptr;    //! A server to retrieve help requests from the clients
     unsigned short int clientHelpNotificationServerPort = 0;        //! The port the help requests shall be received on
     QMap< QString, Client* > * clientIPsToClientsMap = nullptr;    //! A map container storing ip-client pairs

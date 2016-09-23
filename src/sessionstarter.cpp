@@ -58,18 +58,14 @@ void lc::SessionStarter::on_CBDataTargetPath_activated(const QString &arg1) {
     lablib->SetChosenZTreeDataTargetPath( arg1 );
 }
 
-void lc::SessionStarter::on_CBReceiptsHeader_activated(const QString &arg1) {
+void lc::SessionStarter::on_CBReceiptsHeader_activated( const QString &argHeader ) {
+    Q_UNUSED( argHeader );
     ui->CBReceiptsHeader->setStyleSheet( "" );
-    lablib->SetChosenLaTeXHeader( arg1 );
 }
 
-void lc::SessionStarter::on_CBReplaceParticipantName_currentTextChanged(const QString &arg1) {
-    lablib->SetAnonymousReceiptsPlaceholder( arg1 );
-}
-
-void lc::SessionStarter::on_CBzTreeVersion_activated(const QString &arg1) {
+void lc::SessionStarter::on_CBzTreeVersion_activated( const QString &argVersion ) {
+    Q_UNUSED( argVersion );
     ui->CBzTreeVersion->setStyleSheet( "" );
-    lablib->SetChosenZTreeVersion( arg1 );
 }
 
 void lc::SessionStarter::on_ChBPrintanonymousreceipts_clicked( bool checked ) {
@@ -78,14 +74,10 @@ void lc::SessionStarter::on_ChBPrintanonymousreceipts_clicked( bool checked ) {
         ui->LReplaceParticipantName->setEnabled( true );
         ui->CBReplaceParticipantName->setEnabled( true );
         ui->CBReplaceParticipantName->setStyleSheet( "background: cyan" );
-        // Pass the currently chosen placeholder
-        lablib->SetAnonymousReceiptsPlaceholder( ui->CBReplaceParticipantName->currentText() );
     } else {
         ui->LReplaceParticipantName->setEnabled( false );
         ui->CBReplaceParticipantName->setEnabled( false );
         ui->CBReplaceParticipantName->setStyleSheet( "" );
-        // Pass an empty QString as signal, that receipts shall not be anonymous
-        lablib->SetAnonymousReceiptsPlaceholder( "" );
     }
     ui->ChBPrintanonymousreceipts->setStyleSheet( "" );
 }
@@ -151,7 +143,6 @@ void lc::SessionStarter::SetupWidgets() {
              this, &SessionStarter::GetNewDataTargetPath );
 
     // Since filling a QComboBox does not emit the 'activated' signal, initially set some variables manually
-    lablib->SetChosenLaTeXHeader( ui->CBReceiptsHeader->currentText() );
     lablib->SetChosenZTreeDataTargetPath( ui->CBDataTargetPath->currentText() );
 
     // Set the initial status of CBReceiptsforLocalClients according to the settings in lcLablib

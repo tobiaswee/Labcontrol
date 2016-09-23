@@ -269,16 +269,6 @@ void lc::Lablib::ReadSettings() {
     }
 }
 
-void lc::Lablib::SetAnonymousReceiptsPlaceholder( const QString &argPlaceHolder ) {
-    anonymousReceiptsPlaceholder = argPlaceHolder;
-    debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] anonymous_receipts_placeholder set to: '%1'" ).arg( anonymousReceiptsPlaceholder ) );
-}
-
-void lc::Lablib::SetChosenLaTeXHeader( const QString &argLatexHeader ) {
-    chosenLaTeXHeader = argLatexHeader;
-    debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] chosen_latex_header set to: '%1'" ).arg( chosenLaTeXHeader ) );
-}
-
 void lc::Lablib::SetChosenZTreeDataTargetPath( const QString &argZTreeDataTargetPath ) {
     chosenZTreeDataTargetPath = argZTreeDataTargetPath;
     debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] chosen_zTree_data_target_path set to: '%1'" ).arg( chosenZTreeDataTargetPath ) );
@@ -287,11 +277,6 @@ void lc::Lablib::SetChosenZTreeDataTargetPath( const QString &argZTreeDataTarget
 void lc::Lablib::SetChosenZTreePort( const int &argPort ) {
     chosenZTreePort = argPort;
     debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] chosen_zTree_port set to: '%1'" ).arg( QString::number( chosenZTreePort ) ) );
-}
-
-void lc::Lablib::SetChosenZTreeVersion( const QString &argZTreeVersion ) {
-    chosenZTreeVersion = QString{ "zTree_" + argZTreeVersion };
-    debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] chosen_zTree_version set to: '%1'" ).arg( chosenZTreeVersion ) );
 }
 
 void lc::Lablib::SetPrintReceiptsForLocalClients( const bool &argPrintReceiptsForLocalClients ) {
