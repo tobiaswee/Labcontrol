@@ -17,16 +17,11 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <memory>
-
 #include <QErrorMessage>
 #include <QFile>
 #include <QTextStream>
 
 #include "lablib.h"
-#include "settings.h"
-
-extern std::unique_ptr< lc::Settings > settings;
 
 lc::Lablib::Lablib( QPlainTextEdit *argDebugMessagesTextEdit, QObject *argParent ) :
     QObject{ argParent },
@@ -144,8 +139,8 @@ void lc::Lablib::GotNetstatQueryResult( QStringList *argActiveZLeafConnections )
 
 void lc::Lablib::ReadSettings() {
     // Let the local zLeaf name default to 'local' if none was given in the settings
-    if ( !( *settingsItems )[ ( int )settItms_t::LOCAL_ZLEAF_NAME ] ) {
-        settingsItems->replace( ( int )settItms_t::LOCAL_ZLEAF_NAME, new QString{ tr( "local" ) } );
+    if ( settings->GetLocalzLeafName().isEmpty() ) {
+        settings->SetLocalzLeafName( tr( "local" ) );
     }
 
     // Read the list of users with administrative rights
@@ -375,7 +370,6 @@ void lc::Lablib::StartNewZTreeInstance() {
 }
 
 void lc::Lablib::SetLocalZLeafDefaultName( const QString &argName ) {
-    delete ( *settingsItems )[ ( int )settItms_t::LOCAL_ZLEAF_NAME ];
-    ( *settingsItems )[ ( int )settItms_t::LOCAL_ZLEAF_NAME ] = new QString{ argName };
+    settings->SetLocalzLeafName( argName );
     labSettings.setValue( "local_zLeaf_name", argName );
 }

@@ -21,6 +21,7 @@
 #define LABLIB_H
 
 #include <list>
+#include <memory>
 
 #include <QDir>
 #include <QItemSelectionModel>
@@ -42,6 +43,9 @@
 #include "netstatagent.h"
 #include "session.h"
 #include "sessionsmodel.h"
+#include "settings.h"
+
+extern std::unique_ptr< lc::Settings > settings;
 
 namespace lc {
 
@@ -91,7 +95,7 @@ public:
      *
      * @return A pointer to the QString storing the default name for local zLeafs
      */
-    QString *GetLocalZLeafDefaultName() const { return ( *settingsItems )[ ( int )settItms_t::LOCAL_ZLEAF_NAME ]; }
+    QString GetLocalZLeafDefaultName() const { return settings->GetLocalzLeafName(); }
     /** Returns a pointer to a QVector<unsigned int> containing all by sessions occupied ports
      *
      * @return A pointer to a QVector<unsigned int> containing all occupied ports
@@ -107,16 +111,6 @@ public:
      * @return True if receipts for local clients shall be printed
      */
     bool GetPrintReceiptsForLocalClients() const { return PrintReceiptsForLocalClients; }
-    /** Returns a pointer to a specified QString stored in 'settings_items' storing all command QString pointers
-     *
-     * @return A pointer to to a specified QString stored in 'settings_items' storing all command QString pointers
-     */
-    QString *GetSettingsItem( settItms_t argItem ) const { return ( *settingsItems )[ ( int )argItem ]; }
-    /** Returns a pointer to the 'settingsItems' storing all command QString pointers
-     *
-     * @return A pointer to the 'settingsItems' storing all command QString pointers
-     */
-    QVector<QString*> *GetSettingsItems() const { return settingsItems; }
     /** Returns a pointer to server's user's name
      *
      * @return A pointer to the server's user's name

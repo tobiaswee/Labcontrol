@@ -10,14 +10,21 @@ class Settings : public QObject {
     Q_OBJECT
 
 public:
+    Settings() = delete;
     explicit Settings( const QSettings &argSettings, QObject *argParent = nullptr );
+    Settings( const Settings &argSettings ) = delete;
+    Settings& operator=( const Settings &argSettings ) = delete;
+    Settings( Settings &&argSettings ) = delete;
+    Settings& operator=( Settings &&argSettings ) = delete;
+
+    QString GetLocalzLeafName() const;
+    void SetLocalzLeafName( const QString &argLocalzLeafName );
 
     const QString browserCmd;
     const QString dvipsCmd;
     const QString fileMngr;
     const QString latexCmd;
     const QString lcInstDir;
-    const QString localzLeafName;
     const QString lprCmd;
     const QString netstatCmd;
     const QString netwBrdAddr;
@@ -46,8 +53,18 @@ private:
                                      const QString &argMessage,
                                      const QSettings &argSettings,
                                      bool argItemIsFile );
+
+    QString localzLeafName;
 };
 
+}
+
+inline QString lc::Settings::GetLocalzLeafName() const {
+    return localzLeafName;
+}
+
+inline void lc::Settings::SetLocalzLeafName( const QString &argLocalzLeafName ) {
+    localzLeafName = argLocalzLeafName;
 }
 
 #endif // SETTINGS_H

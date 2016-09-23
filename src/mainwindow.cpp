@@ -509,11 +509,12 @@ void lc::MainWindow::on_PBStartLocalzLeaf_clicked() {
 
     if ( ( messageBox != nullptr && messageBox->clickedButton() == messageBox->button( QMessageBox::Yes ) ) || !local_zLeaves_are_running ) {
         // Ask for the name the local zLeaf shall have
-        QString name = QInputDialog::getText( this, tr( "The local zLeaf's name" ), tr( "Please enter the name the local zLeaf shall have." ),
-                                             QLineEdit::Normal, *lablib->GetLocalZLeafDefaultName() );
+        QString name = QInputDialog::getText( this, tr( "The local zLeaf's name" ),
+                                              tr( "Please enter the name the local zLeaf shall have." ),
+                                              QLineEdit::Normal, lablib->GetLocalZLeafDefaultName() );
         lablib->SetLocalZLeafDefaultName( name );
 
-        QString program = QString{ *lablib->GetSettingsItem( settItms_t::LC_INST_DIR ) + "/scripts/start_zLeaf_labcontrol2.sh" };
+        QString program = QString{ settings->lcInstDir + "/scripts/start_zLeaf_labcontrol2.sh" };
         QStringList arguments;
         arguments << ui->CBzLeafVersion->currentText() << "127.0.0.1" << QString::number( ui->SBzLeafPort->value() - 7000 ) << name;
 
