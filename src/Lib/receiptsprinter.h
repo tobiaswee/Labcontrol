@@ -45,7 +45,7 @@ class ReceiptsPrinter : public QThread {
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
         process->setProcessEnvironment( env );
         process->setWorkingDirectory( *workpath );
-        process->start( *( *settingsItems )[ ( int )settItms_t::LATEX_CMD ], arguments );
+        process->start( latexCmd, arguments );
         if( !process->waitForFinished( processTimeOut ) ) {
             QMessageBox message_box{ QMessageBox::Warning, "dvi creation failed", "The creation of the receipts dvi timed out after 30 seconds. Automatic receipts creation will not work.", QMessageBox::Ok };
             message_box.exec();
@@ -63,7 +63,7 @@ class ReceiptsPrinter : public QThread {
         process = new QProcess{};
         process->setProcessEnvironment( env );
         process->setWorkingDirectory( *workpath );
-        process->start( *( *settingsItems )[ ( int )settItms_t::DVIPS_CMD ], arguments );
+        process->start( dvipsCmd, arguments );
         if( !process->waitForFinished( processTimeOut ) ) {
             emit ErrorOccurred(new QString{ "The conversion of the receipts dvi to postscript timed out after 30 seconds. Automatic receipts creation will not work." }, new QString{ "dvi to postscript conversion failed" } );
             delete process;
@@ -74,14 +74,14 @@ class ReceiptsPrinter : public QThread {
         process = nullptr;
 
         // Print the postscript file
-        if ( ( *settingsItems )[ ( int )settItms_t::LPR_CMD ] ) {
+        if ( !lprCmd.isEmpty() ) {
             arguments = QStringList{};
             arguments << QString{ *workpath + "/" + *dateString + ".ps" };
 
             process = new QProcess{};
             process->setProcessEnvironment( env );
             process->setWorkingDirectory( *workpath );
-            process->start( *( *settingsItems )[ ( int )settItms_t::LPR_CMD ], arguments );
+            process->start( lprCmd, arguments );
             if( !process->waitForFinished( processTimeOut ) ) {
                 emit ErrorOccurred( new QString{ "The receipts postscript file was successfully created but could not be printed." }, new QString{ "Printing failed" } );
             }
@@ -90,14 +90,14 @@ class ReceiptsPrinter : public QThread {
         }
 
         // Convert the postscript file to pdf
-        if ( ( *settingsItems )[ ( int )settItms_t::PS2PDF_COMMAND ] ) {
+        if ( !ps2pdfCmd.isEmpty() ) {
             arguments = QStringList{};
             arguments << QString{ *workpath + "/" + *dateString + ".ps" } << QString{ *workpath + "/" + *dateString + ".pdf" };
 
             process = new QProcess{};
             process->setProcessEnvironment( env );
             process->setWorkingDirectory( *workpath );
-            process->start( *( *settingsItems )[ ( int )settItms_t::PS2PDF_COMMAND ], arguments );
+            process->start( ps2pdfCmd, arguments );
             if( !process->waitForFinished( processTimeOut ) ) {
                 emit ErrorOccurred( new QString{ "The receipts were successfully printed but the creation of the PDF file failed." }, new QString{ "PDF creation failed" } );
             }
@@ -105,21 +105,21 @@ class ReceiptsPrinter : public QThread {
             process = nullptr;
 
             // Show the postscript file if the conversion succeeded
-            if ( ( *settingsItems )[ ( int )settItms_t::POSTSCRIPT_VIEWER ] ) {
+            if ( !postscriptViewer.isEmpty() ) {
                 arguments = QStringList{};
                 arguments << QString{ *workpath + "/" + *dateString + ".ps" };
 
                 process = new QProcess{};
                 process->setProcessEnvironment( env );
                 process->setWorkingDirectory( *workpath );
-                process->startDetached( *( *settingsItems )[ ( int )settItms_t::POSTSCRIPT_VIEWER ], arguments );
+                process->startDetached( postscriptViewer, arguments );
                 delete process;
                 process = nullptr;
             }
         }
 
         // Clean up the zTree working path
-        if ( ( *settingsItems )[ ( int )settItms_t::RM_CMD ] ) {
+        if ( !rmCmd.isEmpty() ) {
             arguments = QStringList{};
             arguments << QString{ *workpath + "/" + *dateString + ".aux" }
                       << QString{ *workpath + "/" + *dateString + ".dvi" }
@@ -129,7 +129,7 @@ class ReceiptsPrinter : public QThread {
             process = new QProcess{};
             process->setProcessEnvironment( env );
             process->setWorkingDirectory( *workpath );
-            process->start( *( *settingsItems )[ ( int )settItms_t::RM_CMD ], arguments);
+            process->start( rmCmd, arguments);
             if( !process->waitForFinished( processTimeOut ) ) {
                 emit ErrorOccurred(new QString("The cleanup of the temporary files for receipts creation timed out. Some spare files may be left in your zTree working directory."), new QString("Cleanup failed"));
             }
@@ -142,7 +142,6 @@ class ReceiptsPrinter : public QThread {
 public:
     explicit ReceiptsPrinter( const QString * const argDateString,
                               const QString * const argWorkpath,
-                              const QVector< QString* > * const argSettingsItems,
                               QObject *argParent = nullptr );
 
 signals:
@@ -151,8 +150,14 @@ signals:
 
 private:
     const QString * const dateString;                           //! The date string contained in the file paths
+    const QString dvipsCmd;
+    const QString latexCmd;
+    const QString lprCmd;
+    const QString postscriptViewer;
     const int processTimeOut = 15000;                           //! The maximum time which will be granted to a started process
-    const QVector<QString*> * const settingsItems;              //! A QVector storing all needed command paths
+    const QString ps2pdfCmd;
+    const QString rmCmd;
+    const QString vncViewer;
     const QString * const workpath;                             //! The path were zTree was ordered to store all its data
 };
 

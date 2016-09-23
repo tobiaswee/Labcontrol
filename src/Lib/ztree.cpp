@@ -17,15 +17,20 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
+
+#include "settings.h"
 #include "ztree.h"
+
+extern std::unique_ptr< lc::Settings > settings;
 
 lc::ZTree::ZTree( QPlainTextEdit *argDebugMessagesTextEdit,
                   const QString &argZTreeDataTargetPath, const int &argZTreePort,
-                  const QString &argZTreeVersionPath,
-                  const QVector<QString*> * const argSettingsItems ) {
-    QString program{ *( *argSettingsItems )[ ( int )settItms_t::LC_INST_DIR ] + "/scripts/start_zTree_labcontrol2.sh" };
+                  const QString &argZTreeVersionPath ) {
+    QString program{ settings->lcInstDir + "/scripts/start_zTree_labcontrol2.sh" };
     QStringList arguments;
-    arguments << *( *argSettingsItems )[ ( int )settItms_t::ZTREE_INST_DIR ] << argZTreeVersionPath << argZTreeDataTargetPath << QString::number( static_cast<int>( argZTreePort ) - 7000 );
+    arguments << settings->zTreeInstDir << argZTreeVersionPath << argZTreeDataTargetPath
+              << QString::number( static_cast< int >( argZTreePort ) - 7000 );
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     zTreeInstance.setProcessEnvironment( env );

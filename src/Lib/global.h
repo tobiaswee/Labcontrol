@@ -22,13 +22,6 @@
 
 #include <QMetaType>
 
-enum class settItms_t : unsigned short int { BROWSER_CMD, DVIPS_CMD, FILE_MANAGER, LC_INST_DIR,
-                       LATEX_CMD, LOCAL_ZLEAF_NAME, LPR_CMD, NETSTAT_CMD, NETW_BRDCAST_ADDR,
-                       ORSEE_URL, PING_COMMAND, POSTSCRIPT_VIEWER, PS2PDF_COMMAND,
-                       SSH_KEY_ROOT, SSH_KEY_USER, RCP_CMD, RM_CMD, SERVER_IP, SSH_CMD,
-                       TERM_EMUL_CMD, USER_NAME_ON_CLIENTS, VNC_VIEWER, WAKEONLAN_CMD,
-                       WMCTRL_CMD, XSET_CMD, ZTREE_INST_DIR, SETT_ITMS_QUANT };
-
 //! Opens a terminal for the client
 enum class state_t : unsigned short int  {
     //! The client is booting but not yet responding

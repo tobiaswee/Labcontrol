@@ -20,9 +20,6 @@ lc::Settings::Settings( const QSettings &argSettings, QObject *argParent ) :
     lcInstDir{ ReadSettingsItem( "labcontrol_installation_directory",
                                  "Labcontrol will missbehave with high propability.",
                                  argSettings, true ) },
-    localzLeafName{ ReadSettingsItem( "local_zLeaf_name",
-                                      "The local zLeaf default name will default to 'local'.",
-                                      argSettings, false ) },
     lprCmd{ ReadSettingsItem( "lpr_command",
                               "Receipts printing will not work.",
                               argSettings, true ) },
@@ -82,7 +79,10 @@ lc::Settings::Settings( const QSettings &argSettings, QObject *argParent ) :
                                argSettings, true ) },
     zTreeInstDir{ ReadSettingsItem( "ztree_installation_directory",
                                     "zTree will not be available.",
-                                    argSettings, true ) }
+                                    argSettings, true ) },
+    localzLeafName{ ReadSettingsItem( "local_zLeaf_name",
+                                      "The local zLeaf default name will default to 'local'.",
+                                      argSettings, false ) }
 {
 }
 

@@ -182,7 +182,6 @@ private:
     QVector< int > *occupiedPorts = nullptr;
     bool PrintReceiptsForLocalClients = true;
     SessionsModel *sessionsModel = nullptr;        //! A derivation from QAbstractTableModel used to store the single Session instances
-    QVector<QString*> *settingsItems = nullptr;    //! A QVector storing all simple settings
     QString userNameOnServer;         //! The user name on the server as extracted from the environment variables
     QStringList *webcams = nullptr;                 //! A QStringList containing all available stationary webcams in the laboratory
 };

@@ -17,15 +17,25 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
+
 #include "receiptsprinter.h"
+#include "settings.h"
+
+extern std::unique_ptr< lc::Settings > settings;
 
 lc::ReceiptsPrinter::ReceiptsPrinter( const QString * const argDateString,
                                       const QString * const argWorkpath,
-                                      const QVector< QString* > * const argSettingsItems,
                                       QObject *argParent ) :
     QThread{ argParent },
     dateString{ argDateString },
-    settingsItems{ argSettingsItems },
+    dvipsCmd{ settings->dvipsCmd },
+    latexCmd{ settings->latexCmd },
+    lprCmd{ settings->lprCmd },
+    postscriptViewer{ settings->postscriptViewer },
+    ps2pdfCmd{ settings->ps2pdfCmd },
+    rmCmd{ settings->rmCmd },
+    vncViewer{ settings->vncViewer },
     workpath{ argWorkpath }
 {
 }

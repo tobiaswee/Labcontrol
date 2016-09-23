@@ -38,8 +38,7 @@ class ZTree: public QObject {
 public:
     ZTree( QPlainTextEdit *argDebugMessagesTextEdit,
            const QString &argZTreeDataTargetPath,
-           const int &argZTreePort, const QString &argZTreeVersionPath,
-           const QVector<QString*> * const argSettingsItems );
+           const int &argZTreePort, const QString &argZTreeVersionPath );
 
 signals:
     void ZTreeClosed();

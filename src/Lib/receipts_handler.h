@@ -47,12 +47,14 @@ class ReceiptsHandler : public QObject {
 
 public:
     explicit ReceiptsHandler( QPlainTextEdit *argDebugMessagesTextEdit, const QString &argZTreeDataTargetPath,
-                                const bool &argPrintReceiptsForLocalClients, const QString &argAnonymousReceiptsPlaceholder,
-                                const QString &argLatexHeaderName, const QVector<QString*> * const argSettingsItems, QObject *argParent = nullptr );
+                              const bool &argPrintReceiptsForLocalClients,
+                              const QString &argAnonymousReceiptsPlaceholder,
+                              const QString &argLatexHeaderName, QObject *argParent = nullptr );
     explicit ReceiptsHandler( QPlainTextEdit *argDebugMessagesTextEdit, const QString &argZTreeDataTargetPath,
-                                const bool &argPrintReceiptsForLocalClients, const QString &argAnonymousReceiptsPlaceholder,
-                                const QString &argLatexHeaderName, const QVector<QString*> * const argSettingsItems,
-                                const QString * const argDateString, QObject *argParent = nullptr );
+                              const bool &argPrintReceiptsForLocalClients,
+                              const QString &argAnonymousReceiptsPlaceholder,
+                              const QString &argLatexHeaderName,
+                              const QString * const argDateString, QObject *argParent = nullptr );
     ~ReceiptsHandler();
 
 signals:
@@ -76,7 +78,6 @@ private:
     void MakeReceiptsAnonymous( QVector<paymentEntry_t*> *argDataVector, bool argAlsoAnonymizeClients );
 
     const QString * const anonymousReceiptsPlaceholder;         //! Placeholder which shall be inserted for participant names if anonymous printing is desired (QString != "")
-    const QVector<QString*> * const settingsItems;              //! A QVector storing all needed command paths
     QString *dateString = nullptr;
     QPlainTextEdit * const debugMessagesTextEdit = nullptr;     //! A pointer to the programs debug_messages_text_edit to be able to emit debugging messages
     QString expectedPaymentFileName;                            //! The name of the expected payment file

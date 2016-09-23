@@ -17,18 +17,21 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
+
 #include "receipts_handler.h"
+#include "settings.h"
+
+extern std::unique_ptr< lc::Settings > settings;
 
 lc::ReceiptsHandler::ReceiptsHandler( QPlainTextEdit *argDebugMessagesTextEdit,
                                       const QString &argZTreeDataTargetPath,
                                       const bool &argPrintReceiptsForLocalClients,
                                       const QString &argAnonymousReceiptsPlaceholder,
                                       const QString &argLatexHeaderName,
-                                      const QVector< QString* > * const argSettingsItems,
                                       QObject *argParent ) :
     QObject{ argParent },
     anonymousReceiptsPlaceholder{ new QString{ argAnonymousReceiptsPlaceholder } },
-    settingsItems{ argSettingsItems },
     debugMessagesTextEdit{ argDebugMessagesTextEdit },
     latexHeaderName{ new QString{ argLatexHeaderName } },
     printReceiptsForLocalClients{ new bool { argPrintReceiptsForLocalClients } },
@@ -57,11 +60,9 @@ lc::ReceiptsHandler::ReceiptsHandler( QPlainTextEdit *argDebugMessagesTextEdit,
                                       const bool &argPrintReceiptsForLocalClients,
                                       const QString &argAnonymousReceiptsPlaceholder,
                                       const QString &argLatexHeaderName,
-                                      const QVector< QString* > * const argSettingsItems,
                                       const QString * const argDateString, QObject *argParent ) :
     QObject{ argParent },
     anonymousReceiptsPlaceholder{ new QString{ argAnonymousReceiptsPlaceholder } },
-    settingsItems{ argSettingsItems },
     dateString{ new QString{ *argDateString } },
     debugMessagesTextEdit{ argDebugMessagesTextEdit },
     latexHeaderName{ new QString{ argLatexHeaderName } },
@@ -215,7 +216,7 @@ void lc::ReceiptsHandler::CreateReceiptsFromPaymentFile() {
     delete latexText;
     latexText = nullptr;
 
-    receiptsPrinter = new ReceiptsPrinter{ dateString, zTreeDataTargetPath, settingsItems };
+    receiptsPrinter = new ReceiptsPrinter{ dateString, zTreeDataTargetPath };
     receiptsPrinter->start();
     connect( receiptsPrinter, &ReceiptsPrinter::PrintingFinished,
              this, &ReceiptsHandler::DeleteReceiptsPrinterInstance );
@@ -273,10 +274,11 @@ QVector<QString> *lc::ReceiptsHandler::GetParticipantsDataFromPaymentFile() {
 
 QString *lc::ReceiptsHandler::LoadLatexHeader() {
     // Prepare all facilities to read the latex header file
-    QFile latexHeaderFile( *( *settingsItems )[ ( int )settItms_t::LC_INST_DIR ] + "/" + *latexHeaderName + "_header.tex" );
+    QFile latexHeaderFile( settings->lcInstDir + "/" + *latexHeaderName + "_header.tex" );
     if ( !latexHeaderFile.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
-        QMessageBox messageBox{ QMessageBox::Critical, tr( "LaTeX header could not be loaded" ), tr( "The LaTeX header at '%1/%2_header.tex' could not be loaded. Receipts printing will not work." )
-                                .arg( *( *settingsItems )[ ( int )settItms_t::LC_INST_DIR ] ).arg( *latexHeaderName ), QMessageBox::Ok };
+        QMessageBox messageBox{ QMessageBox::Critical, tr( "LaTeX header could not be loaded" ),
+                                tr( "The LaTeX header at '%1/%2_header.tex' could not be loaded. Receipts printing will not work." )
+                                .arg( settings->lcInstDir ).arg( *latexHeaderName ), QMessageBox::Ok };
         messageBox.exec();
         return nullptr;
     }

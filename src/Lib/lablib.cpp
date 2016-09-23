@@ -29,8 +29,7 @@ lc::Lablib::Lablib( QPlainTextEdit *argDebugMessagesTextEdit, QObject *argParent
     debugMessagesTextEdit{ argDebugMessagesTextEdit },
     labSettings{ "Economic Laboratory", "Labcontrol", this },
     occupiedPorts{ new QVector< int > },
-    sessionsModel{ new SessionsModel{ this } },
-    settingsItems{ new QVector< QString* >{ ( int )settItms_t::SETT_ITMS_QUANT, nullptr } }
+    sessionsModel{ new SessionsModel{ this } }
 {
     ReadSettings();
 
@@ -76,10 +75,6 @@ lc::Lablib::~Lablib () {
     delete InstalledZTreeVersions;
     delete occupiedPorts;
     delete webcams;
-    for (auto s: *settingsItems) {
-        delete s;
-    }
-    delete settingsItems;
 }
 
 void lc::Lablib::DetectInstalledZTreeVersionsAndLaTeXHeaders() {
@@ -358,8 +353,7 @@ void lc::Lablib::StartNewZTreeInstance() {
         sessionsModel->push_back( new Session{ debugMessagesTextEdit, chosenZTreeDataTargetPath,
                                                chosenZTreePort, chosenZTreeVersion,
                                                PrintReceiptsForLocalClients,
-                                               anonymousReceiptsPlaceholder, chosenLaTeXHeader,
-                                               settingsItems } );
+                                               anonymousReceiptsPlaceholder, chosenLaTeXHeader } );
         occupiedPorts->append( sessionsModel->back()->zTreePort );
     }
     catch ( Session::lcDataTargetPathCreationFailed ) {

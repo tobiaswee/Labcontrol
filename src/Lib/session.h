@@ -40,7 +40,7 @@ public:
 
     Session( QPlainTextEdit * const argDebugMessagesTextEdit, const QString &argZTreeDataTargetPath, const int argZTreePort,
              const QString &argZTreeVersionPath, bool argPrintReceiptsForLocalClients, const QString &argAnonymousReceiptsPlaceholder,
-             const QString &argLatexHeaderName, const QVector<QString*> * const argSettingsItems );
+             const QString &argLatexHeaderName );
     ~Session();
 
     /*! Returns the data item with the given index
@@ -69,7 +69,6 @@ private:
     const QString latexHeaderName;                              //! The name of the chosen LaTeX header
     const bool printReceiptsForLocalClients = true;             //! True if receipts shall be printed for local clients
     ReceiptsHandler *receiptsHandler = nullptr;                 //! For automatic creation and printing of the receipts
-    const QVector<QString*> * const settingsItems;              //! A QVector container storing all needed command paths
     QString zTreeDataTargetPath;                                //! The path were the data of this zTree instance's session will be saved
     ZTree *zTreeInstance= nullptr;                              //! The session's zTree instance
     const QString zTreeVersionPath;                             //! The path to the version of zTree used by this session's instance

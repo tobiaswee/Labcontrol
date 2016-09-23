@@ -17,20 +17,23 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
+
 #include "session.h"
+#include "settings.h"
+
+extern std::unique_ptr< lc::Settings > settings;
 
 lc::Session::Session( QPlainTextEdit * const argDebugMessagesTextEdit,
                       const QString &argZTreeDataTargetPath, const int argZTreePort,
                       const QString &argZTreeVersionPath, bool argPrintReceiptsForLocalClients,
                       const QString &argAnonymousReceiptsPlaceholder,
-                      const QString &argLatexHeaderName,
-                      const QVector<QString*> * const argSettingsItems ):
+                      const QString &argLatexHeaderName ):
     zTreePort{ argZTreePort },
     anonymousReceiptsPlaceholder{ argAnonymousReceiptsPlaceholder },
     debugMessagesTextEdit{ argDebugMessagesTextEdit },
     latexHeaderName{ argLatexHeaderName },
     printReceiptsForLocalClients{ argPrintReceiptsForLocalClients },
-    settingsItems{ argSettingsItems },
     zTreeDataTargetPath{ argZTreeDataTargetPath },
     zTreeVersionPath{ argZTreeVersionPath }
 {
@@ -45,7 +48,7 @@ lc::Session::Session( QPlainTextEdit * const argDebugMessagesTextEdit,
         InitializeClasses();
     }
 
-    if ( ( *settingsItems )[ ( int )settItms_t::WMCTRL_CMD ] ) {
+    if ( !settings->wmctrlCmd.isEmpty() ) {
         QTimer::singleShot( 5000, this, SLOT( RenameWindow() ) );
     }
 }
@@ -77,13 +80,14 @@ void lc::Session::InitializeClasses() {
     debugMessagesTextEdit->appendPlainText( "[DEBUG] New session's chosen_zTree_data_target_path: " + zTreeDataTargetPath );
 
     zTreeInstance = new ZTree{ debugMessagesTextEdit, zTreeDataTargetPath,
-                               zTreePort, zTreeVersionPath, settingsItems };
+                               zTreePort, zTreeVersionPath };
     // Only create a 'Receipts_Handler' instance, if all neccessary variables were set
-    if ( latexHeaderName != "None found" && ( *settingsItems )[ ( int )settItms_t::DVIPS_CMD ] && ( *settingsItems )[ ( int )settItms_t::LATEX_CMD ] ) {
+    if ( latexHeaderName != "None found" && !settings->dvipsCmd.isEmpty()
+         && !settings->latexCmd.isEmpty() ) {
         receiptsHandler = new ReceiptsHandler{ debugMessagesTextEdit, zTreeDataTargetPath,
                                                printReceiptsForLocalClients,
                                                anonymousReceiptsPlaceholder,
-                                               latexHeaderName, settingsItems };
+                                               latexHeaderName };
     } else {
         debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] No ReceiptsHandler instance was created." ) );
     }
@@ -99,7 +103,7 @@ void lc::Session::RenameWindow() {
     QProcess renameZTreeWindowProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     renameZTreeWindowProcess.setProcessEnvironment( env );
-    renameZTreeWindowProcess.startDetached( *( *settingsItems )[ ( int )settItms_t::WMCTRL_CMD ], arguments );
+    renameZTreeWindowProcess.startDetached( settings->wmctrlCmd, arguments );
 
     debugMessagesTextEdit->appendPlainText( "[DEBUG] Renamed window" );
 
