@@ -17,8 +17,13 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
+
 #include "sessionstarter.h"
 #include "ui_sessionstarter.h"
+#include "Lib/settings.h"
+
+extern std::unique_ptr< lc::Settings > settings;
 
 lc::SessionStarter::SessionStarter( Lablib *argLablib, QPlainTextEdit *argDebugMessagesTextEdit, QWidget *parent ) :
     QWidget{ parent },
@@ -106,9 +111,9 @@ void lc::SessionStarter::SetupWidgets() {
 
     // Fill the 'CBzTreeVersion' combobox with known entries from the lablib class
     ui->CBzTreeVersion->addItem( "NONE" );
-    const QStringList * const zTreeEntries = lablib->GetInstalledZTreeVersions();
-    if ( !( zTreeEntries == nullptr ) ) {
-        for ( auto zTreeVersionString : *zTreeEntries ) {
+    const QStringList &zTreeEntries = settings->installedZTreeVersions;
+    if ( !zTreeEntries.isEmpty() ) {
+        for ( const auto &zTreeVersionString : zTreeEntries ) {
             ui->CBzTreeVersion->addItem( zTreeVersionString );
         }
         ui->CBzTreeVersion->setCurrentIndex( 0 );

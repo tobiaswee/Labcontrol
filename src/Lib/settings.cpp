@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QDir>
 #include <QFile>
 #include <QProcessEnvironment>
 
@@ -90,11 +91,13 @@ lc::Settings::Settings( const QSettings &argSettings, QObject *argParent ) :
     zTreeInstDir{ ReadSettingsItem( "ztree_installation_directory",
                                     "zTree will not be available.",
                                     argSettings, true ) },
+    installedZTreeVersions{ DetectInstalledzTreeVersions() },
     localzLeafName{ ReadSettingsItem( "local_zLeaf_name",
                                       "The local zLeaf default name will default to 'local'.",
                                       argSettings, false ) }
 {
     qDebug() << "The following webcams where loaded:" << webcams;
+    qDebug() << "Detected z-Tree versions" << installedZTreeVersions;
 }
 
 bool lc::Settings::CheckPathAndComplain( const QString &argPath, const QString &argVariableName,
@@ -106,6 +109,22 @@ bool lc::Settings::CheckPathAndComplain( const QString &argPath, const QString &
     }
     qDebug() << argVariableName << ":" << argPath;
     return true;
+}
+
+QStringList lc::Settings::DetectInstalledzTreeVersions() const {
+    QStringList tempInstzTreeVersions;
+    if ( !zTreeInstDir.isEmpty() ) {
+        QDir zTreeDirectory{ zTreeInstDir, "zTree_*", QDir::Name,
+                             QDir::NoDotAndDotDot | QDir::Dirs
+                             | QDir::Readable | QDir::CaseSensitive };
+        if ( zTreeDirectory.entryList().isEmpty() ) {
+            qWarning() << "No zTree versions could be found in" << zTreeInstDir;
+        } else {
+            tempInstzTreeVersions = zTreeDirectory.entryList();
+            tempInstzTreeVersions.replaceInStrings( "zTree_", "" );
+        }
+    }
+    return tempInstzTreeVersions;
 }
 
 QString lc::Settings::GetLocalUserName() {

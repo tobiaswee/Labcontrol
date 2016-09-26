@@ -112,11 +112,6 @@ public:
      * @return A pointer to a QStringList containing all available LaTeX headers
      */
     QStringList *GetInstalledLaTeXHeaders () const {return installedLaTeXHeaders; }
-    /** Returns a QStringList containing all available zTree versions of this system
-     *
-     * @return A pointer to a QStringList containing all available zTree versions
-     */
-    QStringList *GetInstalledZTreeVersions () const { return InstalledZTreeVersions; }
     void SetChosenZTreeDataTargetPath( const QString &argZTreeDataTargetPath );
     void SetChosenZTreePort( const int &argPort );
     //! Sets the default name of local zLeaf instances
@@ -157,7 +152,6 @@ private:
     QPlainTextEdit *debugMessagesTextEdit = nullptr;       //! This stores a pointer to the text edit in the debug tab to be able to write to it
     int defaultReceiptIndex = 0;                  //! Stores the index of the LaTeX header to be displayed by default
     QStringList *installedLaTeXHeaders = nullptr;
-    QStringList *InstalledZTreeVersions = nullptr;
     QSettings labSettings;
     NetstatAgent *netstatAgent = nullptr;           //! Tries to detect active zLeaf connections from the clients
     QThread netstatThread;

@@ -654,8 +654,8 @@ void lc::MainWindow::SetupWidgets() {
     }
     clients = nullptr;
 
-    const QStringList *zTreeEntries = lablib->GetInstalledZTreeVersions();
-    if ( zTreeEntries == nullptr ) {
+    const QStringList &zTreeEntries = settings->installedZTreeVersions;
+    if ( zTreeEntries.isEmpty() ) {
         ui->CBClientNames->setEnabled( false );
         ui->GBzTree->setEnabled( false );
         ui->GLzLeafSettings->setEnabled( false );
@@ -665,7 +665,7 @@ void lc::MainWindow::SetupWidgets() {
         ui->PBStartzLeaf->setEnabled( false );
     } else {
         ui->CBzLeafVersion->addItem( "NONE" );
-        for ( auto zTreeVersionString : *zTreeEntries ) {
+        for ( const auto &zTreeVersionString : zTreeEntries ) {
             ui->CBzLeafVersion->addItem( zTreeVersionString );
         }
         ui->CBzLeafVersion->setCurrentIndex( 0 );

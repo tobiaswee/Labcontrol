@@ -71,7 +71,6 @@ lc::Lablib::~Lablib () {
         }
     }
     delete clients;
-    delete InstalledZTreeVersions;
     delete occupiedPorts;
 }
 
@@ -104,28 +103,6 @@ void lc::Lablib::DetectInstalledZTreeVersionsAndLaTeXHeaders() {
             installedLaTeXHeaders = new QStringList{ laTeXDirectory.entryList() };
             installedLaTeXHeaders->replaceInStrings( "_header.tex", "" );
             debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] LaTeX headers: %1" ).arg( installedLaTeXHeaders->join( " / " ) ) );
-        }
-    }
-
-    // Detect the installed zTree versions
-    if ( !settings->zTreeInstDir.isEmpty() ) {
-        QDir zTreeDirectory{ settings->zTreeInstDir, "zTree*", QDir::Name,
-                             QDir::NoDotAndDotDot | QDir::Dirs
-                             | QDir::Readable | QDir::CaseSensitive };
-        if ( zTreeDirectory.entryList().isEmpty() ) {
-            QMessageBox messageBox{ QMessageBox::Critical, tr( "zTree not found" ),
-                        tr( "No zTree installation found in '%1'. Running zTree will not be possible." )
-                        .arg( settings->zTreeInstDir ), QMessageBox::Ok };
-            messageBox.exec();
-
-            debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] No zTree versions could be found in '%1'." )
-                                                    .arg( settings->zTreeInstDir ) );
-        }
-        else {
-            InstalledZTreeVersions = new QStringList{ zTreeDirectory.entryList() };
-            InstalledZTreeVersions->replaceInStrings( "zTree_", "" );
-
-            debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] zTree versions: %1" ).arg( InstalledZTreeVersions->join( " / " ) ) ) ;
         }
     }
 }

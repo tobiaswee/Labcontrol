@@ -49,10 +49,12 @@ public:
     const QString wmctrlCmd;
     const QString xsetCmd;
     const QString zTreeInstDir;
+    const QStringList installedZTreeVersions;
 
 private:
     static bool CheckPathAndComplain( const QString &argPath, const QString &argVariableName,
                                       const QString &argMessage );
+    QStringList DetectInstalledzTreeVersions() const;
     static QString GetLocalUserName();
     static QString ReadSettingsItem( const QString &argVariableName,
                                      const QString &argMessage,
