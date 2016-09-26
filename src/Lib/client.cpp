@@ -88,11 +88,7 @@ void lc::Client::BeamFile( const QString &argFileToBeam, const QString * const a
 }
 
 void lc::Client::Boot( const QString &argNetworkBroadcastAddress ) {
-    if ( state == state_t::SHUTTING_DOWN || state == state_t::RESPONDING ) {
-        return;
-    }
-    QStringList arguments;
-    arguments << "-i" << argNetworkBroadcastAddress << mac;
+    QStringList arguments{ QStringList{} << "-i" << argNetworkBroadcastAddress << mac };
 
     // Start the process
     QProcess wakeonlanProcess;
@@ -101,8 +97,8 @@ void lc::Client::Boot( const QString &argNetworkBroadcastAddress ) {
     wakeonlanProcess.startDetached( settings->wakeonlanCmd, arguments );
 
     // Output message via the debug messages tab
-    debugMessagesTextEdit->appendPlainText( "[DEBUG] " +
-                                            settings->wakeonlanCmd +" " + arguments.join( " " ) );
+    debugMessagesTextEdit->appendPlainText( "[DEBUG] " + settings->wakeonlanCmd
+                                            + " " + arguments.join( " " ) );
 
     pingTimer->start( 3000 );
 
