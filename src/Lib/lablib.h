@@ -66,11 +66,12 @@ public:
     /** Lablib's destructor
      */
     ~Lablib();
-    /*! Returns the users who have administrative rights
-     *
-     * @return The users with administrative rights
+    /*!
+     * \brief CheckIfUserIsAdmin checks if the account with the passed user name has administrative rights
+     * \param argUserName The account name which shall checked for administrative rights
+     * \return True, if the account has administrative rights; false, otherwise
      */
-    QStringList *GetAdminUsers() const { return adminUsers; }
+    bool CheckIfUserIsAdmin( const QString &argUserName ) const;
     /*! Returns the currently set port number of zTree
      *
      * @return The currently set port number for zTree
@@ -157,7 +158,7 @@ private:
      */
     void ReadSettings();
 
-    QStringList *adminUsers = nullptr;         //! Stores all users with administrative rights
+    QStringList adminUsers; //! Stores the names of all user accounts with administrative rights
     QString chosenZTreeDataTargetPath;
     int chosenZTreePort = 7000;               //! Stores the currently chosen port for new zTree instances
     ClientHelpNotificationServer *clientHelpNotificationServer = nullptr;    //! A server to retrieve help requests from the clients

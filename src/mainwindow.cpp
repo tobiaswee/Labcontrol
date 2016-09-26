@@ -62,7 +62,7 @@ bool lc::MainWindow::CheckIfUserIsAdmin() {
         userName = env.value( "USERNAME", "" );
     }
 
-    if ( userName == "" ) {
+    if ( userName.isEmpty() ) {
         QMessageBox messageBox{ QMessageBox::Warning, tr( "User not detectable" ),
                                 tr( "Your user name could not be queryed. The admin tab will be"
                                     " disabled. You won't be able to perform administrative"
@@ -76,19 +76,7 @@ bool lc::MainWindow::CheckIfUserIsAdmin() {
                                            .arg( userName ) );
     lablib->SetUserNameOnServer( userName );
 
-    QStringList *adminUsers = lablib->GetAdminUsers();
-
-    if ( adminUsers != nullptr ) {
-        for ( auto s : *adminUsers ) {
-            if ( s == userName ) {
-                ui->PTEDebugMessages->appendPlainText( tr( "[DEBUG] '%1' has administrative"
-                                                           " rights." ).arg( userName ) );
-                return true;
-            }
-        }
-    }
-
-    return false;
+    return lablib->CheckIfUserIsAdmin( userName );
 }
 
 void lc::MainWindow::DisableDisfunctionalWidgets() {

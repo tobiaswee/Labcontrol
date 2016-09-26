@@ -65,7 +65,6 @@ lc::Lablib::~Lablib () {
     }
     netstatThread.quit();
     netstatThread.wait();
-    delete adminUsers;
     if ( clients ) {
         for ( QVector< Client* >::iterator it = clients->begin(); it != clients->end(); ++it ) {
             delete *it;
@@ -75,6 +74,17 @@ lc::Lablib::~Lablib () {
     delete InstalledZTreeVersions;
     delete occupiedPorts;
     delete webcams;
+}
+
+bool lc::Lablib::CheckIfUserIsAdmin( const QString &argUserName ) const {
+    for ( const auto &s : adminUsers ) {
+        if ( s == argUserName ) {
+            debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] User '%1' has administrative"
+                                                        " rights." ).arg( argUserName ) );
+            return true;
+        }
+    }
+    return false;
 }
 
 void lc::Lablib::DetectInstalledZTreeVersionsAndLaTeXHeaders() {
@@ -145,8 +155,9 @@ void lc::Lablib::ReadSettings() {
         messageBox.exec();
         debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] 'admin_users' was not set. No permission for administrative tasks." ) );
     } else {
-        adminUsers = new QStringList{ labSettings.value( "admin_users", "" ).toString().split( '|', QString::SkipEmptyParts, Qt::CaseInsensitive ) };
-        debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] 'admin_users': %1").arg( adminUsers->join(" / ") ) );
+        adminUsers = labSettings.value( "admin_users", "" ).toString()
+                     .split( '|', QString::SkipEmptyParts, Qt::CaseInsensitive );
+        debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] 'admin_users': %1").arg( adminUsers.join(" / ") ) );
     }
 
     // Read the port the ClientHelpNotificationServer shall listen on
