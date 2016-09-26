@@ -71,7 +71,7 @@ public:
      * \param argUserName The account name which shall checked for administrative rights
      * \return True, if the account has administrative rights; false, otherwise
      */
-    bool CheckIfUserIsAdmin( const QString &argUserName ) const;
+    bool CheckIfUserIsAdmin() const;
     /*! Returns the currently set port number of zTree
      *
      * @return The currently set port number for zTree
@@ -107,11 +107,6 @@ public:
      * @return True if receipts for local clients shall be printed
      */
     bool GetPrintReceiptsForLocalClients() const { return PrintReceiptsForLocalClients; }
-    /** Returns a pointer to server's user's name
-     *
-     * @return A pointer to the server's user's name
-     */
-    QString GetUserNameOnServer () const { return userNameOnServer; }
     /** Returns a QStringList containing all available LaTeX headers of this system
      *
      * @return A pointer to a QStringList containing all available LaTeX headers
@@ -135,7 +130,6 @@ public:
      */
     void SetLocalZLeafDefaultName( const QString &argName );
     void SetPrintReceiptsForLocalClients( const bool &argPrintReceiptsForLocalClients );
-    void SetUserNameOnServer( const QString &argUserName );
     void ShowOrsee();
     void ShowPreprints();
 
@@ -176,7 +170,6 @@ private:
     QVector< int > *occupiedPorts = nullptr;
     bool PrintReceiptsForLocalClients = true;
     SessionsModel *sessionsModel = nullptr;        //! A derivation from QAbstractTableModel used to store the single Session instances
-    QString userNameOnServer;         //! The user name on the server as extracted from the environment variables
     QStringList *webcams = nullptr;                 //! A QStringList containing all available stationary webcams in the laboratory
 };
 

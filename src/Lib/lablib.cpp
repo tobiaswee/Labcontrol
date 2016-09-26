@@ -76,11 +76,12 @@ lc::Lablib::~Lablib () {
     delete webcams;
 }
 
-bool lc::Lablib::CheckIfUserIsAdmin( const QString &argUserName ) const {
+bool lc::Lablib::CheckIfUserIsAdmin() const {
     for ( const auto &s : adminUsers ) {
-        if ( s == argUserName ) {
+        if ( s == settings->localUserName ) {
             debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] User '%1' has administrative"
-                                                        " rights." ).arg( argUserName ) );
+                                                        " rights." )
+                                                    .arg( settings->localUserName ) );
             return true;
         }
     }
@@ -293,11 +294,6 @@ void lc::Lablib::SetChosenZTreePort( const int &argPort ) {
 void lc::Lablib::SetPrintReceiptsForLocalClients( const bool &argPrintReceiptsForLocalClients ) {
     PrintReceiptsForLocalClients = argPrintReceiptsForLocalClients;
     debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] Set print_receipts_for_local_clients to : '%1'" ).arg( QString::number( PrintReceiptsForLocalClients ) ) );
-}
-
-void lc::Lablib::SetUserNameOnServer( const QString &argUserName ) {
-    userNameOnServer = argUserName;
-    debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] user_name_on_server set to: '%1'" ).arg( userNameOnServer ) );
 }
 
 void lc::Lablib::ShowOrsee() {

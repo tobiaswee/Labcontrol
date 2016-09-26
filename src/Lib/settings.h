@@ -25,6 +25,7 @@ public:
     const QString fileMngr;
     const QString latexCmd;
     const QString lcInstDir;
+    const QString localUserName;
     const QString lprCmd;
     const QString netstatCmd;
     const QString netwBrdAddr;
@@ -51,6 +52,7 @@ public:
 private:
     static bool CheckPathAndComplain( const QString &argPath, const QString &argVariableName,
                                       const QString &argMessage );
+    static QString GetLocalUserName();
     static QString ReadSettingsItem( const QString &argVariableName,
                                      const QString &argMessage,
                                      const QSettings &argSettings,

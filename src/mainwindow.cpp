@@ -52,17 +52,7 @@ lc::MainWindow::~MainWindow() {
 }
 
 bool lc::MainWindow::CheckIfUserIsAdmin() {
-    // Query the current user's name or give an error if this fails
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    QString userName;
-    // For Linux
-    if ( env.contains( "USER" ) ) {
-        userName = env.value( "USER", "" );
-    } else if ( env.contains( "USERNAME" ) ) { // For Windows
-        userName = env.value( "USERNAME", "" );
-    }
-
-    if ( userName.isEmpty() ) {
+    if ( settings->localUserName.isEmpty() ) {
         QMessageBox messageBox{ QMessageBox::Warning, tr( "User not detectable" ),
                                 tr( "Your user name could not be queryed. The admin tab will be"
                                     " disabled. You won't be able to perform administrative"
@@ -73,10 +63,9 @@ bool lc::MainWindow::CheckIfUserIsAdmin() {
     }
 
     ui->PTEDebugMessages->appendPlainText( tr( "[DEBUG] The user's name is %1." )
-                                           .arg( userName ) );
-    lablib->SetUserNameOnServer( userName );
+                                           .arg( settings->localUserName ) );
 
-    return lablib->CheckIfUserIsAdmin( userName );
+    return lablib->CheckIfUserIsAdmin();
 }
 
 void lc::MainWindow::DisableDisfunctionalWidgets() {
@@ -695,7 +684,7 @@ void lc::MainWindow::SetupWidgets() {
     } else {
         ui->LAdministrativeRights->setText( tr( "You don't have administrative rights." ) );
     }
-    ui->LUserName->setText( tr( "You are user %1" ).arg( lablib->GetUserNameOnServer() ) );
+    ui->LUserName->setText( tr( "You are user %1" ).arg( settings->localUserName ) );
     if ( !settings->userNameOnClients.isEmpty() ) {
         ui->RBUseLocalUser->setText( settings->userNameOnClients );
     } else {

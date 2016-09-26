@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QFile>
+#include <QProcessEnvironment>
 
 #include "settings.h"
 
@@ -20,6 +21,7 @@ lc::Settings::Settings( const QSettings &argSettings, QObject *argParent ) :
     lcInstDir{ ReadSettingsItem( "labcontrol_installation_directory",
                                  "Labcontrol will missbehave with high propability.",
                                  argSettings, true ) },
+    localUserName{ GetLocalUserName() },
     lprCmd{ ReadSettingsItem( "lpr_command",
                               "Receipts printing will not work.",
                               argSettings, true ) },
@@ -101,6 +103,22 @@ bool lc::Settings::CheckPathAndComplain( const QString &argPath, const QString &
     }
     qDebug() << argVariableName << ":" << argPath;
     return true;
+}
+
+QString lc::Settings::GetLocalUserName() {
+    const QProcessEnvironment env{ QProcessEnvironment::systemEnvironment() };
+    QString userName;
+    // For Linux
+    if ( env.contains( "USER" ) ) {
+        userName = env.value( "USER", "" );
+        qDebug() << "The local user name is" << userName;
+    } else if ( env.contains( "USERNAME" ) ) { // For Windows
+        userName = env.value( "USERNAME", "" );
+        qDebug() << "The local user name is" << userName;
+    } else {
+        qWarning() << "The local user name could not be queried";
+    }
+    return userName;
 }
 
 QString lc::Settings::ReadSettingsItem( const QString &argVariableName,
