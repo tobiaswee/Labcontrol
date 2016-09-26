@@ -642,23 +642,17 @@ void lc::MainWindow::SetupWidgets() {
     }
 
     // Fill the 'CBWebcamChooser' with all available network webcams
-    ui->CBWebcamChooser->addItem( "Choose a webcam to view:", QVariant( 0 ) );
-    QStringList *webcams = lablib->GetWebcams();
-    if ( !( webcams == nullptr ) ) {
-        for ( auto s : *webcams )
-            ui->CBWebcamChooser->addItem( s, QVariant( 0 ) );
+    if ( !settings->webcams.isEmpty() ) {
+        for ( const auto &s : settings->webcams )
+            ui->CBWebcamChooser->addItem( s );
     }
 
-    // Deactivate the webcam choosing interface, if no webcams are available (none mounted at clients and none mounted in the laboratory)
-    if ( ui->CBWebcamChooser->count() == 1 ) {
+    // Deactivate the webcam choosing interface, if no webcams are available
+    if ( ui->CBWebcamChooser->count() == 0 ) {
         ui->LWebcamChooser->setEnabled( false );
         ui->CBWebcamChooser->setEnabled( false );
-        QMessageBox messageBox{ QMessageBox::Warning, tr( "Could not add webcams" ),
-                    tr( "The initialization of the webcams failed. Please check the configuration file of Labcontrol." ), QMessageBox::Ok, this };
-        messageBox.exec();
     }
     clients = nullptr;
-    webcams = nullptr;
 
     const QStringList *zTreeEntries = lablib->GetInstalledZTreeVersions();
     if ( zTreeEntries == nullptr ) {

@@ -76,6 +76,8 @@ lc::Settings::Settings( const QSettings &argSettings, QObject *argParent ) :
     wakeonlanCmd{ ReadSettingsItem( "wakeonlan_command",
                                     "Booting the clients will not work.",
                                     argSettings, true ) },
+    webcams{ argSettings.value( "webcams", "" ).toString().split( '|', QString::SkipEmptyParts,
+                                                                  Qt::CaseInsensitive ) },
     wineCmd{ ReadSettingsItem( "wine_command",
                                "Running z-Leaves or z-Tree will be possible.",
                                argSettings, true ) },
@@ -92,6 +94,7 @@ lc::Settings::Settings( const QSettings &argSettings, QObject *argParent ) :
                                       "The local zLeaf default name will default to 'local'.",
                                       argSettings, false ) }
 {
+    qDebug() << "The following webcams where loaded:" << webcams;
 }
 
 bool lc::Settings::CheckPathAndComplain( const QString &argPath, const QString &argVariableName,

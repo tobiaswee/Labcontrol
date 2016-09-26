@@ -73,7 +73,6 @@ lc::Lablib::~Lablib () {
     delete clients;
     delete InstalledZTreeVersions;
     delete occupiedPorts;
-    delete webcams;
 }
 
 bool lc::Lablib::CheckIfUserIsAdmin() const {
@@ -196,10 +195,6 @@ void lc::Lablib::ReadSettings() {
         QMessageBox messageBox{ QMessageBox::Information, tr( "'webcams' not set" ), tr( "The 'webcams' variable was not set. No stationary webcams will be available." ) };
         messageBox.exec();
         debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] 'webcams' was not set. No stationary webcams will be available." ) );
-    }
-    else {
-        webcams = new QStringList{ labSettings.value( "webcams" ).toString().split( '|', QString::SkipEmptyParts, Qt::CaseInsensitive ) };
-        debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] 'webcams': %1" ).arg( webcams->join( " / " ) ) );
     }
 
     // Get the client quantity to check the value lists for clients creation for correct length

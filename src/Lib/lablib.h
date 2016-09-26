@@ -117,11 +117,6 @@ public:
      * @return A pointer to a QStringList containing all available zTree versions
      */
     QStringList *GetInstalledZTreeVersions () const { return InstalledZTreeVersions; }
-    /** Returns a pointer to a QStringList containing all available webcams
-     *
-     * @return A pointer to a QStringList containing all available webcams
-     */
-    QStringList *GetWebcams () const { return webcams; }
     void SetChosenZTreeDataTargetPath( const QString &argZTreeDataTargetPath );
     void SetChosenZTreePort( const int &argPort );
     //! Sets the default name of local zLeaf instances
@@ -170,7 +165,6 @@ private:
     QVector< int > *occupiedPorts = nullptr;
     bool PrintReceiptsForLocalClients = true;
     SessionsModel *sessionsModel = nullptr;        //! A derivation from QAbstractTableModel used to store the single Session instances
-    QStringList *webcams = nullptr;                 //! A QStringList containing all available stationary webcams in the laboratory
 };
 
 }

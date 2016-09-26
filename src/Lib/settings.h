@@ -44,6 +44,7 @@ public:
     const QString userNameOnClients;
     const QString vncViewer;
     const QString wakeonlanCmd;
+    const QStringList webcams;
     const QString wineCmd;
     const QString wmctrlCmd;
     const QString xsetCmd;
