@@ -25,16 +25,11 @@ lc::ClientPinger::ClientPinger( const QString &argIP,
     // Arguments: -c 1 (send 1 ECHO_REQUEST packet) -w 1 (timeout after 1 second) -q (quiet output)
     pingArguments{ QStringList{} << "-c" << "1" << "-w" << "1" << "-q" << argIP },
     pingCommand{ argPingCommand },
-    pingProcess{ new QProcess{ this } },
     state{ state_t::UNINITIALIZED }
 {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    pingProcess->setProcessEnvironment(env);
+    pingProcess.setProcessEnvironment(env);
     // emit ping_string(new QString(*ping_command + " " + ping_arguments->join(" ")));
-}
-
-lc::ClientPinger::~ClientPinger() {
-    delete pingProcess;
 }
 
 void lc::ClientPinger::doPing() {
@@ -42,11 +37,11 @@ void lc::ClientPinger::doPing() {
     state_t newState = state_t::UNINITIALIZED;
 
     // Query the current state of the client
-    pingProcess->start( pingCommand, pingArguments );
-    if ( !pingProcess->waitForFinished( 2500 ) )
+    pingProcess.start( pingCommand, pingArguments );
+    if ( !pingProcess.waitForFinished( 2500 ) )
         newState = state_t::ERROR;
     else {
-        if ( pingProcess->exitCode() == 0 )
+        if ( pingProcess.exitCode() == 0 )
             newState = state_t::RESPONDING;
         else
             newState = state_t::NOT_RESPONDING;
