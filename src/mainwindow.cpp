@@ -176,6 +176,13 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
         ui->PBBoot->setEnabled( false );
     }
 
+    // Deactivate the webcam choosing interface if no webcams are available or the viewer is missing
+    if ( settings->webcamDisplayCmd.isEmpty()
+         || settings->webcams.isEmpty() ) {
+        ui->CBWebcamChooser->setEnabled( false );
+        ui->LWebcamChooser->setEnabled( false );
+    }
+
     // Disable the disable screensaver function if the 'xset_command' was not set
     if ( settings->xsetCmd.isEmpty() ) {
         ui->PBDeactivateScreensaver->setEnabled( false );
@@ -206,7 +213,7 @@ void lc::MainWindow::LoadIconPixmaps() {
 
 void lc::MainWindow::on_CBWebcamChooser_activated( int argIndex ) {
     if (  argIndex != 0 ) {
-        QString program{ settings->lcInstDir + "/webcam_display" };
+        QString program{ settings->webcamDisplayCmd };
         QStringList arguments;
         arguments << ui->CBWebcamChooser->currentText();
 
@@ -645,12 +652,6 @@ void lc::MainWindow::SetupWidgets() {
     if ( !settings->webcams.isEmpty() ) {
         for ( const auto &s : settings->webcams )
             ui->CBWebcamChooser->addItem( s );
-    }
-
-    // Deactivate the webcam choosing interface, if no webcams are available
-    if ( ui->CBWebcamChooser->count() == 0 ) {
-        ui->LWebcamChooser->setEnabled( false );
-        ui->CBWebcamChooser->setEnabled( false );
     }
     clients = nullptr;
 
