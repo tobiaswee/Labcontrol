@@ -6,7 +6,7 @@ The easiest way to build and install _Labcontrol_ is to open the `labcontrol.pro
 
 To work properly _Labcontrol_ requires a file named `labcontrol.conf` in `/etc/xdg/Economic\ Laboratory`. This directory must be created, the existing dummy file be copied there and afterwards be modified according to the laboratory's needs. All _z-Tree_ executables should reside in sub-directories of `/opt/z-Leaves` following the naming scheme `zTree_X.Y.ZZ`.
 
-Receipt creation requires at least one receipt template in `/usr/share/labcontrol`. The name of the header file should match the pattern `NAMETHEHEADERSHALLHAVE_header.tex` to be recognized.
+Receipt creation requires at least one receipt template in `/usr/local/share/labcontrol`. The name of the header file should match the pattern `NAMETHEHEADERSHALLHAVE_header.tex` to be recognized.
 
 ## Contact
 

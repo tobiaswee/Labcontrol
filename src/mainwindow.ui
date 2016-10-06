@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>../../../../../../usr/share/labcontrol/icons/icon.png</normaloff>../../../../../../usr/share/labcontrol/icons/icon.png</iconset>
+    <normaloff>../../../../../../usr/local/share/labcontrol/icons/icon.png</normaloff>../../../../../../usr/local/share/labcontrol/icons/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout_8">
