@@ -51,18 +51,16 @@ public:
     const unsigned short int xPosition = 1;
     const unsigned short int yPosition = 1;
 
-    //! Client's constructor
     /*!
-      @param argDebugMessagesTextEditPtr    A pointer to the debug messages text edit for verbose output
-      @param argIP                          The IP address the represented client has
-      @param argMAC                         The MAC address the represented client has
-      @param argName                        The hostname of the represented client
-      @param argXPosition                   The client's x coordinate in the lab
-      @param argYPosition                   The client's y coordinate in the lab
-      @param argSettingsItems               A QVector storing many needed data QStrings
-    */
-    Client( QString *argIP, QString *argMAC,
-            QString *argName, unsigned short int argXPosition, unsigned short int argYPosition );
+     * \brief Client's constructor
+     * \param argIP         The IP address the represented client has
+     * \param argMAC        The MAC address the represented client has
+     * \param argName       The hostname of the represented client
+     * \param argXPosition  The client's x coordinate in the lab's grid
+     * \param argYPosition  The client's y coordinate in the lab's grid
+     */
+    Client( const QString &argIP, const QString &argMAC, const QString &argName,
+            unsigned short int argXPosition, unsigned short int argYPosition );
     //! Client's destructor
     ~Client();
     //! Beams the chosen file to the client's 'media4ztree' directory
@@ -72,18 +70,14 @@ public:
       @param argUserNameOnClients           The name of the user on the clients
     */
     void BeamFile( const QString &argFileToBeam, const QString * const argPublickeyPathUser, const QString * const argUserNameOnClients );
-    //! Boots the client
     /*!
-      @param argNetworkBroadcastAddress     The network broadcast address of the lab
-    */
-    void Boot( const QString &argNetworkBroadcastAddress );
-    //! Runs the 'deactivate_screensaver.sh' script on the client to deactivate the screensaver
+     * \brief Boots the client
+     */
+    void Boot();
     /*!
-      @param argPublickeyPathUser           The path to the publickey for user login on the clients
-      @param argUserNameOnClients           The name of the user on the clients
-    */
-    void DeactiveScreensaver( const QString &argPublickeyPathUser,
-                              const QString &argUserNameOnClients );
+     * \brief DeactiveScreensaver deactivates potentially running screensavers on the client
+     */
+    void DeactiveScreensaver();
     //! Returns the current state of the client
     /*!
       @return The current state of the client
@@ -98,24 +92,18 @@ public:
      @param argUserToBeUsed                 The name of the user on the clients
     */
     void OpenFilesystem( const QString * const argUserToBeUsed );
-    //! Opens a terminal for the client
     /*!
-     @param argCommand                      A command which shall be executed in the terminal window (Pass an empty QString if not wanted)
-     @param argOpenAsRoot                   Run the terminal session as root (true) or as normal user (false)
-     @param argPublickeyPathUser            The path to the publickey for user login on the clients
-     @param argUserNameOnClients            The name of the user on the clients
-    */
-    void OpenTerminal( const QString &argCommand, const bool &argOpenAsRoot,
-                       const QString &argPublickeyPathUser,
-                       const QString &argUserNameOnClients );
+     * \brief Opens a terminal for the client
+     * \param argCommand    A command which shall be executed in the terminal window (Pass an empty QString if not wanted)
+     * \param argOpenAsRoot Run the terminal session as root (true) or as normal user (false)
+     */
+    void OpenTerminal( const QString &argCommand, const bool &argOpenAsRoot );
     //! Shows the desktop of the given client
     void ShowDesktop();
-    //! Shuts down the client
     /*!
-     @param argPublickeyPathUser            The path to the publickey for user login on the clients
-     @param argUserNameOnClients            The name of the user on the clients
-    */
-    void Shutdown( const QString &argPublickeyPathUser, const QString &argUserNameOnClients );
+     * \brief Shuts down the client
+     */
+    void Shutdown();
     //! Starts a zLeaf instance on the client
     /*!
      @param argZTreeVersion                 The version of zLeaf which shall be started

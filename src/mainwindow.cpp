@@ -245,7 +245,7 @@ void lc::MainWindow::on_PBBoot_clicked() {
     for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
             Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            client->Boot( settings->netwBrdAddr );
+            client->Boot();
         }
     }
 }
@@ -272,7 +272,7 @@ void lc::MainWindow::on_PBDeactivateScreensaver_clicked() {
     QVector< Client* > *clients = lablib->GetClients();
     for ( auto s : *clients ) {
         if ( s->GetClientState() >= state_t::RESPONDING )
-            s->DeactiveScreensaver( settings->pkeyPathUser, settings->userNameOnClients );
+            s->DeactiveScreensaver();
     }
 }
 
@@ -316,8 +316,7 @@ void lc::MainWindow::on_PBExecute_clicked() {
         qDebug() << "Executing command" << command << "on every client.";
         for ( auto s: *clients ) {
             if ( !( s->name.contains( "backup", Qt::CaseInsensitive ) ) ) {
-                s->OpenTerminal( command, ui->RBUseUserRoot->isChecked(), pkeyPathUser,
-                                 settings->userNameOnClients );
+                s->OpenTerminal( command, ui->RBUseUserRoot->isChecked() );
             }
         }
     } else {
@@ -326,8 +325,7 @@ void lc::MainWindow::on_PBExecute_clicked() {
         for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
             if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
                 Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-                client->OpenTerminal( command, ui->RBUseUserRoot->isChecked(), pkeyPathUser,
-                                      settings->userNameOnClients );
+                client->OpenTerminal( command, ui->RBUseUserRoot->isChecked() );
             }
         }
     }
@@ -392,8 +390,7 @@ void lc::MainWindow::on_PBOpenTerminal_clicked() {
     for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
             Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            client->OpenTerminal( QString{}, ui->RBUseUserRoot->isChecked(),
-                                  pkeyPathUser, settings->userNameOnClients );
+            client->OpenTerminal( QString{}, ui->RBUseUserRoot->isChecked() );
         }
     }
 }
@@ -476,7 +473,7 @@ void lc::MainWindow::on_PBShutdown_clicked() {
     for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
             Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            client->Shutdown( settings->pkeyPathUser, settings->userNameOnClients );
+            client->Shutdown();
         }
     }
 }

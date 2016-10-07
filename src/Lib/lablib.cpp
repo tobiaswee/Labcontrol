@@ -236,8 +236,8 @@ void lc::Lablib::ReadSettings() {
 
     clients = new QVector< Client* >;
     for ( int i = 0; i < clientQuantity; i++ ) {
-        clients->append( new Client{ &clientIPs[ i ], &clientMACs[ i ],
-                                     &clientNames[ i ], clientXPositions[ i ].toUShort(),
+        clients->append( new Client{ clientIPs[ i ], clientMACs[ i ], clientNames[ i ],
+                                     clientXPositions[ i ].toUShort(),
                                      clientYPositions[ i ].toUShort() } );
 
         // Add an corresponding entry to the 'client_ips_to_clients_map' std::map<QString, Client*>

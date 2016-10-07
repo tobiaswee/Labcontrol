@@ -26,12 +26,11 @@
 
 extern std::unique_ptr< lc::Settings > settings;
 
-lc::Client::Client( QString *argIP, QString *argMAC,
-                    QString *argName, unsigned short int argXPosition,
-                    unsigned short int argYPosition ):
-    ip{ *argIP },
-    mac{ *argMAC },
-    name{ *argName },
+lc::Client::Client( const QString &argIP, const QString &argMAC, const QString &argName,
+                    unsigned short int argXPosition, unsigned short int argYPosition ):
+    ip{ argIP },
+    mac{ argMAC },
+    name{ argName },
     xPosition{ argXPosition },
     yPosition{ argYPosition },
     protectedCycles{ 0 }
@@ -88,8 +87,8 @@ void lc::Client::BeamFile( const QString &argFileToBeam, const QString * const a
     qDebug() << settings->scpCmd << arguments.join( " " );
 }
 
-void lc::Client::Boot( const QString &argNetworkBroadcastAddress ) {
-    QStringList arguments{ QStringList{} << "-i" << argNetworkBroadcastAddress << mac };
+void lc::Client::Boot() {
+    QStringList arguments{ QStringList{} << "-i" << settings->netwBrdAddr << mac };
 
     // Start the process
     QProcess wakeonlanProcess;
@@ -106,10 +105,10 @@ void lc::Client::Boot( const QString &argNetworkBroadcastAddress ) {
     GotStatusChanged( state_t::BOOTING );
 }
 
-void lc::Client::DeactiveScreensaver( const QString &argPublickeyPathUser,
-                                      const QString &argUserNameOnClients ) {
+void lc::Client::DeactiveScreensaver() {
     QStringList arguments;
-    arguments << "-i" << argPublickeyPathUser << QString{ argUserNameOnClients + "@" + ip }
+    arguments << "-i" << settings->pkeyPathUser
+              << QString{ settings->userNameOnClients + "@" + ip }
               << settings->xsetCmd << "-display" << ":0.0" << "dpms" << "force" <<  "on";
 
     // Start the process
@@ -170,9 +169,7 @@ void lc::Client::OpenFilesystem( const QString * const argUserToBeUsed ) {
     qDebug() << settings->fileMngr << arguments.join( " " );
 }
 
-void lc::Client::OpenTerminal( const QString &argCommand, const bool &argOpenAsRoot,
-                               const QString & argPublickeyPathUser,
-                               const QString &argUserNameOnClients ) {
+void lc::Client::OpenTerminal( const QString &argCommand, const bool &argOpenAsRoot ) {
     if ( !settings->termEmulCmd.isEmpty() ) {
         if ( state < state_t::RESPONDING ) {
             return;
@@ -182,11 +179,11 @@ void lc::Client::OpenTerminal( const QString &argCommand, const bool &argOpenAsR
         arguments = new QStringList;
         if ( !argOpenAsRoot ) {
             *arguments << "--title" << name << "-e" <<
-                          QString{ settings->sshCmd + " -i " + argPublickeyPathUser + " "
-                                   + argUserNameOnClients + "@" + ip };
+                          QString{ settings->sshCmd + " -i " + settings->pkeyPathUser + " "
+                                   + settings->userNameOnClients + "@" + ip };
         } else {
             *arguments << "--title" << name << "-e" <<
-                          QString{ settings->sshCmd + " -i " + argPublickeyPathUser + " " + "root@" + ip };
+                          QString{ settings->sshCmd + " -i " + settings->pkeyPathRoot + " " + "root@" + ip };
         }
 
         if ( settings->termEmulCmd.contains( "konsole" ) ) {
@@ -244,12 +241,13 @@ void lc::Client::ShowDesktop() {
     qDebug() << settings->vncViewer << arguments.join( " " );
 }
 
-void lc::Client::Shutdown( const QString &argPublickeyPathUser, const QString &argUserNameOnClients ) {
+void lc::Client::Shutdown() {
     if ( state == state_t::NOT_RESPONDING || state == state_t::BOOTING || state == state_t::SHUTTING_DOWN ) {
         return;
     }
     QStringList arguments;
-    arguments << "-i" << argPublickeyPathUser << QString{ argUserNameOnClients  + "@" + ip } << "sudo shutdown -P now";
+    arguments << "-i" << settings->pkeyPathUser
+              << QString{ settings->userNameOnClients  + "@" + ip } << "sudo shutdown -P now";
 
     // Start the process
     QProcess shutdownProcess;
