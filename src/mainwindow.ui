@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>740</height>
+    <height>864</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -443,20 +443,6 @@
             </widget>
            </item>
           </layout>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="TDebugMessages">
-       <attribute name="title">
-        <string>Debug messages</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <widget class="QPlainTextEdit" name="PTEDebugMessages">
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
          </widget>
         </item>
        </layout>

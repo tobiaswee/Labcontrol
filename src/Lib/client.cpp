@@ -19,12 +19,14 @@
 
 #include <memory>
 
+#include <QDebug>
+
 #include "client.h"
 #include "settings.h"
 
 extern std::unique_ptr< lc::Settings > settings;
 
-lc::Client::Client( QPlainTextEdit *argDebugMessagesTextEdit, QString *argIP, QString *argMAC,
+lc::Client::Client( QString *argIP, QString *argMAC,
                     QString *argName, unsigned short int argXPosition,
                     unsigned short int argYPosition ):
     ip{ *argIP },
@@ -32,7 +34,6 @@ lc::Client::Client( QPlainTextEdit *argDebugMessagesTextEdit, QString *argIP, QS
     name{ *argName },
     xPosition{ argXPosition },
     yPosition{ argYPosition },
-    debugMessagesTextEdit{ argDebugMessagesTextEdit },
     protectedCycles{ 0 }
 {
     qRegisterMetaType< state_t >( "STATE" );
@@ -55,9 +56,9 @@ lc::Client::Client( QPlainTextEdit *argDebugMessagesTextEdit, QString *argIP, QS
         pingTimer->start( 3000 );
     }
 
-    debugMessagesTextEdit->appendPlainText( tr ( "[DEBUG] Created client %1\n\tMac: %2\tIP: %3\n\tPosition: %4x%5" )
-                                            .arg( name ).arg( mac ).arg( ip ).arg( QString::number( xPosition ) )
-                                            .arg( QString::number( yPosition ) ) );
+    qDebug() << "Created client" << name << "with MAC" << mac << "and IP" << ip
+             << "at position" << QString{ QString::number( xPosition ) + "x"
+                                          + QString::number( yPosition ) };
 }
 
 lc::Client::~Client() {
@@ -84,7 +85,7 @@ void lc::Client::BeamFile( const QString &argFileToBeam, const QString * const a
     beamFileProcess.setProcessEnvironment( env );
     beamFileProcess.startDetached( settings->scpCmd, arguments );
 
-    debugMessagesTextEdit->appendPlainText( "[DEBUG] " + settings->scpCmd + " " +  arguments.join( " " ) );
+    qDebug() << settings->scpCmd << arguments.join( " " );
 }
 
 void lc::Client::Boot( const QString &argNetworkBroadcastAddress ) {
@@ -97,8 +98,7 @@ void lc::Client::Boot( const QString &argNetworkBroadcastAddress ) {
     wakeonlanProcess.startDetached( settings->wakeonlanCmd, arguments );
 
     // Output message via the debug messages tab
-    debugMessagesTextEdit->appendPlainText( "[DEBUG] " + settings->wakeonlanCmd
-                                            + " " + arguments.join( " " ) );
+    qDebug() << settings->wakeonlanCmd << arguments.join( " " );
 
     pingTimer->start( 3000 );
 
@@ -119,7 +119,7 @@ void lc::Client::DeactiveScreensaver( const QString &argPublickeyPathUser,
     deactiveScreensaverProcess.startDetached( settings->sshCmd, arguments );
 
     // Output message via the debug messages tab
-    debugMessagesTextEdit->appendPlainText("[DEBUG] " + settings->sshCmd + " " +  arguments.join(" "));
+    qDebug() << settings->sshCmd << arguments.join( " " );
 }
 
 // void Client::display_ping_string(QString *ping_string) {
@@ -135,7 +135,7 @@ void lc::Client::GotStatusChanged( state_t argState ) {
         return;
     }
     state = argState;
-    debugMessagesTextEdit->appendPlainText( "[DEBUG] " + name + " status changed to: " + QString::number( ( int )argState ) );
+    qDebug() << name << "status changed to:" << static_cast< unsigned short int >( argState );
 }
 
 void lc::Client::KillZLeaf( const QString &argPublickeyPathUser,
@@ -151,7 +151,7 @@ void lc::Client::KillZLeaf( const QString &argPublickeyPathUser,
     killZLeafProcess.startDetached( settings->sshCmd, arguments );
 
     // Output message via the debug messages tab
-    debugMessagesTextEdit->appendPlainText( "[DEBUG] " + settings->sshCmd + " " +  arguments.join( " " ) );
+    qDebug() << settings->sshCmd << arguments.join( " " );
 
     // Restart the ping_timer, because it is stopped when a zLeaf is started
     pingTimer->start( 3000 );
@@ -167,7 +167,7 @@ void lc::Client::OpenFilesystem( const QString * const argUserToBeUsed ) {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     openFilesystemProcess.setProcessEnvironment( env );
     openFilesystemProcess.startDetached( settings->fileMngr, arguments );
-    debugMessagesTextEdit->appendPlainText( "[DEBUG] " + settings->fileMngr + " " + arguments.join( " " ) );
+    qDebug() << settings->fileMngr << arguments.join( " " );
 }
 
 void lc::Client::OpenTerminal( const QString &argCommand, const bool &argOpenAsRoot,
@@ -206,8 +206,7 @@ void lc::Client::OpenTerminal( const QString &argCommand, const bool &argOpenAsR
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
         openTerminalProcess.setProcessEnvironment( env );
         openTerminalProcess.startDetached( settings->termEmulCmd, *arguments );
-        debugMessagesTextEdit->appendPlainText( "[DEBUG] " + settings->termEmulCmd
-                                                + " " + arguments->join(" "));
+        qDebug() << settings->termEmulCmd << arguments->join( " " );
         delete arguments;
     }
 }
@@ -228,7 +227,7 @@ void lc::Client::SetStateToZLEAF_RUNNING( QString argClientIP ) {
         // Inform the ClientPinger instance, that zLeaf is now running
         pinger->setStateToZLEAF_RUNNING();
         this->GotStatusChanged( state_t::ZLEAF_RUNNING );
-        debugMessagesTextEdit->appendPlainText( "[DEBUG] Client '" + name + "' got 'ZLEAF_RUNNING' signal." );
+        qDebug() << "Client" << name << "got 'ZLEAF_RUNNING' signal.";
     }
 }
 
@@ -242,7 +241,7 @@ void lc::Client::ShowDesktop() {
     showDesktopProcess.startDetached( settings->vncViewer, arguments );
 
     // Output message via the debug messages tab
-    debugMessagesTextEdit->appendPlainText( "[DEBUG] " + settings->vncViewer + " " +  arguments.join( " " ) );
+    qDebug() << settings->vncViewer << arguments.join( " " );
 }
 
 void lc::Client::Shutdown( const QString &argPublickeyPathUser, const QString &argUserNameOnClients ) {
@@ -259,7 +258,7 @@ void lc::Client::Shutdown( const QString &argPublickeyPathUser, const QString &a
     shutdownProcess.startDetached( settings->sshCmd, arguments );
 
     // Output message via the debug messages tab
-    debugMessagesTextEdit->appendPlainText( "[DEBUG] " + settings->sshCmd + " " +  arguments.join( " " ) );
+    qDebug() << settings->sshCmd << arguments.join( " " );
 
     // This additional 'ping_timer' start is needed for the case that the clients are shut down without prior closing of zLeaves
     pingTimer->start( 3000 );
@@ -312,7 +311,7 @@ void lc::Client::StartZLeaf( const QString &argPublickeyPathUser,
         startZLeafProcess.startDetached( settings->sshCmd, arguments );
 
         // Output message via the debug messages tab
-        debugMessagesTextEdit->appendPlainText( "[DEBUG] " + settings->sshCmd + " " +  arguments.join( " " ) );
+        qDebug() << settings->sshCmd << arguments.join( " " );
     }
     delete messageBoxRunningZLeafFound;
 }

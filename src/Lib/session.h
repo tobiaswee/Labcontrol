@@ -38,7 +38,7 @@ class Session : public QObject {
 public:
     const int zTreePort = 7000;                             //! The port this session's zTree instance is running on
 
-    Session( QPlainTextEdit * const argDebugMessagesTextEdit, const QString &argZTreeDataTargetPath, const int argZTreePort,
+    Session( const QString &argZTreeDataTargetPath, const int argZTreePort,
              const QString &argZTreeVersionPath, bool argPrintReceiptsForLocalClients, const QString &argAnonymousReceiptsPlaceholder,
              const QString &argLatexHeaderName );
     ~Session();
@@ -65,7 +65,6 @@ private slots:
 
 private:
     const QString anonymousReceiptsPlaceholder;                 //! Placeholder which shall be inserted for participant names if anonymous printing is desired (QString != "")
-    QPlainTextEdit * const debugMessagesTextEdit = nullptr;     //! A pointer to the programs debugMessagesTextEdit to be able to emit debugging messages
     const QString latexHeaderName;                              //! The name of the chosen LaTeX header
     const bool printReceiptsForLocalClients = true;             //! True if receipts shall be printed for local clients
     ReceiptsHandler *receiptsHandler = nullptr;                 //! For automatic creation and printing of the receipts

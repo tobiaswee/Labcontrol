@@ -17,16 +17,16 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QDebug>
 #include <QErrorMessage>
 #include <QFile>
 #include <QTextStream>
 
 #include "lablib.h"
 
-lc::Lablib::Lablib( QPlainTextEdit *argDebugMessagesTextEdit, QObject *argParent ) :
+lc::Lablib::Lablib( QObject *argParent ) :
     QObject{ argParent },
     clientIPsToClientsMap{ new QMap< QString, Client* > },
-    debugMessagesTextEdit{ argDebugMessagesTextEdit },
     labSettings{ "Economic Laboratory", "Labcontrol", this },
     occupiedPorts{ new QVector< int > },
     sessionsModel{ new SessionsModel{ this } }
@@ -77,9 +77,7 @@ lc::Lablib::~Lablib () {
 bool lc::Lablib::CheckIfUserIsAdmin() const {
     for ( const auto &s : adminUsers ) {
         if ( s == settings->localUserName ) {
-            debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] User '%1' has administrative"
-                                                        " rights." )
-                                                    .arg( settings->localUserName ) );
+            qDebug() << "User" << settings->localUserName << "has administrative rights.";
             return true;
         }
     }
@@ -97,12 +95,11 @@ void lc::Lablib::DetectInstalledZTreeVersionsAndLaTeXHeaders() {
                         .arg( settings->lcInstDir ), QMessageBox::Ok };
             messageBox.exec();
             installedLaTeXHeaders = new QStringList{ "None found" };
-            debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] No LaTeX headers could be found in '%1'." )
-                                                    .arg( settings->lcInstDir ) );
+            qDebug() << "No LaTeX headers could be found in" << settings->lcInstDir;
         } else {
             installedLaTeXHeaders = new QStringList{ laTeXDirectory.entryList() };
             installedLaTeXHeaders->replaceInStrings( "_header.tex", "" );
-            debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] LaTeX headers: %1" ).arg( installedLaTeXHeaders->join( " / " ) ) );
+            qDebug() << "LaTeX headers:" << installedLaTeXHeaders->join( " / " );
         }
     }
 }
@@ -115,7 +112,7 @@ void lc::Lablib::GotNetstatQueryResult( QStringList *argActiveZLeafConnections )
         }
     }
     else
-        debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] Netstat status query failed." ) );
+        qDebug() << "Netstat status query failed.";
     delete argActiveZLeafConnections;
 }
 
@@ -130,11 +127,11 @@ void lc::Lablib::ReadSettings() {
         QMessageBox messageBox{ QMessageBox::Information, tr( "'admin_users' not set" ),
                     tr( "The 'admin_users' variable was not set. No users will be able to conduct administrative tasks." ) };
         messageBox.exec();
-        debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] 'admin_users' was not set. No permission for administrative tasks." ) );
+        qDebug() << "'admin_users' was not set. No permission for administrative tasks.";
     } else {
         adminUsers = labSettings.value( "admin_users", "" ).toString()
                      .split( '|', QString::SkipEmptyParts, Qt::CaseInsensitive );
-        debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] 'admin_users': %1").arg( adminUsers.join(" / ") ) );
+        qDebug() << "'adminUsers':" << adminUsers.join( " / " );
     }
 
     // Read the port the ClientHelpNotificationServer shall listen on
@@ -143,35 +140,41 @@ void lc::Lablib::ReadSettings() {
         QMessageBox messageBox{ QMessageBox::Information, tr( "The ClientHelpNotificationServer will be deactivated" ),
                                tr( "The 'client_help_server_port' variable was not set or set to zero. The ClientHelpNotificationServer will be deactivated. Clients' help requests will be ignored by the server." ) };
         messageBox.exec();
-        debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] The ClientHelpNotificationServer will be deactivated since 'client_help_server_port' was not set or set to zero." ) );
+        qDebug() << "The ClientHelpNotificationServer will be deactivated since"
+                    " 'client_help_server_port' was not set or set to zero.";
     } else {
-        debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] 'client_help_server_port': %1" ).arg( QString::number( clientHelpNotificationServerPort ) ) );
+        qDebug() << "'clientHelpNotificationServerPort':" << clientHelpNotificationServerPort;
     }
 
     // Read the default receipt index for the 'CBReceipts' combobox
     if ( !labSettings.contains( "default_receipt_index" ) ) {
-        QMessageBox messageBox(QMessageBox::Information, tr( "'default_receipt_index' not set" ), tr( "The 'default_receipt_index' variable was not set. It will default to '0'." ) );
+        QMessageBox messageBox{ QMessageBox::Information, tr( "'default_receipt_index' not set" ),
+                                tr( "The 'default_receipt_index' variable was not set."
+                                    " It will default to '0'." ) };
         messageBox.exec();
-        debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] 'default_receipt_index' was not set. It will default to '0'." ) );
+        qDebug() << "'default_receipt_index' was not set. It will default to '0'.";
     }
     defaultReceiptIndex = labSettings.value( "default_receipt_index", 0 ).toInt();
-    debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] 'default_receipt_index': %1").arg( QString::number( defaultReceiptIndex ) ) );
+    qDebug() << "'defaultReceiptIndex':" << defaultReceiptIndex;
 
     // Read the initial port number
     if ( !labSettings.contains( "initial_port" ) ) {
         QMessageBox messageBox{ QMessageBox::Information, tr( "'initial_port' not set" ),
                     tr( "The 'initial_port' variable was not set. Labcontrol will default to port 7000 for new zTree instances." ) };
         messageBox.exec();
-        debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] 'initial_port' was not set. Labcontrol will default to port 7000 for new zTree instances." ) );
+        qDebug() << "'initial_port' was not set."
+                    " Labcontrol will default to port 7000 for new zTree instances.";
     }
     chosenZTreePort = labSettings.value( "initial_port", 7000 ).toInt();
-    debugMessagesTextEdit->appendPlainText( tr("[DEBUG] 'initial_port': %1" ).arg( QString::number( chosenZTreePort ) ) );
+    qDebug() << "'initial_port':" << chosenZTreePort;
 
     // Get a list of available webcams in the lab
     if ( !labSettings.contains( "webcams" ) ) {
-        QMessageBox messageBox{ QMessageBox::Information, tr( "'webcams' not set" ), tr( "The 'webcams' variable was not set. No stationary webcams will be available." ) };
+        QMessageBox messageBox{ QMessageBox::Information, tr( "'webcams' not set" ),
+                                tr( "The 'webcams' variable was not set."
+                                    " No stationary webcams will be available." ) };
         messageBox.exec();
-        debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] 'webcams' was not set. No stationary webcams will be available." ) );
+        qDebug() << "'webcams' was not set. No stationary webcams will be available.";
     }
 
     // Get the client quantity to check the value lists for clients creation for correct length
@@ -180,12 +183,13 @@ void lc::Lablib::ReadSettings() {
         QMessageBox messageBox{ QMessageBox::Information, tr( "'client_quantity' not set" ),
                     tr( "The 'client_quantity' variable was not set. The client quantity will be guessed by the amount of client ips set in 'client_ips'." ) };
         messageBox.exec();
-        debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] 'client_quantity' was not set. The client quantity will be guessed by the amount of client IPs set in 'client_ips'." ) );
+        qDebug() << "'client_quantity' was not set. The client quantity will be guessed"
+                    " by the amount of client IPs set in 'client_ips'.";
         clientQuantity = labSettings.value( "client_ips", "" ).toString().split( '/', QString::SkipEmptyParts, Qt::CaseSensitive ).length();
-        debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] 'client_quantity': %1" ).arg( QString::number( clientQuantity ) ) );
+        qDebug() << "'clientQuantity':" << clientQuantity;
     } else {
         clientQuantity = labSettings.value( "client_quantity" ).toInt();
-        debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] 'client_quantity': %1" ).arg( QString::number( clientQuantity ) ) );
+        qDebug() << "'clientQuantity':" << clientQuantity;
     }
 
     // Create all the clients in the lab
@@ -196,7 +200,7 @@ void lc::Lablib::ReadSettings() {
         messageBox.exec();
         return;
     }
-    debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] Client IPs: %1").arg( clientIPs.join( " / " ) ) );
+    qDebug() << "Client IPs:" << clientIPs.join( " / " );
     QStringList clientMACs = labSettings.value( "client_macs" ).toString().split( '|', QString::SkipEmptyParts, Qt::CaseSensitive );
     if ( clientMACs.length() != clientQuantity ) {
         QMessageBox messageBox{ QMessageBox::Critical, tr( "Wrong client mac quantity" ),
@@ -204,7 +208,7 @@ void lc::Lablib::ReadSettings() {
         messageBox.exec();
         return;
     }
-    debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] Client MACs: %1").arg( clientMACs.join( " / " ) ) );
+    qDebug() << "Client MACs:" << clientMACs.join( " / " );
     QStringList clientNames = labSettings.value( "client_names" ).toString().split( '|', QString::SkipEmptyParts, Qt::CaseSensitive );
     if ( clientNames.length() != clientQuantity ) {
         QMessageBox messageBox{ QMessageBox::Critical, tr( "Wrong client name quantity" ),
@@ -212,7 +216,7 @@ void lc::Lablib::ReadSettings() {
         messageBox.exec();
         return;
     }
-    debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] Client names: %1" ).arg( clientNames.join( " / " ) ) );
+    qDebug() << "Client names:" << clientNames.join( " / " );
     QStringList clientXPositions = labSettings.value( "client_xpos" ).toString().split( '|', QString::SkipEmptyParts, Qt::CaseSensitive );
     if ( clientXPositions.length() != clientQuantity ) {
         QMessageBox messageBox{ QMessageBox::Critical, tr( "Wrong client x positions quantity" ),
@@ -220,7 +224,7 @@ void lc::Lablib::ReadSettings() {
         messageBox.exec();
         return;
     }
-    debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] client_xpos: %1" ).arg( clientXPositions.join( " / " ) ) );
+    qDebug() << "clientXPositions:" << clientXPositions.join( " / " );
     QStringList clientYPositions = labSettings.value( "client_ypos" ).toString().split( '|', QString::SkipEmptyParts, Qt::CaseSensitive );
     if ( clientYPositions.length() != clientQuantity ) {
         QMessageBox messageBox{ QMessageBox::Critical, tr( "Wrong client y positions quantity" ),
@@ -228,11 +232,11 @@ void lc::Lablib::ReadSettings() {
         messageBox.exec();
         return;
     }
-    debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] client_ypos: %1" ).arg( clientYPositions.join( " / " ) ) );
+    qDebug() << "clientYPositions:" << clientYPositions.join( " / " );
 
     clients = new QVector< Client* >;
     for ( int i = 0; i < clientQuantity; i++ ) {
-        clients->append( new Client{ debugMessagesTextEdit, &clientIPs[ i ], &clientMACs[ i ],
+        clients->append( new Client{ &clientIPs[ i ], &clientMACs[ i ],
                                      &clientNames[ i ], clientXPositions[ i ].toUShort(),
                                      clientYPositions[ i ].toUShort() } );
 
@@ -241,31 +245,29 @@ void lc::Lablib::ReadSettings() {
 
         // Get the address of the Client instance in RAM for display
         const void *clientPointerAddress = static_cast< const void* >( ( *clientIPsToClientsMap )[ clients->last()->ip ] );
-        QString clientPointerAddressString;
-        QTextStream clientPointerAddressStream ( &clientPointerAddressString );
-        clientPointerAddressStream << clientPointerAddress;
 
         // Connect the 'Client' instance to the 'ZLEAF_RUNNING(QString client_ip)' signal
         connect( this, &Lablib::ZLEAF_RUNNING,
                  clients->last(), &Client::SetStateToZLEAF_RUNNING );
 
-        debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] Added '%1' to 'client_ips_to_clients_map': '%2'" ).arg( clients->last()->name ).arg( clientPointerAddressString ) );
+        qDebug() << "Added" << clients->last()->name
+                 << "to 'clientIPsToClientsMap':" << clientPointerAddress;
     }
 }
 
 void lc::Lablib::SetChosenZTreeDataTargetPath( const QString &argZTreeDataTargetPath ) {
     chosenZTreeDataTargetPath = argZTreeDataTargetPath;
-    debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] chosen_zTree_data_target_path set to: '%1'" ).arg( chosenZTreeDataTargetPath ) );
+    qDebug() << "'chosenZTreeDataTargetPath' set to:" << chosenZTreeDataTargetPath;
 }
 
 void lc::Lablib::SetChosenZTreePort( const int &argPort ) {
     chosenZTreePort = argPort;
-    debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] chosen_zTree_port set to: '%1'" ).arg( QString::number( chosenZTreePort ) ) );
+    qDebug() << "'chosenZTreePort' set to:" << chosenZTreePort;
 }
 
 void lc::Lablib::SetPrintReceiptsForLocalClients( const bool &argPrintReceiptsForLocalClients ) {
     PrintReceiptsForLocalClients = argPrintReceiptsForLocalClients;
-    debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] Set print_receipts_for_local_clients to : '%1'" ).arg( QString::number( PrintReceiptsForLocalClients ) ) );
+    qDebug() << "Set 'PrintReceiptsForLocalClients' to:" << PrintReceiptsForLocalClients;
 }
 
 void lc::Lablib::ShowOrsee() {
@@ -277,7 +279,7 @@ void lc::Lablib::ShowOrsee() {
     showOrseeProcess.startDetached( program, arguments );
 
     // Output message via the debug messages tab
-    debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] %1 %2" ).arg( program ).arg( arguments.join( " " ) ) );
+    qDebug() << program << arguments.join( " " );
 }
 
 void lc::Lablib::ShowPreprints() {
@@ -290,7 +292,7 @@ void lc::Lablib::ShowPreprints() {
     showPreprintsProcess.startDetached( program, arguments );
 
     // Output message via the debug messages tab
-    debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] %1 %2" ).arg( program ).arg( arguments.join( " " ) ) );
+    qDebug() << program << arguments.join( " " );
 }
 
 void lc::Lablib::StartNewZTreeInstance( QString argDataTargetPath, int argPort,
@@ -325,7 +327,7 @@ void lc::Lablib::StartNewZTreeInstance( QString argDataTargetPath, int argPort,
         }
     }
     try {
-        sessionsModel->push_back( new Session{ debugMessagesTextEdit, argDataTargetPath,
+        sessionsModel->push_back( new Session{ argDataTargetPath,
                                                argPort, argzTreeVersion,
                                                argReceiptsForLocalClients,
                                                argAnonReceiptPlaceholder,

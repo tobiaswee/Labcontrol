@@ -19,19 +19,19 @@
 
 #include <memory>
 
+#include <QDebug>
+
 #include "session.h"
 #include "settings.h"
 
 extern std::unique_ptr< lc::Settings > settings;
 
-lc::Session::Session( QPlainTextEdit * const argDebugMessagesTextEdit,
-                      const QString &argZTreeDataTargetPath, const int argZTreePort,
+lc::Session::Session( const QString &argZTreeDataTargetPath, const int argZTreePort,
                       const QString &argZTreeVersionPath, bool argPrintReceiptsForLocalClients,
                       const QString &argAnonymousReceiptsPlaceholder,
                       const QString &argLatexHeaderName ):
     zTreePort{ argZTreePort },
     anonymousReceiptsPlaceholder{ argAnonymousReceiptsPlaceholder },
-    debugMessagesTextEdit{ argDebugMessagesTextEdit },
     latexHeaderName{ argLatexHeaderName },
     printReceiptsForLocalClients{ argPrintReceiptsForLocalClients },
     zTreeDataTargetPath{ argZTreeDataTargetPath },
@@ -77,19 +77,18 @@ void lc::Session::InitializeClasses() {
         throw lcDataTargetPathCreationFailed{};
     }
     zTreeDataTargetPath.append( "/" + date_string + "-" + QString::number( zTreePort ) );
-    debugMessagesTextEdit->appendPlainText( "[DEBUG] New session's chosen_zTree_data_target_path: " + zTreeDataTargetPath );
+    qDebug() << "New session's chosen_zTree_data_target_path:" << zTreeDataTargetPath;
 
-    zTreeInstance = new ZTree{ debugMessagesTextEdit, zTreeDataTargetPath,
-                               zTreePort, zTreeVersionPath };
+    zTreeInstance = new ZTree{ zTreeDataTargetPath, zTreePort, zTreeVersionPath };
     // Only create a 'Receipts_Handler' instance, if all neccessary variables were set
     if ( latexHeaderName != "None found" && !settings->dvipsCmd.isEmpty()
          && !settings->latexCmd.isEmpty() ) {
-        receiptsHandler = new ReceiptsHandler{ debugMessagesTextEdit, zTreeDataTargetPath,
+        receiptsHandler = new ReceiptsHandler{ zTreeDataTargetPath,
                                                printReceiptsForLocalClients,
                                                anonymousReceiptsPlaceholder,
                                                latexHeaderName };
     } else {
-        debugMessagesTextEdit->appendPlainText( tr( "[DEBUG] No ReceiptsHandler instance was created." ) );
+        qDebug() << "No 'ReceiptsHandler' instance was created.";
     }
 }
 
@@ -105,7 +104,7 @@ void lc::Session::RenameWindow() {
     renameZTreeWindowProcess.setProcessEnvironment( env );
     renameZTreeWindowProcess.startDetached( settings->wmctrlCmd, arguments );
 
-    debugMessagesTextEdit->appendPlainText( "[DEBUG] Renamed window" );
+    qDebug() << "Renamed window";
 
     // emit session_started();
 }

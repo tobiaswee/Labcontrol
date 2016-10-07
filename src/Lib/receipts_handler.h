@@ -46,11 +46,11 @@ class ReceiptsHandler : public QObject {
     Q_OBJECT
 
 public:
-    explicit ReceiptsHandler( QPlainTextEdit *argDebugMessagesTextEdit, const QString &argZTreeDataTargetPath,
+    explicit ReceiptsHandler( const QString &argZTreeDataTargetPath,
                               const bool &argPrintReceiptsForLocalClients,
                               const QString &argAnonymousReceiptsPlaceholder,
                               const QString &argLatexHeaderName, QObject *argParent = nullptr );
-    explicit ReceiptsHandler( QPlainTextEdit *argDebugMessagesTextEdit, const QString &argZTreeDataTargetPath,
+    explicit ReceiptsHandler( const QString &argZTreeDataTargetPath,
                               const bool &argPrintReceiptsForLocalClients,
                               const QString &argAnonymousReceiptsPlaceholder,
                               const QString &argLatexHeaderName,
@@ -79,7 +79,6 @@ private:
 
     const QString * const anonymousReceiptsPlaceholder;         //! Placeholder which shall be inserted for participant names if anonymous printing is desired (QString != "")
     QString *dateString = nullptr;
-    QPlainTextEdit * const debugMessagesTextEdit = nullptr;     //! A pointer to the programs debug_messages_text_edit to be able to emit debugging messages
     QString expectedPaymentFileName;                            //! The name of the expected payment file
     QString expectedPaymentFilePath;                            //! The path of the expected payment file
     const QString * const latexHeaderName;                      //! The name of the chosen LaTeX header template

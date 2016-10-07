@@ -57,12 +57,11 @@ class Lablib : public QObject
 {
     Q_OBJECT
 public:
-    /** Lablib's constructor
-     *
-     * @param argDebugMessagesTextEdit      A pointer to the debug messages text edit for verbose output
-     * @param argParent                     This 'lcLablib' instance's parent QObject
+    /*!
+     * \brief Lablib's constructor
+     * \param[in] argParent This 'lcLablib' instance's parent QObject
      */
-    Lablib( QPlainTextEdit *argDebugMessagesTextEdit, QObject *argParent = nullptr );
+    Lablib( QObject *argParent = nullptr );
     /** Lablib's destructor
      */
     ~Lablib();
@@ -149,7 +148,6 @@ private:
     unsigned short int clientHelpNotificationServerPort = 0;        //! The port the help requests shall be received on
     QMap< QString, Client* > * clientIPsToClientsMap = nullptr;    //! A map container storing ip-client pairs
     QVector<Client*> *clients = nullptr;            //! A QVector storing pointers to all Client instances
-    QPlainTextEdit *debugMessagesTextEdit = nullptr;       //! This stores a pointer to the text edit in the debug tab to be able to write to it
     int defaultReceiptIndex = 0;                  //! Stores the index of the LaTeX header to be displayed by default
     QStringList *installedLaTeXHeaders = nullptr;
     QSettings labSettings;

@@ -19,13 +19,14 @@
 
 #include <memory>
 
+#include <QDebug>
+
 #include "settings.h"
 #include "ztree.h"
 
 extern std::unique_ptr< lc::Settings > settings;
 
-lc::ZTree::ZTree( QPlainTextEdit *argDebugMessagesTextEdit,
-                  const QString &argZTreeDataTargetPath, const int &argZTreePort,
+lc::ZTree::ZTree( const QString &argZTreeDataTargetPath, const int &argZTreePort,
                   const QString &argZTreeVersionPath ) {
     QString program{ settings->tasksetCmd };
     QStringList arguments{ QStringList{} << "0x00000001" << settings->wineCmd
@@ -45,7 +46,7 @@ lc::ZTree::ZTree( QPlainTextEdit *argDebugMessagesTextEdit,
              this, SLOT( ZTreeInstanceClosed() ) );
 
     // Output message via the debug messages tab
-    argDebugMessagesTextEdit->appendPlainText( "[DEBUG] " + program + " " + arguments.join( " " ) );
+    qDebug() << program << arguments.join( " " );
 }
 
 void lc::ZTree::ZTreeInstanceClosed() {

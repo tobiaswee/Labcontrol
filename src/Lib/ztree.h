@@ -36,8 +36,7 @@ class ZTree: public QObject {
     Q_OBJECT
 
 public:
-    ZTree( QPlainTextEdit *argDebugMessagesTextEdit,
-           const QString &argZTreeDataTargetPath,
+    ZTree( const QString &argZTreeDataTargetPath,
            const int &argZTreePort, const QString &argZTreeVersionPath );
 
 signals:

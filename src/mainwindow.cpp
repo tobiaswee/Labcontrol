@@ -20,6 +20,7 @@
 #include <memory>
 
 #include <QtGlobal>
+#include <QDebug>
 #include <QInputDialog>
 
 #include "mainwindow.h"
@@ -33,7 +34,7 @@ lc::MainWindow::MainWindow( QWidget *argParent ) :
     ui{ new Ui::MainWindow }
 {
     ui->setupUi( this );
-    lablib = new Lablib{ ui->PTEDebugMessages, this };
+    lablib = new Lablib{ this };
 
     LoadIconPixmaps();
 
@@ -62,8 +63,7 @@ bool lc::MainWindow::CheckIfUserIsAdmin() {
         return false;
     }
 
-    ui->PTEDebugMessages->appendPlainText( tr( "[DEBUG] The user's name is %1." )
-                                           .arg( settings->localUserName ) );
+    qDebug() << "The user's name is:" << settings->localUserName;
 
     return lablib->CheckIfUserIsAdmin();
 }
@@ -254,11 +254,11 @@ void lc::MainWindow::on_PBChooseFile_clicked() {
 
     if(file_dialog->exec()) {
         ui->LEFilePath->setText(file_dialog->selectedFiles().at(0));
-        ui->PTEDebugMessages->appendPlainText( tr( "[DEBUG] Chose file '%1' for beaming." ).arg( ui->LEFilePath->text() ) );
+        qDebug() << "Chose file" << ui->LEFilePath->text() << "for beaming.";
     }
     else {
         ui->LEFilePath->setText( tr( "File choosing cancelled" ) );
-        ui->PTEDebugMessages->appendPlainText( tr( "[DEBUG] File choosing cancelled" ) );
+        qDebug() << "File choosing cancelled";
     }
     delete file_dialog;
 }
@@ -308,7 +308,7 @@ void lc::MainWindow::on_PBExecute_clicked() {
 
     // and execute it
     if ( executeOnEveryClient ) {
-        ui->PTEDebugMessages->appendPlainText( tr( "[DEBUG] Executing command '%1' on every client." ).arg( command ) );
+        qDebug() << "Executing command" << command << "on every client.";
         for ( auto s: *clients ) {
             if ( !( s->name.contains( "backup", Qt::CaseInsensitive ) ) ) {
                 s->OpenTerminal( command, ui->RBUseUserRoot->isChecked(), pkeyPathUser,
@@ -316,7 +316,7 @@ void lc::MainWindow::on_PBExecute_clicked() {
             }
         }
     } else {
-        ui->PTEDebugMessages->appendPlainText( tr( "[DEBUG] Executing command '%1' only on chosen clients." ).arg( command ) );
+        qDebug() << "Executing command" << command << "only on chosen clients.";
         QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
         for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
             if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
@@ -342,7 +342,7 @@ void lc::MainWindow::on_PBKillLocalzLeaf_clicked() {
     local_zLeaves_are_running = false;
 
     // Output message via the debug messages tab
-    ui->PTEDebugMessages->appendPlainText( "[DEBUG] " + program );
+    qDebug() << program;
 }
 
 void lc::MainWindow::on_PBKillzLeaf_clicked() {
@@ -429,7 +429,7 @@ void lc::MainWindow::on_PBRunzLeaf_clicked() {
             ++numberOfSelectedClients;
         }
     }
-    ui->PTEDebugMessages->appendPlainText( tr( "[DEBUG] %1 clients are selected.").arg( QString::number( numberOfSelectedClients ) ) );
+    qDebug() << numberOfSelectedClients << "clients are selected.";
     if ( numberOfSelectedClients > 1 ) {
         QMessageBox messageBox{ QMessageBox::Information, tr( "Too many clients selected" ), tr( "There are too many clients selected in the table view on the left. Please select only one." ), QMessageBox::Ok, this };
         messageBox.exec();
@@ -511,7 +511,7 @@ void lc::MainWindow::on_PBStartLocalzLeaf_clicked() {
         local_zLeaves_are_running = true;
 
         // Output message via the debug messages tab
-        ui->PTEDebugMessages->appendPlainText( "[DEBUG] " + program + " " +  arguments.join( " " ) );
+        qDebug() <<  program << arguments.join( " " );
     }
     delete messageBox;
 }
@@ -538,7 +538,7 @@ void lc::MainWindow::on_PBStartzLeaf_clicked() {
 }
 
 void lc::MainWindow::on_PBStartzTree_clicked() {
-    SessionStarter *sessionStarter = new SessionStarter{ lablib, ui->PTEDebugMessages, this };
+    SessionStarter *sessionStarter = new SessionStarter{ lablib, this };
     sessionStarter->setWindowFlags( Qt::Window );
     sessionStarter->show();
     connect( sessionStarter, &SessionStarter::SessionRequested,
@@ -598,7 +598,7 @@ void lc::MainWindow::on_PBViewDesktop_clicked() {
 
 void lc::MainWindow::on_RBUseLocalUser_toggled(bool checked) {
     if ( checked ) {
-        ui->PTEDebugMessages->appendPlainText( tr( "[DEBUG] RBUseLocalUser got toggled." ) );
+        qDebug() << "'RBUseLocalUser' got toggled.";
     }
 }
 

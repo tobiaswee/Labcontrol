@@ -19,15 +19,16 @@
 
 #include <memory>
 
+#include <QDebug>
+
 #include "sessionstarter.h"
 #include "ui_sessionstarter.h"
 #include "Lib/settings.h"
 
 extern std::unique_ptr< lc::Settings > settings;
 
-lc::SessionStarter::SessionStarter( Lablib *argLablib, QPlainTextEdit *argDebugMessagesTextEdit, QWidget *parent ) :
+lc::SessionStarter::SessionStarter( Lablib *argLablib, QWidget *parent ) :
     QWidget{ parent },
-    debugMessagesTextEdit { argDebugMessagesTextEdit },
     lablib{ argLablib },
     ui{ new Ui::SessionStarter }
 {
@@ -131,7 +132,8 @@ void lc::SessionStarter::SetupWidgets() {
         if ( laTeXHeaders->length() - 1 < lablib->GetDefaultReceiptIndex() ) {
             QMessageBox::information( this, tr( "'default_receipt_index' to high" ),
                                       tr( "'default_receipt_index' was set to big. The combo box containing the receipt templates will default to the first entry." ) );
-            debugMessagesTextEdit->appendPlainText( tr("'default_receipt_index' was set to big. The combo box containing the receipt templates will default to the first entry." ) );
+            qDebug() << "'default_receipt_index' was set to big."
+                        " The combo box containing the receipt templates will default to the first entry.";
             ui->CBReceiptsHeader->setCurrentIndex( 0 );
         } else {
             ui->CBReceiptsHeader->setCurrentIndex( lablib->GetDefaultReceiptIndex() );

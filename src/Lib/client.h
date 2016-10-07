@@ -61,7 +61,7 @@ public:
       @param argYPosition                   The client's y coordinate in the lab
       @param argSettingsItems               A QVector storing many needed data QStrings
     */
-    Client( QPlainTextEdit *argDebugMessagesTextEditPtr, QString *argIP, QString *argMAC,
+    Client( QString *argIP, QString *argMAC,
             QString *argName, unsigned short int argXPosition, unsigned short int argYPosition );
     //! Client's destructor
     ~Client();
@@ -132,7 +132,6 @@ public:
                      unsigned short int argPort, const QString * const argFakeName = nullptr );
 
 private:
-    QPlainTextEdit * const debugMessagesTextEdit = nullptr;
     unsigned short int protectedCycles;
     ClientPinger *pinger = nullptr;
     QThread pingerThread;
