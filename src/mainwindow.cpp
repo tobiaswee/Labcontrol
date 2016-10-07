@@ -605,6 +605,8 @@ void lc::MainWindow::on_RBUseLocalUser_toggled(bool checked) {
 }
 
 void lc::MainWindow::SetupWidgets() {
+    // Set the correct initial port for the
+    ui->SBzLeafPort->setValue( settings->GetChosenZTreePort() );
     // Fill the 'CBClientNames' with possible client names and the 'TVClients' with the clients
     const QVector< Client* > *clients = lablib->GetClients();
     if ( !( clients == nullptr ) ) {

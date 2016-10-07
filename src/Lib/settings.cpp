@@ -1,3 +1,22 @@
+/*
+ * Copyright 2014-2016 Markus Prasser
+ *
+ * This file is part of Labcontrol.
+ *
+ *  Labcontrol is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Labcontrol is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <QDebug>
 #include <QDir>
 #include <QFile>
@@ -7,6 +26,7 @@
 
 lc::Settings::Settings( const QSettings &argSettings, QObject *argParent ) :
     QObject{ argParent },
+    defaultReceiptIndex{ GetDefaultReceiptIndex( argSettings ) },
     browserCmd{ ReadSettingsItem( "browser_command",
                                   "Opening ORSEE in a browser will not work.",
                                   argSettings, true ) },
@@ -97,12 +117,25 @@ lc::Settings::Settings( const QSettings &argSettings, QObject *argParent ) :
     zTreeInstDir{ ReadSettingsItem( "ztree_installation_directory",
                                     "zTree will not be available.",
                                     argSettings, true ) },
+    adminUsers{ GetAdminUsers( argSettings ) },
+    installedLaTeXHeaders{ DetectInstalledLaTeXHeaders() },
     installedZTreeVersions{ DetectInstalledzTreeVersions() },
+    clientHelpNotificationServerPort{ GetClientHelpNotificationServerPort( argSettings ) },
+    chosenzTreePort{ GetInitialPort( argSettings ) },
     localzLeafName{ ReadSettingsItem( "local_zLeaf_name",
                                       "The local zLeaf default name will default to 'local'.",
                                       argSettings, false ) }
 {
-    qDebug() << "The following webcams where loaded:" << webcams;
+    // Let the local zLeaf name default to 'local' if none was given in the settings
+    if ( localzLeafName.isEmpty() ) {
+        qDebug() << "'local_zLeaf_name' was not set, defaulting to 'local'";
+        localzLeafName = "local";
+    }
+    if ( webcams.isEmpty() ) {
+        qDebug() << "'webcams' was not properly set. No stationary webcams will be available.";
+    } else {
+        qDebug() << "The following webcams where loaded:" << webcams;
+    }
     qDebug() << "Detected z-Tree versions" << installedZTreeVersions;
 }
 
@@ -115,6 +148,24 @@ bool lc::Settings::CheckPathAndComplain( const QString &argPath, const QString &
     }
     qDebug() << argVariableName << ":" << argPath;
     return true;
+}
+
+QStringList lc::Settings::DetectInstalledLaTeXHeaders() const {
+    QStringList tempLaTeXHeaders{ "None found" };
+    // Detect the installed LaTeX headers
+    if ( !lcInstDir.isEmpty() ) {
+        QDir laTeXDirectory{ lcInstDir, "*_header.tex", QDir::Name,
+                             QDir::CaseSensitive | QDir::Files | QDir::Readable };
+        if ( !laTeXDirectory.exists() || laTeXDirectory.entryList().isEmpty() ) {
+            qDebug() << "Receipts printing will not work. No LaTeX headers could be found in"
+                     << lcInstDir;
+        } else {
+            tempLaTeXHeaders = laTeXDirectory.entryList();
+            tempLaTeXHeaders.replaceInStrings( "_header.tex", "" );
+            qDebug() << "LaTeX headers:" << tempLaTeXHeaders.join( " / " );
+        }
+    }
+    return tempLaTeXHeaders;
 }
 
 QStringList lc::Settings::DetectInstalledzTreeVersions() const {
@@ -131,6 +182,59 @@ QStringList lc::Settings::DetectInstalledzTreeVersions() const {
         }
     }
     return tempInstzTreeVersions;
+}
+
+QStringList lc::Settings::GetAdminUsers( const QSettings &argSettings ) {
+    // Read the list of users with administrative rights
+    if ( !argSettings.contains( "admin_users" ) ) {
+        qDebug() << "The 'admin_users' variable was not set."
+                    " No users will be able to conduct administrative tasks.";
+        return QStringList{};
+    } else {
+        QStringList adminUsers{ argSettings.value( "admin_users", "" ).toString()
+                                .split( '|', QString::SkipEmptyParts, Qt::CaseInsensitive ) };
+        qDebug() << "'adminUsers':" << adminUsers.join( " / " );
+        return adminUsers;
+    }
+    return QStringList{};
+}
+
+quint16 lc::Settings::GetClientHelpNotificationServerPort( const QSettings &argSettings ) {
+    // Read the port the ClientHelpNotificationServer shall listen on
+    quint16 clientHelpNotificationServerPort = argSettings.value( "client_help_server_port",
+                                                                  0 ).toUInt();
+    if ( !clientHelpNotificationServerPort ) {
+        qDebug() << "The 'client_help_server_port' variable was not set or set to zero."
+                    " The ClientHelpNotificationServer will be deactivated therefore."
+                    " Clients' help requests will be ignored by the server.";
+        return 0;
+    } else {
+        qDebug() << "'clientHelpNotificationServerPort':" << clientHelpNotificationServerPort;
+        return clientHelpNotificationServerPort;
+    }
+    return 0;
+}
+
+int lc::Settings::GetDefaultReceiptIndex( const QSettings &argSettings ) {
+    // Read the default receipt index for the 'CBReceipts' combobox
+    if ( !argSettings.contains( "default_receipt_index" ) ) {
+        qDebug() << "'default_receipt_index' was not set. It will default to '0'.";
+        return 0;
+    }
+    int tempIndex = argSettings.value( "default_receipt_index", 0 ).toInt();
+    qDebug() << "'defaultReceiptIndex':" << tempIndex;
+    return tempIndex;
+}
+
+int lc::Settings::GetInitialPort( const QSettings &argSettings ) {
+    // Read the initial port number
+    if ( !argSettings.contains( "initial_port" ) ) {
+        qDebug() << "The 'initial_port' variable was not set."
+                    " Labcontrol will default to port 7000 for new zTree instances.";
+    }
+    int initialPort = argSettings.value( "initial_port", 7000 ).toInt();
+    qDebug() << "'initial_port':" << initialPort;
+    return initialPort;
 }
 
 QString lc::Settings::GetLocalUserName() {

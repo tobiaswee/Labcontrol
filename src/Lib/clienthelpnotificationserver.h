@@ -33,7 +33,7 @@ class ClientHelpNotificationServer : public QObject {
     Q_OBJECT
 public:
     explicit ClientHelpNotificationServer( const QMap< QString, Client* > * const argClientIPsToClientsMap,
-            const QString &argServerIP, const unsigned short int &argServerPort, QObject *argParent = nullptr );
+            QObject *argParent = nullptr );
 
 signals:
 
@@ -44,7 +44,6 @@ private:
     QTcpServer *helpMessageServer = nullptr;
     const QHostAddress hostAddress;
     QNetworkSession *networkSession = nullptr;
-    const unsigned short int serverPort = 0;
 
 private slots:
     void OpenSession();

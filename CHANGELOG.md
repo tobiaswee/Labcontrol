@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 ### Changed
 ### Fixed
+- Initial port value not correctly set for z-Leaves started from main panel
 ### Removed
 - Never properly implemented client webcam functionality
 

@@ -17,14 +17,18 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
+
 #include "clienthelpnotificationserver.h"
+#include "settings.h"
+
+extern std::unique_ptr< lc::Settings > settings;
 
 lc::ClientHelpNotificationServer::ClientHelpNotificationServer( const QMap< QString, Client* > * const argClientIPsToClientsMap,
-                                const QString &argServerIP, const unsigned short int &argServerPort, QObject *argParent ) :
+                                QObject *argParent ) :
     QObject{ argParent },
     clientIPsToClientsMap{ argClientIPsToClientsMap },
-    hostAddress{ argServerIP },
-    serverPort{ argServerPort }
+    hostAddress{ settings->serverIP }
 {
     QNetworkConfigurationManager manager;
     if ( manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired ) {
@@ -69,7 +73,7 @@ void lc::ClientHelpNotificationServer::OpenSession() {
     }
 
     helpMessageServer = new QTcpServer{ this };
-    if ( !helpMessageServer->listen( hostAddress, serverPort ) ) {
+    if ( !helpMessageServer->listen( hostAddress, settings->clientHelpNotificationServerPort ) ) {
         QMessageBox messageBox{ QMessageBox::Critical, tr( "Unable to start the client help notification server" ),
                     tr( "Unable to start the client help notification server.\nThe following error occurred:\n\n%1." ).arg( helpMessageServer->errorString() ), QMessageBox::Ok };
         messageBox.exec();

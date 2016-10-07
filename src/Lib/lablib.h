@@ -71,21 +71,11 @@ public:
      * \return True, if the account has administrative rights; false, otherwise
      */
     bool CheckIfUserIsAdmin() const;
-    /*! Returns the currently set port number of zTree
-     *
-     * @return The currently set port number for zTree
-     */
-    int GetChosenZTreePort() const { return chosenZTreePort; }
     /** Returns a pointer to the clients known to Lablib
      *
      * @return A QVector of pointers to the Client class instances
      */
     QVector< Client* > *GetClients () const { return clients; }
-    /** Returns the default receipt index for the 'CBReceipts' combobox
-     *
-     * @return The default receipt index for the 'CBReceipts' combobox
-     */
-    int GetDefaultReceiptIndex () const { return defaultReceiptIndex; }
     /** Returns a pointer to the QString storing the default name for local zLeafs
      *
      * @return A pointer to the QString storing the default name for local zLeafs
@@ -106,13 +96,6 @@ public:
      * @return True if receipts for local clients shall be printed
      */
     bool GetPrintReceiptsForLocalClients() const { return PrintReceiptsForLocalClients; }
-    /** Returns a QStringList containing all available LaTeX headers of this system
-     *
-     * @return A pointer to a QStringList containing all available LaTeX headers
-     */
-    QStringList *GetInstalledLaTeXHeaders () const {return installedLaTeXHeaders; }
-    void SetChosenZTreeDataTargetPath( const QString &argZTreeDataTargetPath );
-    void SetChosenZTreePort( const int &argPort );
     //! Sets the default name of local zLeaf instances
     /**
      * @param argName   The default name local zLeaf instances shall have
@@ -141,15 +124,9 @@ private:
      */
     void ReadSettings();
 
-    QStringList adminUsers; //! Stores the names of all user accounts with administrative rights
-    QString chosenZTreeDataTargetPath;
-    int chosenZTreePort = 7000;               //! Stores the currently chosen port for new zTree instances
     ClientHelpNotificationServer *clientHelpNotificationServer = nullptr;    //! A server to retrieve help requests from the clients
-    unsigned short int clientHelpNotificationServerPort = 0;        //! The port the help requests shall be received on
     QMap< QString, Client* > * clientIPsToClientsMap = nullptr;    //! A map container storing ip-client pairs
     QVector<Client*> *clients = nullptr;            //! A QVector storing pointers to all Client instances
-    int defaultReceiptIndex = 0;                  //! Stores the index of the LaTeX header to be displayed by default
-    QStringList *installedLaTeXHeaders = nullptr;
     QSettings labSettings;
     NetstatAgent *netstatAgent = nullptr;           //! Tries to detect active zLeaf connections from the clients
     QThread netstatThread;
