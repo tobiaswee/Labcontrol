@@ -77,7 +77,7 @@ void lc::Client::BeamFile( const QString &argFileToBeam, const QString * const a
 
     QStringList arguments;
     arguments << "-2" << "-i" << *argPublickeyPathUser << "-l" << "32768" << "-r"
-              << argFileToBeam << QString{ *argUserNameOnClients + "@" + name + ":media4ztree" };
+              << argFileToBeam << QString{ *argUserNameOnClients + "@" + ip + ":media4ztree" };
 
     // Start the process
     QProcess beamFileProcess;
@@ -109,7 +109,7 @@ void lc::Client::Boot( const QString &argNetworkBroadcastAddress ) {
 void lc::Client::DeactiveScreensaver( const QString &argPublickeyPathUser,
                                       const QString &argUserNameOnClients ) {
     QStringList arguments;
-    arguments << "-i" << argPublickeyPathUser << QString{ argUserNameOnClients + "@" + name }
+    arguments << "-i" << argPublickeyPathUser << QString{ argUserNameOnClients + "@" + ip }
               << settings->xsetCmd << "-display" << ":0.0" << "dpms" << "force" <<  "on";
 
     // Start the process
@@ -141,7 +141,7 @@ void lc::Client::GotStatusChanged( state_t argState ) {
 void lc::Client::KillZLeaf( const QString &argPublickeyPathUser,
                             const QString &argUserNameOnClients ) {
     QStringList arguments;
-    arguments << "-i" << argPublickeyPathUser << QString{ argUserNameOnClients + "@" + name }
+    arguments << "-i" << argPublickeyPathUser << QString{ argUserNameOnClients + "@" + ip }
               << QString{ settings->lcInstDir + "/scripts/kill_zLeaf_labcontrol2.sh" };
 
     // Start the process
@@ -161,7 +161,7 @@ void lc::Client::OpenFilesystem( const QString * const argUserToBeUsed ) {
     if ( state < state_t::RESPONDING ) {
         return;
     }
-    QStringList arguments = QStringList{} << QString{ "sftp://" + *argUserToBeUsed + "@" + name };
+    QStringList arguments = QStringList{} << QString{ "sftp://" + *argUserToBeUsed + "@" + ip };
 
     QProcess openFilesystemProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
@@ -183,10 +183,10 @@ void lc::Client::OpenTerminal( const QString &argCommand, const bool &argOpenAsR
         if ( !argOpenAsRoot ) {
             *arguments << "--title" << name << "-e" <<
                           QString{ settings->sshCmd + " -i " + argPublickeyPathUser + " "
-                                   + argUserNameOnClients + "@" + name };
+                                   + argUserNameOnClients + "@" + ip };
         } else {
             *arguments << "--title" << name << "-e" <<
-                          QString{ settings->sshCmd + " -i " + argPublickeyPathUser + " " + "root@" + name };
+                          QString{ settings->sshCmd + " -i " + argPublickeyPathUser + " " + "root@" + ip };
         }
 
         if ( settings->termEmulCmd.contains( "konsole" ) ) {
@@ -233,7 +233,7 @@ void lc::Client::SetStateToZLEAF_RUNNING( QString argClientIP ) {
 
 void lc::Client::ShowDesktop() {
     QStringList arguments;
-    arguments << name;
+    arguments << ip;
 
     QProcess showDesktopProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
@@ -249,7 +249,7 @@ void lc::Client::Shutdown( const QString &argPublickeyPathUser, const QString &a
         return;
     }
     QStringList arguments;
-    arguments << "-i" << argPublickeyPathUser << QString{ argUserNameOnClients  + "@" + name } << "sudo shutdown -P now";
+    arguments << "-i" << argPublickeyPathUser << QString{ argUserNameOnClients  + "@" + ip } << "sudo shutdown -P now";
 
     // Start the process
     QProcess shutdownProcess;
@@ -289,16 +289,16 @@ void lc::Client::StartZLeaf( const QString &argPublickeyPathUser,
     if ( ( messageBoxRunningZLeafFound != nullptr && messageBoxRunningZLeafFound->clickedButton() == messageBoxRunningZLeafFound->button( QMessageBox::Yes ) ) || state != state_t::ZLEAF_RUNNING ) {
         QStringList arguments;
         if ( argFakeName  == nullptr && argPort == 7000 ) {
-            arguments << "-i" << argPublickeyPathUser << QString{ argUserNameOnClients + "@" + name }
+            arguments << "-i" << argPublickeyPathUser << QString{ argUserNameOnClients + "@" + ip }
                       << "DISPLAY=:0.0" << QString{ "/home/" + argUserNameOnClients + "/start_zLeaf_labcontrol2.sh" }
                       << *argZTreeVersion << argServerIP;
         } else {
             if ( argFakeName  == nullptr ) {
-                arguments << "-i" << argPublickeyPathUser << QString{ argUserNameOnClients + "@" + name }
+                arguments << "-i" << argPublickeyPathUser << QString{ argUserNameOnClients + "@" + ip }
                           << "DISPLAY=:0.0" << QString{ "/home/" + argUserNameOnClients + "/start_zLeaf_labcontrol2.sh" }
                           << *argZTreeVersion << argServerIP << QString::number( static_cast< int >( argPort ) - 7000 );
             } else {
-                arguments << "-i" << argPublickeyPathUser << QString{ argUserNameOnClients + "@" + name }
+                arguments << "-i" << argPublickeyPathUser << QString{ argUserNameOnClients + "@" + ip }
                           << "DISPLAY=:0.0" << QString{ "/home/" + argUserNameOnClients + "/start_zLeaf_labcontrol2.sh" }
                           << *argZTreeVersion << argServerIP << QString::number( static_cast< int >( argPort ) - 7000 ) << *argFakeName ;
             }
