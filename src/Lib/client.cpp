@@ -138,11 +138,11 @@ void lc::Client::GotStatusChanged( state_t argState ) {
     qDebug() << name << "status changed to:" << static_cast< unsigned short int >( argState );
 }
 
-void lc::Client::KillZLeaf( const QString &argPublickeyPathUser,
-                            const QString &argUserNameOnClients ) {
+void lc::Client::KillZLeaf() {
     QStringList arguments;
-    arguments << "-i" << argPublickeyPathUser << QString{ argUserNameOnClients + "@" + ip }
-              << QString{ settings->lcInstDir + "/scripts/kill_zLeaf_labcontrol2.sh" };
+    arguments << "-i" << settings->pkeyPathUser
+              << QString{ settings->userNameOnClients + "@" + ip }
+              << settings->killallCmd << "-I" << "-q" << "zleaf.exe";
 
     // Start the process
     QProcess killZLeafProcess;
@@ -267,40 +267,51 @@ void lc::Client::Shutdown( const QString &argPublickeyPathUser, const QString &a
     GotStatusChanged( state_t::SHUTTING_DOWN );
 }
 
-void lc::Client::StartZLeaf( const QString &argPublickeyPathUser,
-                             const QString &argUserNameOnClients,
-                             const QString * const argZTreeVersion,
-                             const QString &argServerIP, unsigned short int argPort,
+void lc::Client::StartZLeaf( const QString * const argZTreeVersion, unsigned short int argPort,
                              const QString * const argFakeName ) {
     if ( state < state_t::RESPONDING ) {
         return;
     }
 
     // Create a QMessageBox for user interaction if there is already a zLeaf running
-    QMessageBox *messageBoxRunningZLeafFound = nullptr;
+    std::unique_ptr< QMessageBox > messageBoxRunningZLeafFound;
     if ( state == state_t::ZLEAF_RUNNING ) {
-        messageBoxRunningZLeafFound = new QMessageBox{ QMessageBox::Warning, "Running zLeaf found",
-                QString{ "There is already a zLeaf running on " + name + "." }, QMessageBox::No | QMessageBox::Yes };
-        messageBoxRunningZLeafFound->setInformativeText( "Do you want to start a zLeaf on client " + name + " nonetheless?" );
+        messageBoxRunningZLeafFound.reset( new QMessageBox{ QMessageBox::Warning, "Running zLeaf found",
+                QString{ "There is already a zLeaf running on " + name + "." },
+                QMessageBox::No | QMessageBox::Yes } );
+        messageBoxRunningZLeafFound->setInformativeText( "Do you want to start a zLeaf on client "
+                                                         + name + " nonetheless?" );
         messageBoxRunningZLeafFound->setDefaultButton( QMessageBox::No );
         messageBoxRunningZLeafFound->exec();
     }
 
-    if ( ( messageBoxRunningZLeafFound != nullptr && messageBoxRunningZLeafFound->clickedButton() == messageBoxRunningZLeafFound->button( QMessageBox::Yes ) ) || state != state_t::ZLEAF_RUNNING ) {
+    if ( ( messageBoxRunningZLeafFound.get() != nullptr
+           && messageBoxRunningZLeafFound->clickedButton()
+              == messageBoxRunningZLeafFound->button( QMessageBox::Yes ) )
+         || state != state_t::ZLEAF_RUNNING ) {
         QStringList arguments;
         if ( argFakeName  == nullptr && argPort == 7000 ) {
-            arguments << "-i" << argPublickeyPathUser << QString{ argUserNameOnClients + "@" + ip }
-                      << "DISPLAY=:0.0" << QString{ "/home/" + argUserNameOnClients + "/start_zLeaf_labcontrol2.sh" }
-                      << *argZTreeVersion << argServerIP;
+            arguments << "-i" << settings->pkeyPathUser
+                      << QString{ settings->userNameOnClients + "@" + ip }
+                      << "DISPLAY=:0.0" << settings->tasksetCmd << "0x00000001" << settings->wineCmd
+                      << QString{ settings->zTreeInstDir + "/zTree_" + *argZTreeVersion + "/zleaf.exe" }
+                      << "/server" << settings->serverIP;
         } else {
             if ( argFakeName  == nullptr ) {
-                arguments << "-i" << argPublickeyPathUser << QString{ argUserNameOnClients + "@" + ip }
-                          << "DISPLAY=:0.0" << QString{ "/home/" + argUserNameOnClients + "/start_zLeaf_labcontrol2.sh" }
-                          << *argZTreeVersion << argServerIP << QString::number( static_cast< int >( argPort ) - 7000 );
+                arguments << "-i" << settings->pkeyPathUser
+                          << QString{ settings->userNameOnClients + "@" + ip }
+                          << "DISPLAY=:0.0" << settings->tasksetCmd << "0x00000001" << settings->wineCmd
+                          << QString{ settings->zTreeInstDir + "/zTree_" + *argZTreeVersion + "/zleaf.exe" }
+                          << "/server" << settings->serverIP << "/channel"
+                          << QString::number( static_cast< int >( argPort ) - 7000 );
             } else {
-                arguments << "-i" << argPublickeyPathUser << QString{ argUserNameOnClients + "@" + ip }
-                          << "DISPLAY=:0.0" << QString{ "/home/" + argUserNameOnClients + "/start_zLeaf_labcontrol2.sh" }
-                          << *argZTreeVersion << argServerIP << QString::number( static_cast< int >( argPort ) - 7000 ) << *argFakeName ;
+                arguments << "-i" << settings->pkeyPathUser
+                          << QString{ settings->userNameOnClients + "@" + ip }
+                          << "DISPLAY=:0.0" << settings->tasksetCmd << "0x00000001" << settings->wineCmd
+                          << QString{ settings->zTreeInstDir + "/zTree_" + *argZTreeVersion + "/zleaf.exe" }
+                          << "/server" << settings->serverIP << "/channel"
+                          << QString::number( static_cast< int >( argPort ) - 7000 )
+                          << "/name" << *argFakeName;
             }
         }
 
@@ -313,5 +324,4 @@ void lc::Client::StartZLeaf( const QString &argPublickeyPathUser,
         // Output message via the debug messages tab
         qDebug() << settings->sshCmd << arguments.join( " " );
     }
-    delete messageBoxRunningZLeafFound;
 }

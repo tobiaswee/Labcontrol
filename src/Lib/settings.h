@@ -23,6 +23,7 @@ public:
     const QString browserCmd;
     const QString dvipsCmd;
     const QString fileMngr;
+    const QString killallCmd;
     const QString latexCmd;
     const QString lcInstDir;
     const QString localUserName;

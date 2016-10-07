@@ -89,12 +89,10 @@ public:
       @return The current state of the client
     */
     state_t GetClientState() const { return state; }
-    //! Kills all processes 'zleaf.exe' on the client
     /*!
-     @param argPublickeyPathUser            The path to the publickey for user login on the clients
-     @param argUserNameOnClients            The name of the user on the clients
-    */
-    void KillZLeaf( const QString &argPublickeyPathUser, const QString &argUserNameOnClients );
+     * \brief Kills all processes 'zleaf.exe' on the client
+     */
+    void KillZLeaf();
     //! Opens a file manager for the client's file system
     /*!
      @param argUserToBeUsed                 The name of the user on the clients
@@ -120,16 +118,12 @@ public:
     void Shutdown( const QString &argPublickeyPathUser, const QString &argUserNameOnClients );
     //! Starts a zLeaf instance on the client
     /*!
-     @param argPublickeyPathUser            The path to the publickey for user login on the clients
-     @param argUserNameOnClients            The name of the user on the clients
      @param argZTreeVersion                 The version of zLeaf which shall be started
-     @param argServerIP                     The ip of the server which is running zTree
      @param argPort                         The port zTree ist listening on on the server
      @param argFakeName                     The name the zLeaf instance shall have (if not the default, which is the hostname of the client)
     */
-    void StartZLeaf( const QString &argPublickeyPathUser, const QString &argUserNameOnClients,
-                     const QString * const argZTreeVersion, const QString &argServerIP,
-                     unsigned short int argPort, const QString * const argFakeName = nullptr );
+    void StartZLeaf( const QString * const argZTreeVersion, unsigned short int argPort,
+                     const QString * const argFakeName = nullptr );
 
 private:
     unsigned short int protectedCycles;

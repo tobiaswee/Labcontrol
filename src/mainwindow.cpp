@@ -69,6 +69,11 @@ bool lc::MainWindow::CheckIfUserIsAdmin() {
 }
 
 void lc::MainWindow::DisableDisfunctionalWidgets() {
+    // Disable all z-Leaf killing related buttons if the 'killall' command is not available
+    if ( settings->killallCmd.isEmpty() ) {
+        ui->PBKillLocalzLeaf->setEnabled( false );
+        ui->PBKillzLeaf->setEnabled( false );
+    }
     // Disable all functions relying on the labcontrol installation directory if it is not available
     if ( settings->lcInstDir.isEmpty() ) {
         ui->CBClientNames->setEnabled( false );
@@ -331,18 +336,20 @@ void lc::MainWindow::on_PBExecute_clicked() {
 }
 
 void lc::MainWindow::on_PBKillLocalzLeaf_clicked() {
-    QString program{ settings->lcInstDir + "/scripts/kill_zLeaf_labcontrol2.sh" };
+    QString program{ settings->killallCmd };
+    QStringList arguments;
+    arguments << "-I" << "-q" << "zleaf.exe";
 
     // Start the process
-    QProcess kill_zleaf_process;
+    QProcess killLocalzLeafProc;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    kill_zleaf_process.setProcessEnvironment( env );
-    kill_zleaf_process.startDetached( program );
+    killLocalzLeafProc.setProcessEnvironment( env );
+    killLocalzLeafProc.startDetached( program, arguments );
 
     local_zLeaves_are_running = false;
 
     // Output message via the debug messages tab
-    qDebug() << program;
+    qDebug() << program << arguments;
 }
 
 void lc::MainWindow::on_PBKillzLeaf_clicked() {
@@ -350,7 +357,7 @@ void lc::MainWindow::on_PBKillzLeaf_clicked() {
     for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
             Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            client->KillZLeaf( settings->pkeyPathUser, settings->userNameOnClients );
+            client->KillZLeaf();
         }
     }
 }
@@ -439,8 +446,7 @@ void lc::MainWindow::on_PBRunzLeaf_clicked() {
         for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
             if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
                 Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-                client->StartZLeaf( settings->pkeyPathUser, settings->userNameOnClients,
-                                    zLeafVersion, settings->serverIP, ui->SBzLeafPort->value(),
+                client->StartZLeaf( zLeafVersion, ui->SBzLeafPort->value(),
                                     fakeName );
             }
         }
@@ -529,8 +535,7 @@ void lc::MainWindow::on_PBStartzLeaf_clicked() {
     for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
             Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            client->StartZLeaf( settings->pkeyPathUser, settings->userNameOnClients,
-                                zLeafVersion, settings->serverIP, ui->SBzLeafPort->value(),
+            client->StartZLeaf( zLeafVersion, ui->SBzLeafPort->value(),
                                 nullptr );
         }
     }
