@@ -54,7 +54,6 @@ void lc::ClientPinger::doPing() {
 
     if ( newState != state ) {
         state = newState;
-        // emit ping_string(new QString(name + *ping_command + " " + ping_arguments->join(" ")));
         emit PingFinished( newState );
     }
 }

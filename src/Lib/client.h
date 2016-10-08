@@ -121,7 +121,6 @@ private:
     QTimer *pingTimer = nullptr;                       //! QTimer used to trigger pings by pinger's ClientPinger instance
 
 private slots:
-    // void display_ping_string(QString *ping_string);
     void GotStatusChanged( state_t argState );
     void RequestAPing();
 

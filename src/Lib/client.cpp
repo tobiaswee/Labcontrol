@@ -46,7 +46,6 @@ lc::Client::Client( const QString &argIP, const QString &argMAC, const QString &
                  pinger, &ClientPinger::doPing );
         connect( pinger, &ClientPinger::PingFinished,
                  this, &Client::GotStatusChanged );
-        // connect(pinger, &ClientPinger::ping_string, this, &Client::display_ping_string);
         pingerThread.start();
 
         pingTimer = new QTimer{ this };
@@ -121,11 +120,6 @@ void lc::Client::DeactiveScreensaver() {
     qDebug() << settings->sshCmd << arguments.join( " " );
 }
 
-// void Client::display_ping_string(QString *ping_string) {
-//     debug_messages_text_edit->appendPlainText("[DEBUG] " + *ping_string);
-//     delete ping_string;
-// }
-
 void lc::Client::GotStatusChanged( state_t argState ) {
     if ( ( protectedCycles > 0 ) && ( state == state_t::BOOTING ) && ( argState != state_t::RESPONDING ) ) {
         return;
@@ -183,7 +177,8 @@ void lc::Client::OpenTerminal( const QString &argCommand, const bool &argOpenAsR
                                    + settings->userNameOnClients + "@" + ip };
         } else {
             *arguments << "--title" << name << "-e" <<
-                          QString{ settings->sshCmd + " -i " + settings->pkeyPathRoot + " " + "root@" + ip };
+                          QString{ settings->sshCmd + " -i " + settings->pkeyPathRoot
+                                   + " " + "root@" + ip };
         }
 
         if ( settings->termEmulCmd.contains( "konsole" ) ) {
@@ -242,7 +237,8 @@ void lc::Client::ShowDesktop() {
 }
 
 void lc::Client::Shutdown() {
-    if ( state == state_t::NOT_RESPONDING || state == state_t::BOOTING || state == state_t::SHUTTING_DOWN ) {
+    if ( state == state_t::NOT_RESPONDING || state == state_t::BOOTING
+         || state == state_t::SHUTTING_DOWN ) {
         return;
     }
     QStringList arguments;

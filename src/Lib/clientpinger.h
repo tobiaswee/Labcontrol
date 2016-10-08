@@ -61,7 +61,6 @@ private:
 
 signals:
     //! This signal was just implemented for testing purposes
-    // void ping_string(QString *string);
     //! This signal is emitted if the ping finished and the state of the client changed
     void PingFinished( state_t state );
 };
