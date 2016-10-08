@@ -6,32 +6,26 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>512</width>
-    <height>256</height>
+    <width>640</width>
+    <height>576</height>
    </rect>
   </property>
-  <property name="minimumSize">
-   <size>
-    <width>512</width>
-    <height>256</height>
-   </size>
-  </property>
   <property name="windowTitle">
-   <string>Session Starter</string>
+   <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="VLSessionStarter">
    <item>
-    <layout class="QHBoxLayout" name="HLForBothGroupBoxes">
+    <layout class="QHBoxLayout" name="HLGroupBoxes">
      <item>
       <widget class="QGroupBox" name="GBzTree">
        <property name="title">
         <string>z-Tree</string>
        </property>
-       <layout class="QVBoxLayout" name="VLzTreeGroupBox">
+       <layout class="QVBoxLayout" name="VLzTree">
         <item>
-         <widget class="QLabel" name="LzTreeVersion">
+         <widget class="QLabel" name="label">
           <property name="toolTip">
-           <string>The zTree version which shall be used for the experiment.</string>
+           <string>The z-Tree version which shall be used for the experiment.</string>
           </property>
           <property name="text">
            <string>z-Tree version:</string>
@@ -41,17 +35,20 @@
         <item>
          <widget class="QComboBox" name="CBzTreeVersion">
           <property name="toolTip">
-           <string>The zTree version which shall be used for the experiment.</string>
+           <string>The z-Tree version which shall be used for the experiment.</string>
           </property>
           <property name="styleSheet">
-           <string notr="true">background: cyan</string>
+           <string notr="true">background: cyan;</string>
+          </property>
+          <property name="maxVisibleItems">
+           <number>32</number>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QLabel" name="LDataTargetPath">
           <property name="toolTip">
-           <string>The path where zTree shall store its data.
+           <string>The path where z-Tree shall store its data.
 
 Please take care that it does not contain any spaces or other special characters.</string>
           </property>
@@ -63,25 +60,12 @@ Please take care that it does not contain any spaces or other special characters
         <item>
          <widget class="QComboBox" name="CBDataTargetPath">
           <property name="toolTip">
-           <string>The path where zTree shall store its data.
+           <string>The path where z-Tree shall store its data.
 
 Please take care that it does not contain any spaces or other special characters.</string>
           </property>
           <property name="styleSheet">
-           <string notr="true">background: cyan</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="ChBRamdiskForGamesafeFile">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="toolTip">
-           <string>This function is not implemented yet.</string>
-          </property>
-          <property name="text">
-           <string>Use ramdisk for gamesafe file</string>
+           <string notr="true">background: cyan;</string>
           </property>
          </widget>
         </item>
@@ -90,7 +74,7 @@ Please take care that it does not contain any spaces or other special characters
           <item>
            <widget class="QLabel" name="LPort">
             <property name="toolTip">
-             <string>The port which will be used by started zTree and zLeaf instances. Only matters if multiple experiments shall be run in parallel.</string>
+             <string>The port which will be used by started z-Tree and z-Leaf instances. This only matters if multiple experiments shall be run in parallel.</string>
             </property>
             <property name="text">
              <string>Port:</string>
@@ -99,11 +83,14 @@ Please take care that it does not contain any spaces or other special characters
           </item>
           <item>
            <widget class="QSpinBox" name="SBPort">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
             <property name="toolTip">
-             <string>The port which will be used by started zTree and zLeaf instances. Only matters if multiple experiments shall be run in parallel.</string>
+             <string>The port which will be used by started z-Tree and z-Leaf instances. This only matters if multiple experiments shall be run in parallel.</string>
             </property>
             <property name="styleSheet">
-             <string notr="true">background: cyan</string>
+             <string notr="true">background: cyan;</string>
             </property>
             <property name="minimum">
              <number>7000</number>
@@ -115,6 +102,19 @@ Please take care that it does not contain any spaces or other special characters
           </item>
          </layout>
         </item>
+        <item>
+         <widget class="QCheckBox" name="ChBRamdiskForGamesafeFile">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>This function is not implemented, yet.</string>
+          </property>
+          <property name="text">
+           <string>Use ramdisk for gamesafe file</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>
@@ -123,9 +123,12 @@ Please take care that it does not contain any spaces or other special characters
        <property name="title">
         <string>Receipts</string>
        </property>
-       <layout class="QVBoxLayout" name="VLReceiptsGroupBox">
+       <layout class="QVBoxLayout" name="VLReceipts">
         <item>
-         <widget class="QLabel" name="LReceiptsLabel">
+         <widget class="QLabel" name="LReceiptsHeader">
+          <property name="toolTip">
+           <string>Choose the LaTeX template which shall be used for receipts creation.</string>
+          </property>
           <property name="text">
            <string>Template for receipts:</string>
           </property>
@@ -133,15 +136,21 @@ Please take care that it does not contain any spaces or other special characters
         </item>
         <item>
          <widget class="QComboBox" name="CBReceiptsHeader">
+          <property name="toolTip">
+           <string>Choose the LaTeX template which shall be used for receipts creation.</string>
+          </property>
           <property name="styleSheet">
-           <string notr="true">background: cyan</string>
+           <string notr="true">background: cyan;</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="ChBPrintanonymousreceipts">
+         <widget class="QCheckBox" name="ChBPrintAnonymousReceipts">
+          <property name="toolTip">
+           <string>Check this if you want the created receipts to be anonymous.</string>
+          </property>
           <property name="styleSheet">
-           <string notr="true">background: cyan</string>
+           <string notr="true">background: cyan;</string>
           </property>
           <property name="text">
            <string>Print anonymous receipts</string>
@@ -149,22 +158,31 @@ Please take care that it does not contain any spaces or other special characters
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="LReplaceParticipantName">
+         <widget class="QLabel" name="LReplaceParticipantNames">
           <property name="enabled">
            <bool>false</bool>
           </property>
+          <property name="toolTip">
+           <string>Choose a string which shall replace the participant name on the anonymous receipts.</string>
+          </property>
           <property name="text">
-           <string>Substitute participant names with:</string>
+           <string>Substitute participants' names with:</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="CBReplaceParticipantName">
+         <widget class="QComboBox" name="CBReplaceParticipantNames">
           <property name="enabled">
            <bool>false</bool>
           </property>
+          <property name="toolTip">
+           <string>Choose a string which shall replace the participant name on the anonymous receipts.</string>
+          </property>
           <property name="editable">
            <bool>true</bool>
+          </property>
+          <property name="currentText">
+           <string>\hspace{5cm}</string>
           </property>
           <property name="currentIndex">
            <number>0</number>
@@ -191,30 +209,61 @@ Please take care that it does not contain any spaces or other special characters
           </item>
          </widget>
         </item>
-        <item>
-         <widget class="QCheckBox" name="ChBReceiptsforLocalClients">
-          <property name="text">
-           <string>Print receipts for local clients</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
        </layout>
       </widget>
      </item>
     </layout>
    </item>
    <item>
-    <widget class="QPushButton" name="PBStartzTree">
+    <widget class="QLabel" name="LClientSelection">
      <property name="toolTip">
-      <string>Start zTree with the set parameters.
-
-Take care, that all options in the 'z-Tree' and the 'Receipts' boxes must be set BEFORE starting the accordant z-Tree, since they cannot be changed anymore after the start.</string>
+      <string>Select the clients which shall be attached to this session:</string>
      </property>
      <property name="text">
-      <string>Start z-Tree</string>
+      <string>Select the clients which shall be attached to this session:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTableView" name="TVClients">
+     <property name="toolTip">
+      <string>Select the clients which shall be attached to this session.</string>
+     </property>
+     <attribute name="horizontalHeaderVisible">
+      <bool>false</bool>
+     </attribute>
+     <attribute name="verticalHeaderVisible">
+      <bool>false</bool>
+     </attribute>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="ChBSessionWithoutClients">
+     <property name="toolTip">
+      <string>This allows an experimenter to override the normally hard requirement of choosing clients to be attached to the started session and start a session without attached clients.</string>
+     </property>
+     <property name="text">
+      <string>Allow session without attached clients</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="PBStartSession">
+     <property name="toolTip">
+      <string>Start a new session according to the above made settings.</string>
+     </property>
+     <property name="text">
+      <string>Start session</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="PBCancel">
+     <property name="toolTip">
+      <string>Cancel the creation of a new session.</string>
+     </property>
+     <property name="text">
+      <string>Cancel</string>
      </property>
     </widget>
    </item>

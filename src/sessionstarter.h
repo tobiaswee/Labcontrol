@@ -20,9 +20,6 @@
 #ifndef SESSIONSTARTER_H
 #define SESSIONSTARTER_H
 
-#include "src/Lib/lablib.h"
-
-#include <QFileDialog>
 #include <QWidget>
 
 namespace lc {
@@ -35,37 +32,11 @@ class SessionStarter : public QWidget {
     Q_OBJECT
 
 public:
-    explicit SessionStarter( QWidget *parent = nullptr );
+    explicit SessionStarter( QWidget *argParent = nullptr );
     ~SessionStarter();
-
-    //! This gets thrown as an exception if this class is created even if it shouldn't
-    //! (because no installed z-Tree instances could be detected).
-    class lcForbiddenCall {};
-
-signals:
-    void SessionRequested( QString argDataTargetPath, int argPort, QString argzTreeVersion,
-                           bool argReceiptsForLocalClients, QString argAnonReceiptPlaceholder,
-                           QString argChosenLatexHeader );
 
 private:
     Ui::SessionStarter *ui = nullptr;
-
-    void SetupWidgets();
-
-private slots:
-    //! Opens a 'QFileDialog' and tries to choose a new zTree data target path
-    void GetNewDataTargetPath();
-    void on_CBDataTargetPath_activated(const QString &arg1);
-    void on_CBReceiptsHeader_activated( const QString &argHeader );
-    void on_CBzTreeVersion_activated( const QString &argVersion );
-    void on_ChBPrintanonymousreceipts_clicked( bool checked );
-    void on_ChBReceiptsforLocalClients_clicked( bool argChecked );
-    void on_PBStartzTree_clicked();
-    void on_SBPort_editingFinished();
-
-signals:
-    //! This signal becomes emitted if "Set new path" was chosen in the 'CBDataTargetPath'
-    void NewDataTargetPathRequested();
 };
 
 }

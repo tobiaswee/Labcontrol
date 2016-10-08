@@ -50,12 +50,12 @@
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_4">
              <item>
-              <widget class="QPushButton" name="PBStartzTree">
+              <widget class="QPushButton" name="PBStartSession">
                <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start zTree with the set parameters.&lt;br/&gt;&lt;br/&gt;Take care, that all options in the 'z-Tree' and the 'Receipts' boxes must be set BEFORE starting the accordant z-Tree, since they cannot be changed anymore after the start.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>Start a new session. A new window will be opened to enter all required parameters.</string>
                </property>
                <property name="text">
-                <string>Start z-Tree</string>
+                <string>Start Session</string>
                </property>
               </widget>
              </item>

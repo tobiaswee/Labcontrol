@@ -170,9 +170,9 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
         ui->CBClientNames->setEnabled( false );
         ui->LFakeName->setEnabled( false );
         ui->PBRunzLeaf->setEnabled( false );
+        ui->PBStartSession->setEnabled( false );
         ui->PBStartLocalzLeaf->setEnabled( false );
         ui->PBStartzLeaf->setEnabled( false );
-        ui->PBStartzTree->setEnabled( false );
     }
 
     // Disable 'PBOpenTerminal' if 'terminal_emulator_command' was not set
@@ -202,9 +202,9 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
         ui->CBClientNames->setEnabled( false );
         ui->LFakeName->setEnabled( false );
         ui->PBRunzLeaf->setEnabled( false );
+        ui->PBStartSession->setEnabled( false );
         ui->PBStartLocalzLeaf->setEnabled( false );
         ui->PBStartzLeaf->setEnabled( false );
-        ui->PBStartzTree->setEnabled( false );
     }
 
     // Disable the disable screensaver function if the 'xset_command' was not set
@@ -216,9 +216,9 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
         ui->CBClientNames->setEnabled( false );
         ui->LFakeName->setEnabled( false );
         ui->PBRunzLeaf->setEnabled( false );
+        ui->PBStartSession->setEnabled( false );
         ui->PBStartLocalzLeaf->setEnabled( false );
         ui->PBStartzLeaf->setEnabled( false );
-        ui->PBStartzTree->setEnabled( false );
     }
 }
 
@@ -511,32 +511,12 @@ void lc::MainWindow::on_PBStartLocalzLeaf_clicked() {
              localzLeafStarter, SLOT( deleteLater() ) );
 }
 
-void lc::MainWindow::on_PBStartzLeaf_clicked() {
-    // Show an error message, if no z-Leaf version was chosen yet
-    if ( ui->CBzLeafVersion->currentIndex() == 0 ) {
-        QMessageBox messageBox{ QMessageBox::Warning, tr( "Unset z-Leaf version" ), tr( "There is no z-Leaf version chosen yet. Please choose one." ), QMessageBox::Ok, this };
-        messageBox.exec();
-        return;
-    }
-
-    QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
-    const QString * const zLeafVersion = new QString{ ui->CBzLeafVersion->currentText() };
-    for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
-        if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
-            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            client->StartZLeaf( zLeafVersion, ui->SBzLeafPort->value(),
-                                nullptr );
-        }
-    }
-    delete zLeafVersion;
-}
-
-void lc::MainWindow::on_PBStartzTree_clicked() {
+void lc::MainWindow::on_PBStartSession_clicked() {
     SessionStarter *sessionStarter = new SessionStarter{ this };
     sessionStarter->setWindowFlags( Qt::Window );
     sessionStarter->show();
-    connect( sessionStarter, &SessionStarter::SessionRequested,
-             lablib, &Lablib::StartNewZTreeInstance );
+    // connect( sessionStarter, &SessionStarter::SessionRequested,
+    //          lablib, &Lablib::StartNewZTreeInstance );
     connect( sessionStarter, &SessionStarter::destroyed,
              sessionStarter, &SessionStarter::deleteLater );
 //    // Show an error message, if no zTree version was chosen yet
@@ -578,6 +558,26 @@ void lc::MainWindow::on_PBStartzTree_clicked() {
 //    ui->SBPort->setStyleSheet( "" );
 
 //    lablib->StartNewZTreeInstance();
+}
+
+void lc::MainWindow::on_PBStartzLeaf_clicked() {
+    // Show an error message, if no z-Leaf version was chosen yet
+    if ( ui->CBzLeafVersion->currentIndex() == 0 ) {
+        QMessageBox messageBox{ QMessageBox::Warning, tr( "Unset z-Leaf version" ), tr( "There is no z-Leaf version chosen yet. Please choose one." ), QMessageBox::Ok, this };
+        messageBox.exec();
+        return;
+    }
+
+    QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
+    const QString * const zLeafVersion = new QString{ ui->CBzLeafVersion->currentText() };
+    for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
+        if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
+            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
+            client->StartZLeaf( zLeafVersion, ui->SBzLeafPort->value(),
+                                nullptr );
+        }
+    }
+    delete zLeafVersion;
 }
 
 void lc::MainWindow::on_PBViewDesktop_clicked() {

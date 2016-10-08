@@ -74,8 +74,8 @@ private slots:
     void on_PBShowSessions_clicked();
     void on_PBShutdown_clicked();
     void on_PBStartLocalzLeaf_clicked();
+    void on_PBStartSession_clicked();
     void on_PBStartzLeaf_clicked();
-    void on_PBStartzTree_clicked();
     void on_PBViewDesktop_clicked();
     void on_RBUseLocalUser_toggled(bool checked);
     void StartLocalzLeaf( QString argzLeafName, QString argzLeafVersion, int argzTreePort );
