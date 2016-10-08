@@ -71,16 +71,6 @@ public:
      * \return True, if the account has administrative rights; false, otherwise
      */
     bool CheckIfUserIsAdmin() const;
-    /** Returns a pointer to the clients known to Lablib
-     *
-     * @return A QVector of pointers to the Client class instances
-     */
-    QVector< Client* > *GetClients () const { return clients; }
-    /** Returns a pointer to the QString storing the default name for local zLeafs
-     *
-     * @return A pointer to the QString storing the default name for local zLeafs
-     */
-    QString GetLocalZLeafDefaultName() const { return settings->GetLocalzLeafName(); }
     /** Returns a pointer to a QVector<unsigned int> containing all by sessions occupied ports
      *
      * @return A pointer to a QVector<unsigned int> containing all occupied ports
@@ -91,17 +81,11 @@ public:
      * @return A pointer to the QAbstractTableModel storing the Session instances
      */
     SessionsModel *GetSessionsModel () const { return sessionsModel; }
-    /** Returns true if receipts for local clients shall be printed
-     *
-     * @return True if receipts for local clients shall be printed
-     */
-    bool GetPrintReceiptsForLocalClients() const { return PrintReceiptsForLocalClients; }
     //! Sets the default name of local zLeaf instances
     /**
      * @param argName   The default name local zLeaf instances shall have
      */
     void SetLocalZLeafDefaultName( const QString &argName );
-    void SetPrintReceiptsForLocalClients( const bool &argPrintReceiptsForLocalClients );
     void ShowOrsee();
     void ShowPreprints();
 
@@ -125,14 +109,11 @@ private:
     void ReadSettings();
 
     ClientHelpNotificationServer *clientHelpNotificationServer = nullptr;    //! A server to retrieve help requests from the clients
-    QMap< QString, Client* > * clientIPsToClientsMap = nullptr;    //! A map container storing ip-client pairs
-    QVector<Client*> *clients = nullptr;            //! A QVector storing pointers to all Client instances
     QSettings labSettings;
     NetstatAgent *netstatAgent = nullptr;           //! Tries to detect active zLeaf connections from the clients
     QThread netstatThread;
     QTimer *netstatTimer = nullptr;                //! A timer for regular execution of the NetstatAgent instance's request mechanism
     QVector< int > *occupiedPorts = nullptr;
-    bool PrintReceiptsForLocalClients = true;
     SessionsModel *sessionsModel = nullptr;        //! A derivation from QAbstractTableModel used to store the single Session instances
 };
 

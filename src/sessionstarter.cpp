@@ -27,9 +27,8 @@
 
 extern std::unique_ptr< lc::Settings > settings;
 
-lc::SessionStarter::SessionStarter( Lablib *argLablib, QWidget *parent ) :
+lc::SessionStarter::SessionStarter( QWidget *parent ) :
     QWidget{ parent },
-    lablib{ argLablib },
     ui{ new Ui::SessionStarter }
 {
     ui->setupUi( this );
@@ -89,9 +88,9 @@ void lc::SessionStarter::on_ChBPrintanonymousreceipts_clicked( bool checked ) {
     ui->ChBPrintanonymousreceipts->setStyleSheet( "" );
 }
 
-void lc::SessionStarter::on_ChBReceiptsforLocalClients_clicked( bool checked ) {
+void lc::SessionStarter::on_ChBReceiptsforLocalClients_clicked( bool argChecked ) {
+    Q_UNUSED( argChecked );
     ui->ChBReceiptsforLocalClients->setStyleSheet( "" );
-    lablib->SetPrintReceiptsForLocalClients( checked );
 }
 
 void lc::SessionStarter::on_PBStartzTree_clicked() {
@@ -148,7 +147,4 @@ void lc::SessionStarter::SetupWidgets() {
     ui->CBDataTargetPath->setCurrentIndex( 2 );
     connect( this, &SessionStarter::NewDataTargetPathRequested,
              this, &SessionStarter::GetNewDataTargetPath );
-
-    // Set the initial status of CBReceiptsforLocalClients according to the settings in lcLablib
-    ui->ChBReceiptsforLocalClients->setChecked( lablib->GetPrintReceiptsForLocalClients() );
 }

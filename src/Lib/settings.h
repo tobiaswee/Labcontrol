@@ -24,6 +24,8 @@
 #include <QObject>
 #include <QSettings>
 
+#include "client.h"
+
 namespace lc {
 
 class Settings : public QObject {
@@ -36,8 +38,10 @@ public:
     Settings& operator=( const Settings &argSettings ) = delete;
     Settings( Settings &&argSettings ) = delete;
     Settings& operator=( Settings &&argSettings ) = delete;
+    ~Settings();
 
     int GetChosenZTreePort() const { return chosenzTreePort; }
+    QVector< Client* > &GetClients() { return clients; }
     QString GetLocalzLeafName() const;
     void SetChosenZTreePort( const int argPort );
     void SetLocalzLeafName( const QString &argLocalzLeafName );
@@ -82,6 +86,9 @@ public:
 private:
     static bool CheckPathAndComplain( const QString &argPath, const QString &argVariableName,
                                       const QString &argMessage );
+    static QVector< Client* > CreateClients( const QSettings &argSettings,
+                                             const QString &argPingCmd );
+    static QMap< QString, Client* > CreateClIPsToClMap( const QVector< Client* > &argClients );
     QStringList DetectInstalledLaTeXHeaders() const;
     QStringList DetectInstalledzTreeVersions() const;
     static QStringList GetAdminUsers( const QSettings &argSettings );
@@ -95,7 +102,11 @@ private:
                                      bool argItemIsFile );
 
     int chosenzTreePort = 0;
+    QVector< Client* > clients;
     QString localzLeafName;
+
+public:
+    const QMap< QString, Client* > clIPsToClMap;
 };
 
 }

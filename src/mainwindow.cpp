@@ -297,8 +297,7 @@ void lc::MainWindow::on_PBChooseFile_clicked() {
 }
 
 void lc::MainWindow::on_PBDeactivateScreensaver_clicked() {
-    QVector< Client* > *clients = lablib->GetClients();
-    for ( auto s : *clients ) {
+    for ( auto s : settings->GetClients() ) {
         if ( s->GetClientState() >= state_t::RESPONDING )
             s->DeactiveScreensaver();
     }
@@ -309,15 +308,13 @@ void lc::MainWindow::on_PBExecute_clicked() {
     bool executeOnEveryClient = true;
 
     // Cancel, if not all clients are up and running
-    QVector< Client* > *clients = lablib->GetClients();
-    for ( auto s: *clients ) {
+    for ( auto s: settings->GetClients() ) {
         if ( !( s->name.contains( "backup", Qt::CaseInsensitive ) ) ) {
             if ( s->GetClientState() < state_t::RESPONDING ) {
                 QMessageBox messageBox{ QMessageBox::Warning, tr( "Not all clients are running" ),
                             tr( "Not all clients are running. The command could not be executed on every client and should therefore be canceled to keep the clients consistent.\n\nAre you sure you want to continue only with the currently chosen clients?" ), QMessageBox::No | QMessageBox::Yes, this };
                 messageBox.setDefaultButton( QMessageBox::No );
                 messageBox.exec();
-                clients = nullptr;
                 executeOnEveryClient = false;
                 if ( messageBox.clickedButton() == messageBox.button( QMessageBox::No ) ) {
                     return;
@@ -342,7 +339,7 @@ void lc::MainWindow::on_PBExecute_clicked() {
     // and execute it
     if ( executeOnEveryClient ) {
         qDebug() << "Executing command" << command << "on every client.";
-        for ( auto s: *clients ) {
+        for ( auto s: settings->GetClients() ) {
             if ( !( s->name.contains( "backup", Qt::CaseInsensitive ) ) ) {
                 s->OpenTerminal( command, ui->RBUseUserRoot->isChecked() );
             }
@@ -357,8 +354,6 @@ void lc::MainWindow::on_PBExecute_clicked() {
             }
         }
     }
-
-    clients = nullptr;
 }
 
 void lc::MainWindow::on_PBKillLocalzLeaf_clicked() {
@@ -537,7 +532,7 @@ void lc::MainWindow::on_PBStartzLeaf_clicked() {
 }
 
 void lc::MainWindow::on_PBStartzTree_clicked() {
-    SessionStarter *sessionStarter = new SessionStarter{ lablib, this };
+    SessionStarter *sessionStarter = new SessionStarter{ this };
     sessionStarter->setWindowFlags( Qt::Window );
     sessionStarter->show();
     connect( sessionStarter, &SessionStarter::SessionRequested,
@@ -605,12 +600,11 @@ void lc::MainWindow::SetupWidgets() {
     // Set the correct initial port for the
     ui->SBzLeafPort->setValue( settings->GetChosenZTreePort() );
     // Fill the 'CBClientNames' with possible client names and the 'TVClients' with the clients
-    const QVector< Client* > *clients = lablib->GetClients();
-    if ( !( clients == nullptr ) ) {
+    if ( !settings->GetClients().isEmpty() ) {
         valid_items = new QVector< QStandardItem * >;
-        valid_items->reserve( clients->size() );
+        valid_items->reserve( settings->GetClients().size() );
         clients_view_model = new QStandardItemModel{ this };
-        for ( auto *s : *clients ) {
+        for ( auto *s : settings->GetClients() ) {
             int temp_xpos = s->xPosition - 1, temp_ypos = s->yPosition - 1;
 
             // Check if a client already exists at the given position and skip, if so
@@ -654,7 +648,6 @@ void lc::MainWindow::SetupWidgets() {
         for ( const auto &s : settings->webcams )
             ui->CBWebcamChooser->addItem( s );
     }
-    clients = nullptr;
 
     const QStringList &zTreeEntries = settings->installedZTreeVersions;
     if ( zTreeEntries.isEmpty() ) {

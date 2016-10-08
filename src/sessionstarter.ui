@@ -196,6 +196,9 @@ Please take care that it does not contain any spaces or other special characters
           <property name="text">
            <string>Print receipts for local clients</string>
           </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
        </layout>

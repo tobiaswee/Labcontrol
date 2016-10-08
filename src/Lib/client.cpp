@@ -27,7 +27,8 @@
 extern std::unique_ptr< lc::Settings > settings;
 
 lc::Client::Client( const QString &argIP, const QString &argMAC, const QString &argName,
-                    unsigned short int argXPosition, unsigned short int argYPosition ):
+                    unsigned short int argXPosition, unsigned short int argYPosition,
+                    const QString &argPingCmd ):
     ip{ argIP },
     mac{ argMAC },
     name{ argName },
@@ -37,8 +38,8 @@ lc::Client::Client( const QString &argIP, const QString &argMAC, const QString &
 {
     qRegisterMetaType< state_t >( "STATE" );
 
-    if ( !settings->pingCmd.isEmpty() ) {
-        pinger = new ClientPinger{ ip, settings->pingCmd };
+    if ( !argPingCmd.isEmpty() ) {
+        pinger = new ClientPinger{ ip, argPingCmd };
         pinger->moveToThread( &pingerThread );
         connect( &pingerThread, &QThread::finished,
                  pinger, &QObject::deleteLater );

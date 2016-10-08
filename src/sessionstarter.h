@@ -35,7 +35,7 @@ class SessionStarter : public QWidget {
     Q_OBJECT
 
 public:
-    explicit SessionStarter( Lablib *argLablib, QWidget *parent = nullptr );
+    explicit SessionStarter( QWidget *parent = nullptr );
     ~SessionStarter();
 
     //! This gets thrown as an exception if this class is created even if it shouldn't
@@ -48,7 +48,6 @@ signals:
                            QString argChosenLatexHeader );
 
 private:
-    Lablib * const lablib = nullptr;
     Ui::SessionStarter *ui = nullptr;
 
     void SetupWidgets();
@@ -60,7 +59,7 @@ private slots:
     void on_CBReceiptsHeader_activated( const QString &argHeader );
     void on_CBzTreeVersion_activated( const QString &argVersion );
     void on_ChBPrintanonymousreceipts_clicked( bool checked );
-    void on_ChBReceiptsforLocalClients_clicked(bool checked);
+    void on_ChBReceiptsforLocalClients_clicked( bool argChecked );
     void on_PBStartzTree_clicked();
     void on_SBPort_editingFinished();
 

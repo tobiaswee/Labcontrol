@@ -32,15 +32,13 @@ namespace lc {
 class ClientHelpNotificationServer : public QObject {
     Q_OBJECT
 public:
-    explicit ClientHelpNotificationServer( const QMap< QString, Client* > * const argClientIPsToClientsMap,
-            QObject *argParent = nullptr );
+    explicit ClientHelpNotificationServer( QObject *argParent = nullptr );
 
 signals:
 
 public slots:
 
 private:
-    const QMap< QString, Client* > * const clientIPsToClientsMap = nullptr;
     QTcpServer *helpMessageServer = nullptr;
     const QHostAddress hostAddress;
     QNetworkSession *networkSession = nullptr;

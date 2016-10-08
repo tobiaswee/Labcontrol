@@ -26,13 +26,14 @@
 
 lc::Lablib::Lablib( QObject *argParent ) :
     QObject{ argParent },
-    clientIPsToClientsMap{ new QMap< QString, Client* > },
     labSettings{ "Economic Laboratory", "Labcontrol", this },
     occupiedPorts{ new QVector< int > },
     sessionsModel{ new SessionsModel{ this } }
 {
-    ReadSettings();
-
+    for ( const auto &s : settings->GetClients() ) {
+        connect( this, &Lablib::ZLEAF_RUNNING,
+                 s, &Client::SetStateToZLEAF_RUNNING );
+    }
     DetectInstalledZTreeVersionsAndLaTeXHeaders();
 
     // Initialize all 'netstat' query mechanisms
@@ -51,8 +52,7 @@ lc::Lablib::Lablib( QObject *argParent ) :
 
     // Initialize the server for client help requests retrieval
     if ( settings->clientHelpNotificationServerPort && !settings->serverIP.isEmpty() ) {
-        clientHelpNotificationServer = new ClientHelpNotificationServer{ clientIPsToClientsMap,
-                                                                         this };
+        clientHelpNotificationServer = new ClientHelpNotificationServer{ this };
     }
 }
 
@@ -63,12 +63,6 @@ lc::Lablib::~Lablib () {
     }
     netstatThread.quit();
     netstatThread.wait();
-    if ( clients ) {
-        for ( QVector< Client* >::iterator it = clients->begin(); it != clients->end(); ++it ) {
-            delete *it;
-        }
-    }
-    delete clients;
     delete occupiedPorts;
 }
 
@@ -95,90 +89,6 @@ void lc::Lablib::GotNetstatQueryResult( QStringList *argActiveZLeafConnections )
     else
         qDebug() << "Netstat status query failed.";
     delete argActiveZLeafConnections;
-}
-
-void lc::Lablib::ReadSettings() {
-    // Get the client quantity to check the value lists for clients creation for correct length
-    int clientQuantity = 0;
-    if ( !labSettings.contains("client_quantity" ) ) {
-        QMessageBox messageBox{ QMessageBox::Information, tr( "'client_quantity' not set" ),
-                    tr( "The 'client_quantity' variable was not set. The client quantity will be guessed by the amount of client ips set in 'client_ips'." ) };
-        messageBox.exec();
-        qDebug() << "'client_quantity' was not set. The client quantity will be guessed"
-                    " by the amount of client IPs set in 'client_ips'.";
-        clientQuantity = labSettings.value( "client_ips", "" ).toString().split( '/', QString::SkipEmptyParts, Qt::CaseSensitive ).length();
-        qDebug() << "'clientQuantity':" << clientQuantity;
-    } else {
-        clientQuantity = labSettings.value( "client_quantity" ).toInt();
-        qDebug() << "'clientQuantity':" << clientQuantity;
-    }
-
-    // Create all the clients in the lab
-    QStringList clientIPs = labSettings.value( "client_ips" ).toString().split( '|', QString::SkipEmptyParts, Qt::CaseSensitive );
-    if ( clientIPs.length() != clientQuantity ) {
-        QMessageBox messageBox{ QMessageBox::Critical, tr( "Wrong client ip quantity" ),
-                    tr( "The quantity of client ips does not match the client quantity. Client creation will fail. No clients will be available for interaction." ), QMessageBox::Ok };
-        messageBox.exec();
-        return;
-    }
-    qDebug() << "Client IPs:" << clientIPs.join( " / " );
-    QStringList clientMACs = labSettings.value( "client_macs" ).toString().split( '|', QString::SkipEmptyParts, Qt::CaseSensitive );
-    if ( clientMACs.length() != clientQuantity ) {
-        QMessageBox messageBox{ QMessageBox::Critical, tr( "Wrong client mac quantity" ),
-                    tr( "The quantity of client macs does not match the client quantity. Client creation will fail. No clients will be available for interaction." ), QMessageBox::Ok };
-        messageBox.exec();
-        return;
-    }
-    qDebug() << "Client MACs:" << clientMACs.join( " / " );
-    QStringList clientNames = labSettings.value( "client_names" ).toString().split( '|', QString::SkipEmptyParts, Qt::CaseSensitive );
-    if ( clientNames.length() != clientQuantity ) {
-        QMessageBox messageBox{ QMessageBox::Critical, tr( "Wrong client name quantity" ),
-                    tr( "The quantity of client names does not match the client quantity. Client creation will fail. No clients will be available for interaction." ), QMessageBox::Ok };
-        messageBox.exec();
-        return;
-    }
-    qDebug() << "Client names:" << clientNames.join( " / " );
-    QStringList clientXPositions = labSettings.value( "client_xpos" ).toString().split( '|', QString::SkipEmptyParts, Qt::CaseSensitive );
-    if ( clientXPositions.length() != clientQuantity ) {
-        QMessageBox messageBox{ QMessageBox::Critical, tr( "Wrong client x positions quantity" ),
-                    tr( "The quantity of client x positions does not match the client quantity. Client creation will fail. No clients will be available for interaction." ), QMessageBox::Ok };
-        messageBox.exec();
-        return;
-    }
-    qDebug() << "clientXPositions:" << clientXPositions.join( " / " );
-    QStringList clientYPositions = labSettings.value( "client_ypos" ).toString().split( '|', QString::SkipEmptyParts, Qt::CaseSensitive );
-    if ( clientYPositions.length() != clientQuantity ) {
-        QMessageBox messageBox{ QMessageBox::Critical, tr( "Wrong client y positions quantity" ),
-                    tr( "The quantity of client y positions does not match the client quantity. Client creation will fail. No clients will be available for interaction." ), QMessageBox::Ok };
-        messageBox.exec();
-        return;
-    }
-    qDebug() << "clientYPositions:" << clientYPositions.join( " / " );
-
-    clients = new QVector< Client* >;
-    for ( int i = 0; i < clientQuantity; i++ ) {
-        clients->append( new Client{ clientIPs[ i ], clientMACs[ i ], clientNames[ i ],
-                                     clientXPositions[ i ].toUShort(),
-                                     clientYPositions[ i ].toUShort() } );
-
-        // Add an corresponding entry to the 'client_ips_to_clients_map' std::map<QString, Client*>
-        ( *clientIPsToClientsMap )[ clients->last()->ip ] = clients->last();
-
-        // Get the address of the Client instance in RAM for display
-        const void *clientPointerAddress = static_cast< const void* >( ( *clientIPsToClientsMap )[ clients->last()->ip ] );
-
-        // Connect the 'Client' instance to the 'ZLEAF_RUNNING(QString client_ip)' signal
-        connect( this, &Lablib::ZLEAF_RUNNING,
-                 clients->last(), &Client::SetStateToZLEAF_RUNNING );
-
-        qDebug() << "Added" << clients->last()->name
-                 << "to 'clientIPsToClientsMap':" << clientPointerAddress;
-    }
-}
-
-void lc::Lablib::SetPrintReceiptsForLocalClients( const bool &argPrintReceiptsForLocalClients ) {
-    PrintReceiptsForLocalClients = argPrintReceiptsForLocalClients;
-    qDebug() << "Set 'PrintReceiptsForLocalClients' to:" << PrintReceiptsForLocalClients;
 }
 
 void lc::Lablib::ShowOrsee() {

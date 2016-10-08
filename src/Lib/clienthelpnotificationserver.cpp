@@ -24,10 +24,8 @@
 
 extern std::unique_ptr< lc::Settings > settings;
 
-lc::ClientHelpNotificationServer::ClientHelpNotificationServer( const QMap< QString, Client* > * const argClientIPsToClientsMap,
-                                QObject *argParent ) :
+lc::ClientHelpNotificationServer::ClientHelpNotificationServer( QObject *argParent ) :
     QObject{ argParent },
-    clientIPsToClientsMap{ argClientIPsToClientsMap },
     hostAddress{ settings->serverIP }
 {
     QNetworkConfigurationManager manager;
@@ -94,8 +92,8 @@ void lc::ClientHelpNotificationServer::SendReply() {
     QString peerAddress = clientConnection->peerAddress().toString();
     QString peerName;
     bool unknownClient = false;
-    if ( clientIPsToClientsMap->contains( peerAddress ) ) {
-        peerName = ( *clientIPsToClientsMap )[ peerAddress ]->name;
+    if ( settings->clIPsToClMap.contains( peerAddress ) ) {
+        peerName = settings->clIPsToClMap[ peerAddress ]->name;
     } else {
         unknownClient = true;
     }

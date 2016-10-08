@@ -22,6 +22,7 @@
 #include <QFile>
 #include <QProcessEnvironment>
 
+#include "client.h"
 #include "settings.h"
 
 lc::Settings::Settings( const QSettings &argSettings, QObject *argParent ) :
@@ -122,9 +123,11 @@ lc::Settings::Settings( const QSettings &argSettings, QObject *argParent ) :
     installedZTreeVersions{ DetectInstalledzTreeVersions() },
     clientHelpNotificationServerPort{ GetClientHelpNotificationServerPort( argSettings ) },
     chosenzTreePort{ GetInitialPort( argSettings ) },
+    clients{ CreateClients( argSettings, pingCmd ) },
     localzLeafName{ ReadSettingsItem( "local_zLeaf_name",
                                       "The local zLeaf default name will default to 'local'.",
-                                      argSettings, false ) }
+                                      argSettings, false ) },
+    clIPsToClMap{ CreateClIPsToClMap( clients ) }
 {
     // Let the local zLeaf name default to 'local' if none was given in the settings
     if ( localzLeafName.isEmpty() ) {
@@ -139,6 +142,12 @@ lc::Settings::Settings( const QSettings &argSettings, QObject *argParent ) :
     qDebug() << "Detected z-Tree versions" << installedZTreeVersions;
 }
 
+lc::Settings::~Settings() {
+    for ( QVector< Client* >::iterator it = clients.begin(); it != clients.end(); ++it ) {
+        delete *it;
+    }
+}
+
 bool lc::Settings::CheckPathAndComplain( const QString &argPath, const QString &argVariableName,
                                          const QString &argMessage ) {
     if ( !QFile::exists( argPath ) ) {
@@ -148,6 +157,96 @@ bool lc::Settings::CheckPathAndComplain( const QString &argPath, const QString &
     }
     qDebug() << argVariableName << ":" << argPath;
     return true;
+}
+
+QVector< lc::Client* > lc::Settings::CreateClients( const QSettings &argSettings,
+                                                    const QString &argPingCmd ) {
+    QVector< Client* > tempClientVec;
+
+    // Get the client quantity to check the value lists for clients creation for correct length
+    int clientQuantity = 0;
+    if ( !argSettings.contains("client_quantity" ) ) {
+        qWarning() << "'client_quantity' was not set. The client quantity will be guessed"
+                      " by the amount of client IPs set in 'client_ips'.";
+        clientQuantity = argSettings.value( "client_ips", "" ).toString()
+                         .split( '/', QString::SkipEmptyParts, Qt::CaseSensitive ).length();
+        qDebug() << "'clientQuantity':" << clientQuantity;
+    } else {
+        bool ok = true;
+        clientQuantity = argSettings.value( "client_quantity" ).toInt( &ok );
+        if ( !ok ) {
+            qWarning() << "The variable 'client_quantity' was not convertible to int";
+        }
+        qDebug() << "'clientQuantity':" << clientQuantity;
+    }
+
+    // Create all the clients in the lab
+    QStringList clientIPs = argSettings.value( "client_ips" ).toString()
+                            .split( '|', QString::SkipEmptyParts, Qt::CaseSensitive );
+    if ( clientIPs.length() != clientQuantity ) {
+        qWarning() << "The quantity of client ips does not match the client quantity. Client"
+                      " creation will fail. No clients will be available for interaction.";
+        return tempClientVec;
+    }
+    qDebug() << "Client IPs:" << clientIPs.join( " / " );
+
+    QStringList clientMACs = argSettings.value( "client_macs" ).toString()
+                             .split( '|', QString::SkipEmptyParts, Qt::CaseSensitive );
+    if ( clientMACs.length() != clientQuantity ) {
+        qWarning() << "The quantity of client macs does not match the client quantity. Client"
+                      " creation will fail. No clients will be available for interaction.";
+        return tempClientVec;
+    }
+    qDebug() << "Client MACs:" << clientMACs.join( " / " );
+
+    QStringList clientNames = argSettings.value( "client_names" ).toString()
+                              .split( '|', QString::SkipEmptyParts, Qt::CaseSensitive );
+    if ( clientNames.length() != clientQuantity ) {
+        qWarning() << "The quantity of client names does not match the client quantity. Client"
+                      " creation will fail. No clients will be available for interaction.";
+        return tempClientVec;
+    }
+    qDebug() << "Client names:" << clientNames.join( " / " );
+
+    QStringList clientXPositions = argSettings.value( "client_xpos" ).toString()
+                                   .split( '|', QString::SkipEmptyParts, Qt::CaseSensitive );
+    if ( clientXPositions.length() != clientQuantity ) {
+        qWarning() << "The quantity of client x positions does not match the client quantity."
+                      " Client creation will fail. No clients will be available for interaction.";
+        return tempClientVec;
+    }
+    qDebug() << "clientXPositions:" << clientXPositions.join( " / " );
+
+    QStringList clientYPositions = argSettings.value( "client_ypos" ).toString()
+                                   .split( '|', QString::SkipEmptyParts, Qt::CaseSensitive );
+    if ( clientYPositions.length() != clientQuantity ) {
+        qWarning() << "The quantity of client y positions does not match the client quantity."
+                      " Client creation will fail. No clients will be available for interaction.";
+        return tempClientVec;
+    }
+    qDebug() << "clientYPositions:" << clientYPositions.join( " / " );
+
+    for ( int i = 0; i < clientQuantity; i++ ) {
+        tempClientVec.append( new Client{ clientIPs[ i ], clientMACs[ i ], clientNames[ i ],
+                                          clientXPositions[ i ].toUShort(),
+                                          clientYPositions[ i ].toUShort(), argPingCmd } );
+    }
+
+    return tempClientVec;
+}
+
+QMap< QString, lc::Client* > lc::Settings::CreateClIPsToClMap( const QVector< Client* > &argClients ) {
+    QMap< QString, Client* > tempMap;
+    for ( const auto &s : argClients ) {
+        tempMap.insert( s->ip, s );
+
+        // Get the address of the Client instance in RAM for display
+        const void *clientPtrAddr = static_cast< const void* >( tempMap[ s->ip ] );
+
+        qDebug() << "Added" << s->name
+                 << "to 'clientIPsToClientsMap':" << clientPtrAddr;
+    }
+    return tempMap;
 }
 
 QStringList lc::Settings::DetectInstalledLaTeXHeaders() const {

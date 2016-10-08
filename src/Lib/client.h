@@ -60,7 +60,8 @@ public:
      * \param argYPosition  The client's y coordinate in the lab's grid
      */
     Client( const QString &argIP, const QString &argMAC, const QString &argName,
-            unsigned short int argXPosition, unsigned short int argYPosition );
+            unsigned short int argXPosition, unsigned short int argYPosition,
+            const QString &argPingCmd );
     //! Client's destructor
     ~Client();
     //! Beams the chosen file to the client's 'media4ztree' directory
