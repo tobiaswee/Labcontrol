@@ -32,18 +32,18 @@ lc::ReceiptsHandler::ReceiptsHandler( const QString &argZTreeDataTargetPath,
                                       const QString &argLatexHeaderName,
                                       QObject *argParent ) :
     QObject{ argParent },
-    anonymousReceiptsPlaceholder{ new QString{ argAnonymousReceiptsPlaceholder } },
-    latexHeaderName{ new QString{ argLatexHeaderName } },
+    anonymousReceiptsPlaceholder{ argAnonymousReceiptsPlaceholder },
+    latexHeaderName{ argLatexHeaderName },
     printReceiptsForLocalClients{ new bool { argPrintReceiptsForLocalClients } },
     timer{ new QTimer{ this } },
-    zTreeDataTargetPath{ new QString{ argZTreeDataTargetPath } }
+    zTreeDataTargetPath{ argZTreeDataTargetPath }
 {
     // Guess the name of the payment file
     QDateTime currentDate;
     currentDate  = QDateTime::currentDateTime();
-    dateString = new QString{ currentDate.toString( "yyMMdd_hhmm" ) };
-    expectedPaymentFileName = QString{ *dateString + ".pay" };
-    expectedPaymentFilePath = QString{ *zTreeDataTargetPath + "/" + *dateString + ".pay" };
+    dateString = currentDate.toString( "yyMMdd_hhmm" );
+    expectedPaymentFileName = QString{ dateString + ".pay" };
+    expectedPaymentFilePath = QString{ zTreeDataTargetPath + "/" + dateString + ".pay" };
     qDebug() << "Expected payment file name is:" << expectedPaymentFilePath;
 
     // Create a new file object representing the payment file
@@ -61,14 +61,14 @@ lc::ReceiptsHandler::ReceiptsHandler( const QString &argZTreeDataTargetPath,
                                       const QString &argLatexHeaderName,
                                       const QString * const argDateString, QObject *argParent ) :
     QObject{ argParent },
-    anonymousReceiptsPlaceholder{ new QString{ argAnonymousReceiptsPlaceholder } },
-    dateString{ new QString{ *argDateString } },
-    latexHeaderName{ new QString{ argLatexHeaderName } },
+    anonymousReceiptsPlaceholder{ argAnonymousReceiptsPlaceholder },
+    dateString{ *argDateString },
+    latexHeaderName{ argLatexHeaderName },
     printReceiptsForLocalClients{ new bool { argPrintReceiptsForLocalClients } },
-    zTreeDataTargetPath{ new QString{ argZTreeDataTargetPath } }
+    zTreeDataTargetPath{ argZTreeDataTargetPath }
 {
-    expectedPaymentFileName = QString{ *dateString + ".pay" };
-    expectedPaymentFilePath = QString{ *zTreeDataTargetPath + "/" + *argDateString + ".pay" };
+    expectedPaymentFileName = QString{ dateString + ".pay" };
+    expectedPaymentFilePath = QString{ zTreeDataTargetPath + "/" + *argDateString + ".pay" };
     qDebug() << "Expected payment file name is:" << expectedPaymentFilePath;
 
     // Create a new file object representing the payment file
@@ -78,13 +78,9 @@ lc::ReceiptsHandler::ReceiptsHandler( const QString &argZTreeDataTargetPath,
 }
 
 lc::ReceiptsHandler::~ReceiptsHandler() {
-    delete anonymousReceiptsPlaceholder;
-    delete dateString;
-    delete latexHeaderName;
     delete paymentFile;
     delete printReceiptsForLocalClients;
     delete receiptsPrinter;
-    delete zTreeDataTargetPath;
 }
 
 void lc::ReceiptsHandler::PrintReceipts() {
@@ -134,7 +130,7 @@ void lc::ReceiptsHandler::CreateReceiptsFromPaymentFile() {
     rawParticipantsData = nullptr;
 
     // Make receipts overview anonymous if requested (at this stage just names are removed, so that the overview still containts the client names
-    if ( !anonymousReceiptsPlaceholder->isEmpty() ) {
+    if ( !anonymousReceiptsPlaceholder.isEmpty() ) {
         MakeReceiptsAnonymous( participants, false );
     }
 
@@ -163,7 +159,7 @@ void lc::ReceiptsHandler::CreateReceiptsFromPaymentFile() {
     // MISSING: Appending show up entries to the overview
 
     // Make also the clients on the receipts anonymous. This is done as second step, so that the beforehand created overview still contains the clients
-    if ( !anonymousReceiptsPlaceholder->isEmpty() ) {
+    if ( !anonymousReceiptsPlaceholder.isEmpty() ) {
         MakeReceiptsAnonymous( participants, true );
     }
 
@@ -189,7 +185,7 @@ void lc::ReceiptsHandler::CreateReceiptsFromPaymentFile() {
     qDebug() << *latexText;
 
     // Create the tex file
-    QFile *texFile = new QFile( *zTreeDataTargetPath + "/" + *dateString + ".tex" );
+    QFile *texFile = new QFile{ zTreeDataTargetPath + "/" + dateString + ".tex" };
     qDebug() << "Tex file" << texFile->fileName() << "will be created for receipts printing.";
     // Clean up any already existing files
     if ( texFile->exists() ) {
@@ -272,11 +268,11 @@ QVector<QString> *lc::ReceiptsHandler::GetParticipantsDataFromPaymentFile() {
 
 QString *lc::ReceiptsHandler::LoadLatexHeader() {
     // Prepare all facilities to read the latex header file
-    QFile latexHeaderFile( settings->lcInstDir + "/" + *latexHeaderName + "_header.tex" );
+    QFile latexHeaderFile( settings->lcInstDir + "/" + latexHeaderName + "_header.tex" );
     if ( !latexHeaderFile.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
         QMessageBox messageBox{ QMessageBox::Critical, tr( "LaTeX header could not be loaded" ),
                                 tr( "The LaTeX header at '%1/%2_header.tex' could not be loaded. Receipts printing will not work." )
-                                .arg( settings->lcInstDir ).arg( *latexHeaderName ), QMessageBox::Ok };
+                                .arg( settings->lcInstDir ).arg( latexHeaderName ), QMessageBox::Ok };
         messageBox.exec();
         return nullptr;
     }
@@ -294,14 +290,14 @@ void lc::ReceiptsHandler::MakeReceiptsAnonymous( QVector<paymentEntry_t*> *argDa
     if ( !argAlsoAnonymizeClients ) {
         qDebug() << "Names are made anonymous";
         for ( QVector< paymentEntry_t* >::iterator it = argDataVector->begin(); it != argDataVector->end(); ++it ) {
-            ( *it )->name = QString{ *anonymousReceiptsPlaceholder };
+            ( *it )->name = anonymousReceiptsPlaceholder;
         }
     }
     else {
        qDebug() << "Clients and names are made anonymous";
        for ( QVector< paymentEntry_t* >::iterator it = argDataVector->begin(); it != argDataVector->end(); ++it ) {
-           ( *it )->name = QString{ *anonymousReceiptsPlaceholder };
-           ( *it )->computer = QString{ "\\hspace{1cm}" };
+           ( *it )->name = anonymousReceiptsPlaceholder;
+           ( *it )->computer = "\\hspace{1cm}";
        }
     }
 }

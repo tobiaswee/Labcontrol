@@ -77,16 +77,16 @@ private:
     QString *LoadLatexHeader();
     void MakeReceiptsAnonymous( QVector<paymentEntry_t*> *argDataVector, bool argAlsoAnonymizeClients );
 
-    const QString * const anonymousReceiptsPlaceholder;         //! Placeholder which shall be inserted for participant names if anonymous printing is desired (QString != "")
-    QString *dateString = nullptr;
-    QString expectedPaymentFileName;                            //! The name of the expected payment file
-    QString expectedPaymentFilePath;                            //! The path of the expected payment file
-    const QString * const latexHeaderName;                      //! The name of the chosen LaTeX header template
-    QFile *paymentFile = nullptr;                               //! A pointer to the '*.pay' file being watched for existance and starting the printing process
-    const bool * const printReceiptsForLocalClients;            //! Stores if receipts shall be printed for local clients
-    ReceiptsPrinter *receiptsPrinter = nullptr;                 //! Creates new thread for receipts printing
-    QTimer *timer = nullptr;                                    //! Used for regular checking if the payment file was created
-    const QString * const zTreeDataTargetPath;                  //! A reference to the data target path stored in the session class instance
+    const QString anonymousReceiptsPlaceholder;                 //!< Placeholder which shall be inserted for participant names if anonymous printing is desired (QString != "")
+    QString dateString;                                         //!< The expected date string of the payment file in form 'yyMMdd_hhmm'
+    QString expectedPaymentFileName;                            //!< The name of the expected payment file
+    QString expectedPaymentFilePath;                            //!< The path of the expected payment file
+    const QString latexHeaderName;                              //!< The name of the chosen LaTeX header template
+    QFile *paymentFile = nullptr;                               //!< A pointer to the '*.pay' file being watched for existance and starting the printing process
+    const bool * const printReceiptsForLocalClients;            //!< Stores if receipts shall be printed for local clients
+    ReceiptsPrinter *receiptsPrinter = nullptr;                 //!< Creates new thread for receipts printing
+    QTimer *timer = nullptr;                                    //!< Used for regular checking if the payment file was created
+    const QString zTreeDataTargetPath;                          //!< A reference to the data target path stored in the session class instance
 };
 
 }

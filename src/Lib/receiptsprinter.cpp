@@ -24,8 +24,8 @@
 
 extern std::unique_ptr< lc::Settings > settings;
 
-lc::ReceiptsPrinter::ReceiptsPrinter( const QString * const argDateString,
-                                      const QString * const argWorkpath,
+lc::ReceiptsPrinter::ReceiptsPrinter( const QString &argDateString,
+                                      const QString &argWorkpath,
                                       QObject *argParent ) :
     QThread{ argParent },
     dateString{ argDateString },
