@@ -78,6 +78,7 @@ private slots:
     void on_PBStartzTree_clicked();
     void on_PBViewDesktop_clicked();
     void on_RBUseLocalUser_toggled(bool checked);
+    void StartLocalzLeaf( QString argzLeafName, QString argzLeafVersion, int argzTreePort );
     //! Updates the icons of the QTableView displaying the clients' states
     /*!
      * This function iterates over all valid items of the 'TVClients' and sets their states
@@ -104,7 +105,7 @@ private:
     QTimer *gui_update_timer = nullptr;         //! A QTimer triggering updates of the graphical user interface
     QVector< QPixmap > icons;                   //! Vector of pixmaps storing the icons indicating the clients' statuses
     Lablib *lablib = nullptr;                   //! Accumulator of all program logic being accessed by the GUI
-    bool local_zLeaves_are_running = false;     //! Stores if a local zLeaf instance is running on the server ('true' if local zLeaf exists)
+    bool localzLeavesAreRunning = false;        //! Stores if a local z-Leaf instance is running on the server ('true' if local z-Leaf exists)
     QButtonGroup *userChooseButtonGroup = nullptr;      //! Used to group the radio buttons choosing which user shall be used for administrative client actions
     Ui::MainWindow *ui = nullptr;               //! Pointer storing all GUI items
     QVector<QStandardItem *> *valid_items = nullptr;    //! Stores all valid Client instances displayed by the table view, its main use is as iterable object for 'update_clients_table_view()'

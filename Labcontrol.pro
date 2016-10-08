@@ -4,7 +4,8 @@ TARGET = labcontrol
 TEMPLATE = app
 
 
-SOURCES += src/main.cpp \
+SOURCES += src/localzleafstarter.cpp \
+    src/main.cpp \
     src/mainwindow.cpp \
     src/sessiondisplay.cpp \
     src/sessionstarter.cpp \
@@ -20,7 +21,8 @@ SOURCES += src/main.cpp \
     src/Lib/settings.cpp \
     src/Lib/ztree.cpp
 
-HEADERS  += src/mainwindow.h \
+HEADERS  += src/localzleafstarter.h \
+    src/mainwindow.h \
     src/sessiondisplay.h \
     src/sessionstarter.h \
     src/Lib/client.h \
@@ -36,7 +38,8 @@ HEADERS  += src/mainwindow.h \
     src/Lib/settings.h \
     src/Lib/ztree.h
 
-FORMS    += src/mainwindow.ui \
+FORMS    += src/localzleafstarter.ui \
+    src/mainwindow.ui \
     src/sessiondisplay.ui \
     src/sessionstarter.ui
 

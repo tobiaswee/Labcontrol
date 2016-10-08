@@ -23,6 +23,7 @@
 #include <QDebug>
 #include <QInputDialog>
 
+#include "localzleafstarter.h"
 #include "mainwindow.h"
 #include "Lib/settings.h"
 
@@ -165,6 +166,15 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
         ui->TAdminActions->setEnabled( false );
     }
 
+    if ( settings->tasksetCmd.isEmpty() ) {
+        ui->CBClientNames->setEnabled( false );
+        ui->LFakeName->setEnabled( false );
+        ui->PBRunzLeaf->setEnabled( false );
+        ui->PBStartLocalzLeaf->setEnabled( false );
+        ui->PBStartzLeaf->setEnabled( false );
+        ui->PBStartzTree->setEnabled( false );
+    }
+
     // Disable 'PBOpenTerminal' if 'terminal_emulator_command' was not set
     if ( settings->termEmulCmd.isEmpty() ) {
         ui->GBExecuteOnEveryClient->setEnabled( false );
@@ -188,9 +198,27 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
         ui->LWebcamChooser->setEnabled( false );
     }
 
+    if ( settings->wineCmd.isEmpty() ) {
+        ui->CBClientNames->setEnabled( false );
+        ui->LFakeName->setEnabled( false );
+        ui->PBRunzLeaf->setEnabled( false );
+        ui->PBStartLocalzLeaf->setEnabled( false );
+        ui->PBStartzLeaf->setEnabled( false );
+        ui->PBStartzTree->setEnabled( false );
+    }
+
     // Disable the disable screensaver function if the 'xset_command' was not set
     if ( settings->xsetCmd.isEmpty() ) {
         ui->PBDeactivateScreensaver->setEnabled( false );
+    }
+
+    if ( settings->zTreeInstDir.isEmpty() ) {
+        ui->CBClientNames->setEnabled( false );
+        ui->LFakeName->setEnabled( false );
+        ui->PBRunzLeaf->setEnabled( false );
+        ui->PBStartLocalzLeaf->setEnabled( false );
+        ui->PBStartzLeaf->setEnabled( false );
+        ui->PBStartzTree->setEnabled( false );
     }
 }
 
@@ -344,7 +372,7 @@ void lc::MainWindow::on_PBKillLocalzLeaf_clicked() {
     killLocalzLeafProc.setProcessEnvironment( env );
     killLocalzLeafProc.startDetached( program, arguments );
 
-    local_zLeaves_are_running = false;
+    localzLeavesAreRunning = false;
 
     // Output message via the debug messages tab
     qDebug() << program << arguments;
@@ -479,44 +507,13 @@ void lc::MainWindow::on_PBShutdown_clicked() {
 }
 
 void lc::MainWindow::on_PBStartLocalzLeaf_clicked() {
-    // Show an error message, if no z-Leaf version was chosen yet
-    if ( ui->CBzLeafVersion->currentIndex() == 0 ) {
-        QMessageBox::information( this, tr( "Unset z-Leaf version" ), tr( "There is no z-Leaf version chosen yet. Please choose one." ), QMessageBox::Ok );
-        return;
-    }
-
-    // Create a QMessageBox for user interaction if there is already a z-Leaf running
-    QMessageBox *messageBox = nullptr;
-    if ( local_zLeaves_are_running ) {
-        messageBox = new QMessageBox{ QMessageBox::Warning, tr( "Running local zLeaf found" ), tr( "There already seems to exist a local zLeaf instance" ), QMessageBox::No | QMessageBox::Yes, this };
-        messageBox->setInformativeText( "Do you want to start a local zLeaf nonetheless?" );
-        messageBox->setDefaultButton( QMessageBox::No );
-        messageBox->exec();
-    }
-
-    if ( ( messageBox != nullptr && messageBox->clickedButton() == messageBox->button( QMessageBox::Yes ) ) || !local_zLeaves_are_running ) {
-        // Ask for the name the local zLeaf shall have
-        QString name = QInputDialog::getText( this, tr( "The local zLeaf's name" ),
-                                              tr( "Please enter the name the local zLeaf shall have." ),
-                                              QLineEdit::Normal, lablib->GetLocalZLeafDefaultName() );
-        lablib->SetLocalZLeafDefaultName( name );
-
-        QString program = QString{ settings->lcInstDir + "/scripts/start_zLeaf_labcontrol2.sh" };
-        QStringList arguments;
-        arguments << ui->CBzLeafVersion->currentText() << "127.0.0.1" << QString::number( ui->SBzLeafPort->value() - 7000 ) << name;
-
-        // Start the process
-        QProcess start_zLeaf_process;
-        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-        start_zLeaf_process.setProcessEnvironment( env );
-        start_zLeaf_process.startDetached( program, arguments );
-
-        local_zLeaves_are_running = true;
-
-        // Output message via the debug messages tab
-        qDebug() <<  program << arguments.join( " " );
-    }
-    delete messageBox;
+    LocalzLeafStarter *localzLeafStarter = new LocalzLeafStarter{ this };
+    localzLeafStarter->setWindowFlags( Qt::Window );
+    localzLeafStarter->show();
+    connect( localzLeafStarter, &LocalzLeafStarter::LocalzLeafRequested,
+             this, &MainWindow::StartLocalzLeaf );
+    connect( localzLeafStarter, SIGNAL( LocalzLeafRequested( QString, QString, int ) ),
+             localzLeafStarter, SLOT( deleteLater() ) );
 }
 
 void lc::MainWindow::on_PBStartzLeaf_clicked() {
@@ -722,6 +719,23 @@ void lc::MainWindow::SetupWidgets() {
                         "See the GNU General Public License for more details.\n\n"
                         "You should have received a copy of the GNU General Public License\n"
                         "along with Labcontrol. If not, see <http://www.gnu.org/licenses/>.\n\n\n" );
+}
+
+void lc::MainWindow::StartLocalzLeaf( QString argzLeafName, QString argzLeafVersion,
+                                      int argzTreePort ) {
+    if ( settings->tasksetCmd.isEmpty() || settings->wineCmd.isEmpty()
+         || settings->zTreeInstDir.isEmpty() ) {
+        return;
+    }
+
+    QProcess startProc;
+    startProc.setProcessEnvironment( QProcessEnvironment::systemEnvironment() );
+    QStringList arguments;
+    arguments << "0x00000001" << settings->wineCmd
+              << QString{ settings->zTreeInstDir + "/zTree_" + argzLeafVersion + "/zleaf.exe" }
+              << "/server" << "127.0.0.1" << "/channel"
+              << QString::number( argzTreePort - 7000 ) << "/name" << argzLeafName;
+    startProc.startDetached( settings->tasksetCmd, arguments );
 }
 
 void lc::MainWindow::UpdateClientsTableView() {
