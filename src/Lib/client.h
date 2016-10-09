@@ -84,6 +84,7 @@ public:
       @return The current state of the client
     */
     state_t GetClientState() const { return state; }
+    QString GetSessionPort() const { return sessionPort; }
     /*!
      * \brief Kills all processes 'zleaf.exe' on the client
      */
@@ -99,6 +100,8 @@ public:
      * \param argOpenAsRoot Run the terminal session as root (true) or as normal user (false)
      */
     void OpenTerminal( const QString &argCommand, const bool &argOpenAsRoot );
+    void SetSessionPort( const QString &argSP ) { sessionPort = argSP; }
+    void SetzLeafVersion( const QString &argzLeafV ) { zLeafVersion = argzLeafV; }
     //! Shows the desktop of the given client
     void ShowDesktop();
     /*!
@@ -120,6 +123,8 @@ private:
     QThread pingerThread;
     state_t state = state_t::UNINITIALIZED;
     QTimer *pingTimer = nullptr;                       //! QTimer used to trigger pings by pinger's ClientPinger instance
+    QString sessionPort;
+    QString zLeafVersion;
 
 private slots:
     void GotStatusChanged( state_t argState );

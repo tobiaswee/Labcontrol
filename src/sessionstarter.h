@@ -22,7 +22,11 @@
 
 #include <QWidget>
 
+class QStandardItemModel;
+
 namespace lc {
+
+class Client;
 
 namespace Ui {
 class SessionStarter;
@@ -35,8 +39,25 @@ public:
     explicit SessionStarter( QWidget *argParent = nullptr );
     ~SessionStarter();
 
+signals:
+    void RequestNewDataTargetPath();
+    void RequestNewSession( QVector< Client* > argAssocCl, QString argParticipNameReplacement,
+                            bool argPrintAnonReceipts, QString argReceiptsHeader,
+                            QString argzTreeDataTargetPath, quint16 argzTreePort,
+                            QString argzTreeVersion );
+
 private:
+    QStandardItemModel *clientsViewModel = nullptr;
     Ui::SessionStarter *ui = nullptr;
+
+private slots:
+    void GetNewDataTargetPath();
+    void on_CBDataTargetPath_activated( int argIndex );
+    void on_CBReceiptsHeader_activated( int argIndex );
+    void on_CBzTreeVersion_activated( int argIndex );
+    void on_ChBPrintAnonymousReceipts_clicked( bool argChecked );
+    void on_PBStartSession_clicked();
+    void on_SBPort_editingFinished();
 };
 
 }

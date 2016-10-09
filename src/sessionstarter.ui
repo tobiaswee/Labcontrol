@@ -270,5 +270,22 @@ Please take care that it does not contain any spaces or other special characters
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>PBCancel</sender>
+   <signal>clicked()</signal>
+   <receiver>lc::SessionStarter</receiver>
+   <slot>deleteLater()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>319</x>
+     <y>552</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>319</x>
+     <y>287</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
