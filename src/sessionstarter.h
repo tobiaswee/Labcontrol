@@ -36,7 +36,8 @@ class SessionStarter : public QWidget {
     Q_OBJECT
 
 public:
-    explicit SessionStarter( QWidget *argParent = nullptr );
+    explicit SessionStarter( const QVector< quint16 > &argOccupiedPorts,
+                             QWidget *argParent = nullptr );
     ~SessionStarter();
 
 signals:
@@ -47,7 +48,10 @@ signals:
                             QString argzTreeVersion );
 
 private:
+    void CheckIfPortIsOccupied( quint16 argPort );
+
     QStandardItemModel *clientsViewModel = nullptr;
+    const QVector< quint16 > &occupiedPorts;
     Ui::SessionStarter *ui = nullptr;
 
 private slots:

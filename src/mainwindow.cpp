@@ -512,7 +512,7 @@ void lc::MainWindow::on_PBStartLocalzLeaf_clicked() {
 }
 
 void lc::MainWindow::on_PBStartSession_clicked() {
-    SessionStarter *sessionStarter = new SessionStarter{ this };
+    SessionStarter *sessionStarter = new SessionStarter{ lablib->GetOccupiedPorts(), this };
     sessionStarter->setWindowFlags( Qt::Window );
     sessionStarter->show();
     connect( sessionStarter, &SessionStarter::RequestNewSession,
@@ -534,22 +534,6 @@ void lc::MainWindow::on_PBStartSession_clicked() {
 //        if (messageBox.clickedButton() == messageBox.button(QMessageBox::No))
 //            return;
 //    }
-
-//    // Show an error message, if there is already a zTree instance using the currently chosen port
-//    QVector<int> *occupiedPorts = lablib->GetOccupiedPorts();
-//    if ( occupiedPorts->length() != 0 ) {
-//        int chosenPort = ui->SBPort->value();
-//        for ( auto cit = occupiedPorts->cbegin(); cit != occupiedPorts->cend(); ++cit ) {
-//            if ( *cit == chosenPort ) {
-//                QMessageBox messageBox{ QMessageBox::Warning, tr( "Port is already used" ),
-//                            tr( "The chosen port is already used by another started zTree instance.\nPlease choose another port." ), QMessageBox::Ok, this };
-//                messageBox.exec();
-//                occupiedPorts = nullptr;
-//                return;
-//            }
-//        }
-//    }
-//    occupiedPorts = nullptr;
 
 //    ui->CBDataTargetPath->setStyleSheet( "" );
 //    ui->CBPrintanonymousreceipts->setStyleSheet( "" );

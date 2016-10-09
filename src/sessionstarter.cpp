@@ -29,16 +29,16 @@
 
 extern std::unique_ptr< lc::Settings > settings;
 
-lc::SessionStarter::SessionStarter( QWidget *argParent ) :
+lc::SessionStarter::SessionStarter( const QVector< quint16 > &argOccupiedPorts,
+                                    QWidget *argParent ) :
     QWidget{ argParent },
     clientsViewModel{ new QStandardItemModel{ this } },
+    occupiedPorts{ argOccupiedPorts },
     ui{ new Ui::SessionStarter }
 {
     ui->setupUi( this );
 
-    if ( settings->GetChosenZTreePort() ) {
-        ui->SBPort->setValue( settings->GetChosenZTreePort() );
-    }
+    CheckIfPortIsOccupied( settings->GetChosenZTreePort() );
 
     if ( settings->dvipsCmd.isEmpty() || settings->latexCmd.isEmpty()
          || settings->lcInstDir.isEmpty() || settings->lprCmd.isEmpty()
@@ -97,6 +97,13 @@ lc::SessionStarter::SessionStarter( QWidget *argParent ) :
 
 lc::SessionStarter::~SessionStarter() {
     delete ui;
+}
+void lc::SessionStarter::CheckIfPortIsOccupied( quint16 argPort ) {
+    if ( occupiedPorts.contains( argPort ) ) {
+        CheckIfPortIsOccupied( argPort + 1 );
+    } else {
+        ui->SBPort->setValue( argPort );
+    }
 }
 
 void lc::SessionStarter::GetNewDataTargetPath() {
@@ -184,4 +191,6 @@ void lc::SessionStarter::on_PBStartSession_clicked() {
 
 void lc::SessionStarter::on_SBPort_editingFinished() {
     ui->SBPort->setStyleSheet( "" );
+
+    CheckIfPortIsOccupied( ui->SBPort->value() );
 }
