@@ -27,7 +27,6 @@
 lc::Lablib::Lablib( QObject *argParent ) :
     QObject{ argParent },
     labSettings{ "Economic Laboratory", "Labcontrol", this },
-    occupiedPorts{ new QVector< int > },
     sessionsModel{ new SessionsModel{ this } }
 {
     for ( const auto &s : settings->GetClients() ) {
@@ -63,7 +62,6 @@ lc::Lablib::~Lablib () {
     }
     netstatThread.quit();
     netstatThread.wait();
-    delete occupiedPorts;
 }
 
 bool lc::Lablib::CheckIfUserIsAdmin() const {
@@ -116,12 +114,12 @@ void lc::Lablib::ShowPreprints() {
     qDebug() << program << arguments.join( " " );
 }
 
-void lc::Lablib::StartNewZTreeInstance( QString argDataTargetPath, int argPort,
-                                        QString argzTreeVersion,
-                                        bool argReceiptsForLocalClients,
-                                        QString argAnonReceiptPlaceholder,
-                                        QString argChosenLatexHeader ) {
-    if ( !QDir( argDataTargetPath ).exists() ) {
+void lc::Lablib::StartNewSession( QVector< Client* > argAssocCl,
+                                  QString argParticipNameReplacement,
+                                  bool argPrintLocalReceipts, QString argReceiptsHeader,
+                                  QString argzTreeDataTargetPath, quint16 argzTreePort,
+                                  QString argzTreeVersion ) {
+    if ( !QDir( argzTreeDataTargetPath ).exists() ) {
         QMessageBox messageBox{ QMessageBox::Critical, tr( "Data target path does not exist" ),
                     tr( "Your chosen data target path does not exist."
                         " Do you want it to be created automatically?" ),
@@ -136,7 +134,7 @@ void lc::Lablib::StartNewZTreeInstance( QString argDataTargetPath, int argPort,
             messageBox.exec();
             return;
         } else {
-            if ( !QDir().mkpath( argDataTargetPath ) ) {
+            if ( !QDir().mkpath( argzTreeDataTargetPath ) ) {
                 QMessageBox messageBox{ QMessageBox::Critical, tr( "Data target directory could"
                                                                    " not be created" ),
                                         tr( "Your chosen data target directory does not exist"
@@ -148,19 +146,19 @@ void lc::Lablib::StartNewZTreeInstance( QString argDataTargetPath, int argPort,
         }
     }
     try {
-        sessionsModel->push_back( new Session{ argDataTargetPath,
-                                               argPort, argzTreeVersion,
-                                               argReceiptsForLocalClients,
-                                               argAnonReceiptPlaceholder,
-                                               argChosenLatexHeader } );
-        occupiedPorts->append( sessionsModel->back()->zTreePort );
+        sessionsModel->push_back( new Session{ argzTreeDataTargetPath,
+                                               argzTreePort, argzTreeVersion,
+                                               argPrintLocalReceipts,
+                                               argParticipNameReplacement,
+                                               argReceiptsHeader } );
+        occupiedPorts.append( sessionsModel->back()->zTreePort );
     }
     catch ( Session::lcDataTargetPathCreationFailed ) {
         QMessageBox::information( nullptr, tr( "Chosen data target path could not be created" ),
                                   tr( "The path specified by your chosen data target path '%1'"
                                       " could not be created. Please check if it is a valid"
                                       " location and you have all needed permissions." )
-                                  .arg( argDataTargetPath ) );
+                                  .arg( argzTreeDataTargetPath ) );
     }
 }
 

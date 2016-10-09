@@ -209,6 +209,21 @@ Please take care that it does not contain any spaces or other special characters
           </item>
          </widget>
         </item>
+        <item>
+         <widget class="QCheckBox" name="ChBReceiptsForLocalClients">
+          <property name="toolTip">
+           <string>This decides if receipts shall be printed for any z-Leaf instance running locally on the server.
+
+Warning: If this is disabled no receipts will be printed for ANY participant whose name contains the character string &quot;local&quot;!</string>
+          </property>
+          <property name="text">
+           <string>Print receipts for local clients</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>

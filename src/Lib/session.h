@@ -38,7 +38,7 @@ class Session : public QObject {
 public:
     const int zTreePort = 7000;                             //! The port this session's zTree instance is running on
 
-    Session( const QString &argZTreeDataTargetPath, const int argZTreePort,
+    Session( const QString &argZTreeDataTargetPath, const quint16 argZTreePort,
              const QString &argZTreeVersionPath, bool argPrintReceiptsForLocalClients, const QString &argAnonymousReceiptsPlaceholder,
              const QString &argLatexHeaderName );
     ~Session();

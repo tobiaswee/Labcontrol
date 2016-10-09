@@ -26,7 +26,7 @@
 
 extern std::unique_ptr< lc::Settings > settings;
 
-lc::Session::Session( const QString &argZTreeDataTargetPath, const int argZTreePort,
+lc::Session::Session( const QString &argZTreeDataTargetPath, const quint16 argZTreePort,
                       const QString &argZTreeVersionPath, bool argPrintReceiptsForLocalClients,
                       const QString &argAnonymousReceiptsPlaceholder,
                       const QString &argLatexHeaderName ):

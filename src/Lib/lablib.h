@@ -75,7 +75,7 @@ public:
      *
      * @return A pointer to a QVector<unsigned int> containing all occupied ports
      */
-    QVector<int> *GetOccupiedPorts () const { return occupiedPorts; }
+    const QVector< quint16 > &GetOccupiedPorts () const { return occupiedPorts; }
     /** Returns a pointer to the QAbstractTableModel storing the Session instances
      *
      * @return A pointer to the QAbstractTableModel storing the Session instances
@@ -90,9 +90,10 @@ public:
     void ShowPreprints();
 
 public slots:
-    void StartNewZTreeInstance( QString argDataTargetPath, int argPort, QString argzTreeVersion,
-                                bool argReceiptsForLocalClients, QString argAnonReceiptPlaceholder,
-                                QString argChosenLatexHeader );
+    void StartNewSession( QVector< Client* > argAssocCl, QString argParticipNameReplacement,
+                          bool argPrintLocalReceipts, QString argReceiptsHeader,
+                          QString argzTreeDataTargetPath, quint16 argzTreePort,
+                          QString argzTreeVersion );
 
 signals:
     void ZLEAF_RUNNING( QString argClientIP );
@@ -113,7 +114,7 @@ private:
     NetstatAgent *netstatAgent = nullptr;           //! Tries to detect active zLeaf connections from the clients
     QThread netstatThread;
     QTimer *netstatTimer = nullptr;                //! A timer for regular execution of the NetstatAgent instance's request mechanism
-    QVector< int > *occupiedPorts = nullptr;
+    QVector< quint16 > occupiedPorts;
     SessionsModel *sessionsModel = nullptr;        //! A derivation from QAbstractTableModel used to store the single Session instances
 };
 

@@ -515,8 +515,8 @@ void lc::MainWindow::on_PBStartSession_clicked() {
     SessionStarter *sessionStarter = new SessionStarter{ this };
     sessionStarter->setWindowFlags( Qt::Window );
     sessionStarter->show();
-    // connect( sessionStarter, &SessionStarter::SessionRequested,
-    //          lablib, &Lablib::StartNewZTreeInstance );
+    connect( sessionStarter, &SessionStarter::RequestNewSession,
+             lablib, &Lablib::StartNewSession );
     connect( sessionStarter, &SessionStarter::destroyed,
              sessionStarter, &SessionStarter::deleteLater );
 //    // Show an error message, if no zTree version was chosen yet

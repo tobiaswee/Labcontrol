@@ -173,7 +173,7 @@ void lc::SessionStarter::on_PBStartSession_clicked() {
     }
 
     emit RequestNewSession( associatedClients, anonymousReceiptsPlaceholder,
-                            ui->ChBPrintAnonymousReceipts->isChecked(),
+                            ui->ChBReceiptsForLocalClients->isChecked(),
                             ui->CBReceiptsHeader->currentText(),
                             ui->CBDataTargetPath->currentText(),
                             static_cast< quint16 >( ui->SBPort->value() ),

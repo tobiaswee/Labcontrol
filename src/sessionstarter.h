@@ -42,7 +42,7 @@ public:
 signals:
     void RequestNewDataTargetPath();
     void RequestNewSession( QVector< Client* > argAssocCl, QString argParticipNameReplacement,
-                            bool argPrintAnonReceipts, QString argReceiptsHeader,
+                            bool argPrintLocalReceipts, QString argReceiptsHeader,
                             QString argzTreeDataTargetPath, quint16 argzTreePort,
                             QString argzTreeVersion );
 
