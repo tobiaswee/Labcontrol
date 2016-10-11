@@ -64,11 +64,11 @@ void lc::ManualPrintingSetup::on_PBSelectFile_clicked() {
     if ( fileDialog.exec() ) {
         ui->PBSelectFile->setStyleSheet( "" );
         const QString tmpFileName{ fileDialog.selectedFiles().at( 0 ) };
-        const QString dateString{ tmpFileName.split( '/', QString::KeepEmptyParts,
-                                                     Qt::CaseInsensitive ).last()
+        dateString = tmpFileName.split( '/', QString::KeepEmptyParts,
+                                        Qt::CaseInsensitive ).last()
                                 .split( '.', QString::KeepEmptyParts,
-                                        Qt::CaseInsensitive ).first() };
-        QString workPath{ tmpFileName };
+                                        Qt::CaseInsensitive ).first();
+        workPath = tmpFileName;
         workPath.truncate( workPath.lastIndexOf( '/' ) );
     }
 }
@@ -91,9 +91,9 @@ void lc::ManualPrintingSetup::on_PBPrint_clicked() {
         anonymousReceiptsPlaceholder = ui->CBReplaceParticipantNames->currentText();
     }
 
-    emit RequestReceiptsHandler( ui->ChBReceiptsForLocalClients->isChecked(),
+    emit RequestReceiptsHandler( workPath, ui->ChBReceiptsForLocalClients->isChecked(),
                                  anonymousReceiptsPlaceholder,
-                                 ui->CBReceiptsHeader->currentText() );
+                                 ui->CBReceiptsHeader->currentText(), dateString );
 
     this->deleteLater();
 }

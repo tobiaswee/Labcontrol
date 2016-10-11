@@ -54,7 +54,7 @@ public:
                               bool argPrintReceiptsForLocalClients,
                               const QString &argAnonymousReceiptsPlaceholder,
                               const QString &argLatexHeaderName,
-                              const QString * const argDateString, QObject *argParent = nullptr );
+                              const QString &argDateString, QObject *argParent = nullptr );
 
 signals:
     void PrintingFinished();

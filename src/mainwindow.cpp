@@ -425,6 +425,8 @@ void lc::MainWindow::on_PBPrintPaymentFileManually_clicked() {
     manPrint->show();
     connect( manPrint, SIGNAL( destroyed( QObject* ) ),
              manPrint, SLOT( deleteLater() ) );
+    connect( manPrint, &ManualPrintingSetup::RequestReceiptsHandler,
+             this, &MainWindow::StartReceiptsHandler );
 }
 
 void lc::MainWindow::on_PBRunzLeaf_clicked() {
@@ -671,6 +673,18 @@ void lc::MainWindow::StartLocalzLeaf( QString argzLeafName, QString argzLeafVers
               << "/server" << "127.0.0.1" << "/channel"
               << QString::number( argzTreePort - 7000 ) << "/name" << argzLeafName;
     startProc.startDetached( settings->tasksetCmd, arguments );
+}
+
+void lc::MainWindow::StartReceiptsHandler( QString argzTreeDataTargetPath,
+                                           bool argReceiptsForLocalClients,
+                                           QString argAnonymousReceiptsPlaceholder,
+                                           QString argLatexHeaderName, QString argDateString) {
+    ReceiptsHandler *recHand = new ReceiptsHandler{ argzTreeDataTargetPath,
+                                                    argReceiptsForLocalClients,
+                                                    argAnonymousReceiptsPlaceholder,
+                                                    argLatexHeaderName, argDateString, this };
+    connect( recHand, &ReceiptsHandler::PrintingFinished,
+             recHand, &ReceiptsHandler::deleteLater );
 }
 
 void lc::MainWindow::UpdateClientsTableView() {

@@ -36,13 +36,16 @@ public:
     ~ManualPrintingSetup();
 
 signals:
-    void RequestReceiptsHandler( bool argReceiptsForLocalClients,
+    void RequestReceiptsHandler( QString argzTreeDataTargetPath,
+                                 bool argReceiptsForLocalClients,
                                  QString argAnonymousReceiptsPlaceholder,
-                                 QString argLatexHeaderName );
+                                 QString argLatexHeaderName,
+                                 QString argDateString );
 
 private:
-    QString filePath;
+    QString dateString;
     Ui::ManualPrintingSetup *ui = nullptr;
+    QString workPath;
 
 private slots:
     void on_CBReceiptsHeader_activated( int argIndex );

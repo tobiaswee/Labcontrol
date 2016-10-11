@@ -109,6 +109,13 @@ private:
     QButtonGroup *userChooseButtonGroup = nullptr;      //! Used to group the radio buttons choosing which user shall be used for administrative client actions
     Ui::MainWindow *ui = nullptr;               //! Pointer storing all GUI items
     QVector<QStandardItem *> *valid_items = nullptr;    //! Stores all valid Client instances displayed by the table view, its main use is as iterable object for 'update_clients_table_view()'
+
+private slots:
+    void StartReceiptsHandler( QString argzTreeDataTargetPath,
+                               bool argReceiptsForLocalClients,
+                               QString argAnonymousReceiptsPlaceholder,
+                               QString argLatexHeaderName,
+                               QString argDateString );
 };
 
 }
