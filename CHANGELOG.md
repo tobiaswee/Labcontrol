@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 ### Removed
 
-## [2.1.0] - 2016-10-12
+## [v2.1.0] - 2016-10-12
 ### Added
 * Manual printing of _z-Tree_ payment files
 * Proper handling of simultaneously conducted sessions
@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Removed
 * Never properly implemented client webcam functionality
 
-## [2.0.0] - 2016-09-21
+## [v2.0.0] - 2016-09-21
 ### Added
 * Imported code from the lp:labcontrol repository on launchpad.net
 
