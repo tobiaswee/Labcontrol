@@ -7,6 +7,7 @@ TEMPLATE = app
 SOURCES += src/localzleafstarter.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
+    src/manualprintingsetup.cpp \
     src/sessiondisplay.cpp \
     src/sessionstarter.cpp \
     src/Lib/client.cpp \
@@ -23,6 +24,7 @@ SOURCES += src/localzleafstarter.cpp \
 
 HEADERS  += src/localzleafstarter.h \
     src/mainwindow.h \
+    src/manualprintingsetup.h \
     src/sessiondisplay.h \
     src/sessionstarter.h \
     src/Lib/client.h \
@@ -40,6 +42,7 @@ HEADERS  += src/localzleafstarter.h \
 
 FORMS    += src/localzleafstarter.ui \
     src/mainwindow.ui \
+    src/manualprintingsetup.ui \
     src/sessiondisplay.ui \
     src/sessionstarter.ui
 

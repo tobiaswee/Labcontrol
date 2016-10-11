@@ -25,6 +25,7 @@
 
 #include "localzleafstarter.h"
 #include "mainwindow.h"
+#include "manualprintingsetup.h"
 #include "Lib/settings.h"
 
 extern std::unique_ptr< lc::Settings > settings;
@@ -419,23 +420,11 @@ void lc::MainWindow::on_PBOpenTerminal_clicked() {
 }
 
 void lc::MainWindow::on_PBPrintPaymentFileManually_clicked() {
-    QFileDialog *fileDialog = new QFileDialog{ this, tr( "Please choose a payment file to print." ),
-                                                QDir::homePath(), "*.pay" };
-    fileDialog->setFileMode( QFileDialog::ExistingFile );
-    fileDialog->setOption( QFileDialog::ReadOnly, true );
-    if( fileDialog->exec() ) {
-        QString fileName = fileDialog->selectedFiles().at( 0 );
-        QString *dateString = new QString{ fileName.split( '/', QString::KeepEmptyParts,
-                                                           Qt::CaseInsensitive ).last()
-        .split( '.', QString::KeepEmptyParts, Qt::CaseInsensitive ).first() };
-        QString *workPath = new QString{ fileName };
-        workPath->truncate( workPath->lastIndexOf( '/' ) );
-        // lcReceiptsHandler *receiptsHandler = new lcReceiptsHandler{ ui->PTEDebugMessages, *workPath,
-        //                         ui->CBReceiptsforLocalClients->isChecked(), lablib->GetAnonymousReceiptsPlaceholder(),
-        //                         ui->CBReceiptsHeader->currentText(), lablib->GetSettingsItems(), dateString, this };
-        // connect( receiptsHandler, &lcReceiptsHandler::PrintingFinished, receiptsHandler, &lcReceiptsHandler::deleteLater );
-    }
-    delete fileDialog;
+    ManualPrintingSetup *manPrint = new ManualPrintingSetup{ this };
+    manPrint->setWindowFlags( Qt::Window );
+    manPrint->show();
+    connect( manPrint, SIGNAL( destroyed( QObject* ) ),
+             manPrint, SLOT( deleteLater() ) );
 }
 
 void lc::MainWindow::on_PBRunzLeaf_clicked() {
