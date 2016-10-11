@@ -439,15 +439,6 @@ void lc::MainWindow::on_PBPrintPaymentFileManually_clicked() {
 }
 
 void lc::MainWindow::on_PBRunzLeaf_clicked() {
-    // Show an error message, if no zTree version was chosen yet
-    if ( ui->CBzLeafVersion->currentIndex() == 0 ) {
-        QMessageBox messageBox{ QMessageBox::Warning, tr( "Unset z-Leaf version" ),
-                    tr( "There is no z-Leaf version chosen yet. Please choose one." ),
-                    QMessageBox::Ok, this };
-        messageBox.exec();
-        return;
-    }
-
     // Check if more than one client is selected and issue a warning message if so
     unsigned short int numberOfSelectedClients = 0;
     QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
@@ -462,16 +453,13 @@ void lc::MainWindow::on_PBRunzLeaf_clicked() {
         messageBox.exec();
     } else {
         const QString * const fakeName = new QString{ ui->CBClientNames->currentText() };
-        const QString * const zLeafVersion = new QString{ ui->CBzLeafVersion->currentText() };
         for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
             if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
                 Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-                client->StartZLeaf( zLeafVersion, ui->SBzLeafPort->value(),
-                                    fakeName );
+                client->StartZLeaf( fakeName );
             }
         }
         delete fakeName;
-        delete zLeafVersion;
     }
 }
 
@@ -545,23 +533,13 @@ void lc::MainWindow::on_PBStartSession_clicked() {
 }
 
 void lc::MainWindow::on_PBStartzLeaf_clicked() {
-    // Show an error message, if no z-Leaf version was chosen yet
-    if ( ui->CBzLeafVersion->currentIndex() == 0 ) {
-        QMessageBox messageBox{ QMessageBox::Warning, tr( "Unset z-Leaf version" ), tr( "There is no z-Leaf version chosen yet. Please choose one." ), QMessageBox::Ok, this };
-        messageBox.exec();
-        return;
-    }
-
     QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
-    const QString * const zLeafVersion = new QString{ ui->CBzLeafVersion->currentText() };
     for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
             Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            client->StartZLeaf( zLeafVersion, ui->SBzLeafPort->value(),
-                                nullptr );
+            client->StartZLeaf( nullptr );
         }
     }
-    delete zLeafVersion;
 }
 
 void lc::MainWindow::on_PBViewDesktop_clicked() {
@@ -581,8 +559,6 @@ void lc::MainWindow::on_RBUseLocalUser_toggled(bool checked) {
 }
 
 void lc::MainWindow::SetupWidgets() {
-    // Set the correct initial port for the
-    ui->SBzLeafPort->setValue( settings->GetChosenZTreePort() );
     // Fill the 'CBClientNames' with possible client names and the 'TVClients' with the clients
     if ( !settings->GetClients().isEmpty() ) {
         valid_items = new QVector< QStandardItem * >;
@@ -637,17 +613,10 @@ void lc::MainWindow::SetupWidgets() {
     if ( zTreeEntries.isEmpty() ) {
         ui->CBClientNames->setEnabled( false );
         ui->GBzTree->setEnabled( false );
-        ui->GLzLeafSettings->setEnabled( false );
         ui->LFakeName->setEnabled( false );
         ui->PBRunzLeaf->setEnabled( false );
         ui->PBStartLocalzLeaf->setEnabled( false );
         ui->PBStartzLeaf->setEnabled( false );
-    } else {
-        ui->CBzLeafVersion->addItem( "NONE" );
-        for ( const auto &zTreeVersionString : zTreeEntries ) {
-            ui->CBzLeafVersion->addItem( zTreeVersionString );
-        }
-        ui->CBzLeafVersion->setCurrentIndex( 0 );
     }
 
     // Disable the admin tab if the user has no administrative rights and set it up

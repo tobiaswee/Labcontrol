@@ -80,8 +80,8 @@ lc::SessionStarter::SessionStarter( const QVector< quint16 > &argOccupiedPorts,
 
         QStandardItem *item = new QStandardItem( s->name );
         item->setEditable( false );
-        const QString sessionPort{ s->GetSessionPort() };
-        if ( sessionPort.isEmpty() ) {
+        const QString sessionPort{ QString::number( s->GetSessionPort() ) };
+        if ( sessionPort == "0" ) {
             item->setText( s->name );
         } else {
             item->setBackground( QBrush{ QColor{ 196, 196, 255 } } );
@@ -173,7 +173,7 @@ void lc::SessionStarter::on_PBStartSession_clicked() {
     for ( auto cit = activatedItems.cbegin(); cit != activatedItems.cend(); ++cit ) {
         if ( ( *cit ).data( Qt::DisplayRole ).type() != 0 ) {
             Client *client = static_cast< Client* >( ( *cit ).data( Qt::UserRole ).value< void* >() );
-            client->SetSessionPort( QString::number( ui->SBPort->value() ) );
+            client->SetSessionPort( ui->SBPort->value() );
             client->SetzLeafVersion( ui->CBzTreeVersion->currentText() );
             associatedClients.append( client );
         }

@@ -262,9 +262,8 @@ void lc::Client::Shutdown() {
     GotStatusChanged( state_t::SHUTTING_DOWN );
 }
 
-void lc::Client::StartZLeaf( const QString * const argZTreeVersion, unsigned short int argPort,
-                             const QString * const argFakeName ) {
-    if ( state < state_t::RESPONDING ) {
+void lc::Client::StartZLeaf( const QString * const argFakeName ) {
+    if ( state < state_t::RESPONDING || zLeafVersion.isEmpty() || GetSessionPort() < 7000 ) {
         return;
     }
 
@@ -285,27 +284,27 @@ void lc::Client::StartZLeaf( const QString * const argZTreeVersion, unsigned sho
               == messageBoxRunningZLeafFound->button( QMessageBox::Yes ) )
          || state != state_t::ZLEAF_RUNNING ) {
         QStringList arguments;
-        if ( argFakeName  == nullptr && argPort == 7000 ) {
+        if ( argFakeName  == nullptr && GetSessionPort() == 7000 ) {
             arguments << "-i" << settings->pkeyPathUser
                       << QString{ settings->userNameOnClients + "@" + ip }
                       << "DISPLAY=:0.0" << settings->tasksetCmd << "0x00000001" << settings->wineCmd
-                      << QString{ settings->zTreeInstDir + "/zTree_" + *argZTreeVersion + "/zleaf.exe" }
+                      << QString{ settings->zTreeInstDir + "/zTree_" + GetzLeafVersion() + "/zleaf.exe" }
                       << "/server" << settings->serverIP;
         } else {
             if ( argFakeName  == nullptr ) {
                 arguments << "-i" << settings->pkeyPathUser
                           << QString{ settings->userNameOnClients + "@" + ip }
                           << "DISPLAY=:0.0" << settings->tasksetCmd << "0x00000001" << settings->wineCmd
-                          << QString{ settings->zTreeInstDir + "/zTree_" + *argZTreeVersion + "/zleaf.exe" }
+                          << QString{ settings->zTreeInstDir + "/zTree_" + GetzLeafVersion() + "/zleaf.exe" }
                           << "/server" << settings->serverIP << "/channel"
-                          << QString::number( static_cast< int >( argPort ) - 7000 );
+                          << QString::number( GetSessionPort() - 7000 );
             } else {
                 arguments << "-i" << settings->pkeyPathUser
                           << QString{ settings->userNameOnClients + "@" + ip }
                           << "DISPLAY=:0.0" << settings->tasksetCmd << "0x00000001" << settings->wineCmd
-                          << QString{ settings->zTreeInstDir + "/zTree_" + *argZTreeVersion + "/zleaf.exe" }
+                          << QString{ settings->zTreeInstDir + "/zTree_" + GetzLeafVersion() + "/zleaf.exe" }
                           << "/server" << settings->serverIP << "/channel"
-                          << QString::number( static_cast< int >( argPort ) - 7000 )
+                          << QString::number( GetSessionPort() - 7000 )
                           << "/name" << *argFakeName;
             }
         }

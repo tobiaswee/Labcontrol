@@ -96,53 +96,6 @@
               </widget>
              </item>
              <item>
-              <layout class="QGridLayout" name="GLzLeafSettings">
-               <item row="0" column="0">
-                <widget class="QLabel" name="LzLeafVersion">
-                 <property name="toolTip">
-                  <string>The z-Leaf version which shall be used for the experiment.</string>
-                 </property>
-                 <property name="text">
-                  <string>z-Leaf version:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QComboBox" name="CBzLeafVersion">
-                 <property name="toolTip">
-                  <string>The z-Leaf version which shall be used for the experiment.</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QLabel" name="LzLeafPort">
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The port which will be used by started z-Leaf instances. Only matters if multiple experiments shall be run in parallel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="text">
-                  <string>Port</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QSpinBox" name="SBzLeafPort">
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The port which will be used by started z-Leaf instances. Only matters if multiple experiments shall be run in parallel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="minimum">
-                  <number>7000</number>
-                 </property>
-                 <property name="maximum">
-                  <number>65535</number>
-                 </property>
-                 <property name="value">
-                  <number>7000</number>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
               <widget class="QPushButton" name="PBStartzLeaf">
                <property name="toolTip">
                 <string>Starts zLeaf on the selected clients with the port given in the 'zTree' groupbox.</string>
