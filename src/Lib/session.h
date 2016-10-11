@@ -73,7 +73,6 @@ private:
     const QVector< Client* > assocClients;
     const QString latexHeaderName;                              //! The name of the chosen LaTeX header
     const bool printReceiptsForLocalClients = true;             //! True if receipts shall be printed for local clients
-    ReceiptsHandler *receiptsHandler = nullptr;                 //! For automatic creation and printing of the receipts
     QString zTreeDataTargetPath;                                //! The path were the data of this zTree instance's session will be saved
     ZTree *zTreeInstance= nullptr;                              //! The session's zTree instance
     const QString zTreeVersionPath;                             //! The path to the version of zTree used by this session's instance

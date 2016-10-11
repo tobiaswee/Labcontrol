@@ -59,7 +59,6 @@ lc::Session::~Session() {
         client->SetSessionPort( 0 );
         client->SetzLeafVersion( "" );
     }
-    delete receiptsHandler;
 }
 
 QVariant lc::Session::GetDataItem( int argIndex ) {
@@ -89,10 +88,8 @@ void lc::Session::InitializeClasses() {
     // Only create a 'Receipts_Handler' instance, if all neccessary variables were set
     if ( latexHeaderName != "None found" && !settings->dvipsCmd.isEmpty()
          && !settings->latexCmd.isEmpty() ) {
-        receiptsHandler = new ReceiptsHandler{ zTreeDataTargetPath,
-                                               printReceiptsForLocalClients,
-                                               anonymousReceiptsPlaceholder,
-                                               latexHeaderName };
+        new ReceiptsHandler{ zTreeDataTargetPath, printReceiptsForLocalClients,
+                             anonymousReceiptsPlaceholder, latexHeaderName, this };
     } else {
         qDebug() << "No 'ReceiptsHandler' instance was created.";
     }

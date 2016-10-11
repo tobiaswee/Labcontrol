@@ -27,27 +27,22 @@
 extern std::unique_ptr< lc::Settings > settings;
 
 lc::ReceiptsHandler::ReceiptsHandler( const QString &argZTreeDataTargetPath,
-                                      const bool &argPrintReceiptsForLocalClients,
+                                      bool argPrintReceiptsForLocalClients,
                                       const QString &argAnonymousReceiptsPlaceholder,
                                       const QString &argLatexHeaderName,
                                       QObject *argParent ) :
     QObject{ argParent },
     anonymousReceiptsPlaceholder{ argAnonymousReceiptsPlaceholder },
+    dateString{ QDateTime::currentDateTime().toString( "yyMMdd_hhmm" ) },
+    expectedPaymentFileName{ dateString + ".pay" },
+    expectedPaymentFilePath{ argZTreeDataTargetPath + "/" + dateString + ".pay" },
     latexHeaderName{ argLatexHeaderName },
-    printReceiptsForLocalClients{ new bool { argPrintReceiptsForLocalClients } },
+    paymentFile{ expectedPaymentFilePath },
+    printReceiptsForLocalClients{ argPrintReceiptsForLocalClients },
     timer{ new QTimer{ this } },
     zTreeDataTargetPath{ argZTreeDataTargetPath }
 {
-    // Guess the name of the payment file
-    QDateTime currentDate;
-    currentDate  = QDateTime::currentDateTime();
-    dateString = currentDate.toString( "yyMMdd_hhmm" );
-    expectedPaymentFileName = QString{ dateString + ".pay" };
-    expectedPaymentFilePath = QString{ zTreeDataTargetPath + "/" + dateString + ".pay" };
     qDebug() << "Expected payment file name is:" << expectedPaymentFilePath;
-
-    // Create a new file object representing the payment file
-    paymentFile = new QFile( expectedPaymentFilePath );
 
     // Create a QTimer regularly checking if the payment file was created and print it if so
     connect( timer, &QTimer::timeout,
@@ -56,36 +51,28 @@ lc::ReceiptsHandler::ReceiptsHandler( const QString &argZTreeDataTargetPath,
 }
 
 lc::ReceiptsHandler::ReceiptsHandler( const QString &argZTreeDataTargetPath,
-                                      const bool &argPrintReceiptsForLocalClients,
+                                      bool argPrintReceiptsForLocalClients,
                                       const QString &argAnonymousReceiptsPlaceholder,
                                       const QString &argLatexHeaderName,
                                       const QString * const argDateString, QObject *argParent ) :
     QObject{ argParent },
     anonymousReceiptsPlaceholder{ argAnonymousReceiptsPlaceholder },
     dateString{ *argDateString },
+    expectedPaymentFileName{ *argDateString + ".pay" },
+    expectedPaymentFilePath{ argZTreeDataTargetPath + "/" + *argDateString + ".pay" },
     latexHeaderName{ argLatexHeaderName },
-    printReceiptsForLocalClients{ new bool { argPrintReceiptsForLocalClients } },
+    paymentFile{ expectedPaymentFilePath },
+    printReceiptsForLocalClients{ argPrintReceiptsForLocalClients },
     zTreeDataTargetPath{ argZTreeDataTargetPath }
 {
-    expectedPaymentFileName = QString{ dateString + ".pay" };
-    expectedPaymentFilePath = QString{ zTreeDataTargetPath + "/" + *argDateString + ".pay" };
     qDebug() << "Expected payment file name is:" << expectedPaymentFilePath;
-
-    // Create a new file object representing the payment file
-    paymentFile = new QFile( expectedPaymentFilePath );
 
     PrintReceipts();
 }
 
-lc::ReceiptsHandler::~ReceiptsHandler() {
-    delete paymentFile;
-    delete printReceiptsForLocalClients;
-    delete receiptsPrinter;
-}
-
 void lc::ReceiptsHandler::PrintReceipts() {
     // If the payment file exists, print it
-    if ( paymentFile->exists() ) {
+    if ( paymentFile.exists() ) {
         qDebug() << "The payment file has been created and will be printed";
         if ( timer ) {
             timer->stop();
@@ -113,7 +100,7 @@ void lc::ReceiptsHandler::CreateReceiptsFromPaymentFile() {
         // Split the lines containing the participants' data into their inidivual parts
         QStringList temp_participant_data = it->split('\t', QString::KeepEmptyParts);
         qDebug() << temp_participant_data.join( " - " );
-        if ( !( *printReceiptsForLocalClients ) && temp_participant_data.at( 3 ).contains( "local" ) ) {
+        if ( !printReceiptsForLocalClients && temp_participant_data.at( 3 ).contains( "local" ) ) {
             qDebug() << "Receipt for local client" << temp_participant_data.at( 1 ) << "will not be printed.";
         }
         else {
@@ -210,7 +197,7 @@ void lc::ReceiptsHandler::CreateReceiptsFromPaymentFile() {
     delete latexText;
     latexText = nullptr;
 
-    receiptsPrinter = new ReceiptsPrinter{ dateString, zTreeDataTargetPath };
+    receiptsPrinter = new ReceiptsPrinter{ dateString, zTreeDataTargetPath, this };
     receiptsPrinter->start();
     connect( receiptsPrinter, &ReceiptsPrinter::PrintingFinished,
              this, &ReceiptsHandler::DeleteReceiptsPrinterInstance );
@@ -225,7 +212,7 @@ void lc::ReceiptsHandler::CreateReceiptsFromPaymentFile() {
 void lc::ReceiptsHandler::DeleteReceiptsPrinterInstance() {
     receiptsPrinter->quit();
     receiptsPrinter->wait();
-    delete receiptsPrinter;
+    receiptsPrinter->deleteLater();
     receiptsPrinter = nullptr;
     qDebug() << "Deleted 'ReceiptsPrinter' instance.";
 
@@ -244,8 +231,8 @@ QVector<QString> *lc::ReceiptsHandler::GetParticipantsDataFromPaymentFile() {
     QVector<QString> *participantsData = new QVector<QString>;
 
     // Open the payment file for reading and create a QTextStream
-    paymentFile->open( QIODevice::ReadOnly | QIODevice::Text );
-    QTextStream in( paymentFile );
+    paymentFile.open( QIODevice::ReadOnly | QIODevice::Text );
+    QTextStream in( &paymentFile );
     in.setCodec( "ISO 8859-1" );
 
     // Read the file line by line and store them in the vector
@@ -261,7 +248,7 @@ QVector<QString> *lc::ReceiptsHandler::GetParticipantsDataFromPaymentFile() {
     participantsData->erase( participantsData->begin() );
 
     // Close the file afterwards
-    paymentFile->close();
+    paymentFile.close();
 
     return participantsData;
 }
