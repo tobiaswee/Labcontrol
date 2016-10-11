@@ -28,6 +28,8 @@
 
 namespace lc {
 
+class Client;
+
 //! A class containing an entire session.
 /*!
   This class represents an entire session with its zTree instance and the corresponding lcReceiptsHandler instance.
@@ -38,8 +40,9 @@ class Session : public QObject {
 public:
     const int zTreePort = 7000;                             //! The port this session's zTree instance is running on
 
-    Session( const QString &argZTreeDataTargetPath, const quint16 argZTreePort,
-             const QString &argZTreeVersionPath, bool argPrintReceiptsForLocalClients,
+    Session( QVector< Client* > &&argAssocClients, const QString &argZTreeDataTargetPath,
+             const quint16 argZTreePort, const QString &argZTreeVersionPath,
+             bool argPrintReceiptsForLocalClients,
              const QString &argAnonymousReceiptsPlaceholder,
              const QString &argLatexHeaderName, QObject *argParent = nullptr );
     ~Session();
@@ -67,6 +70,7 @@ private slots:
 
 private:
     const QString anonymousReceiptsPlaceholder;                 //! Placeholder which shall be inserted for participant names if anonymous printing is desired (QString != "")
+    const QVector< Client* > assocClients;
     const QString latexHeaderName;                              //! The name of the chosen LaTeX header
     const bool printReceiptsForLocalClients = true;             //! True if receipts shall be printed for local clients
     ReceiptsHandler *receiptsHandler = nullptr;                 //! For automatic creation and printing of the receipts

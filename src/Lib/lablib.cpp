@@ -146,7 +146,8 @@ void lc::Lablib::StartNewSession( QVector< Client* > argAssocCl,
         }
     }
     try {
-        sessionsModel->push_back( new Session{ argzTreeDataTargetPath,
+        sessionsModel->push_back( new Session{ std::move( argAssocCl ),
+                                               argzTreeDataTargetPath,
                                                argzTreePort, argzTreeVersion,
                                                argPrintLocalReceipts,
                                                argParticipNameReplacement,

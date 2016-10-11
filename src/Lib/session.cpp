@@ -24,13 +24,15 @@
 
 extern std::unique_ptr< lc::Settings > settings;
 
-lc::Session::Session( const QString &argZTreeDataTargetPath, const quint16 argZTreePort,
+lc::Session::Session( QVector< Client* > &&argAssocClients,
+                      const QString &argZTreeDataTargetPath, const quint16 argZTreePort,
                       const QString &argZTreeVersionPath, bool argPrintReceiptsForLocalClients,
                       const QString &argAnonymousReceiptsPlaceholder,
                       const QString &argLatexHeaderName, QObject *argParent ):
     QObject{ argParent },
     zTreePort{ argZTreePort },
     anonymousReceiptsPlaceholder{ argAnonymousReceiptsPlaceholder },
+    assocClients{ std::move( argAssocClients ) },
     latexHeaderName{ argLatexHeaderName },
     printReceiptsForLocalClients{ argPrintReceiptsForLocalClients },
     zTreeDataTargetPath{ argZTreeDataTargetPath },
@@ -53,8 +55,11 @@ lc::Session::Session( const QString &argZTreeDataTargetPath, const quint16 argZT
 }
 
 lc::Session::~Session() {
+    for ( auto &client : assocClients ) {
+        client->SetSessionPort( 0 );
+        client->SetzLeafVersion( "" );
+    }
     delete receiptsHandler;
-    delete zTreeInstance;
 }
 
 QVariant lc::Session::GetDataItem( int argIndex ) {
