@@ -238,7 +238,11 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="CBClientNames"/>
+              <widget class="QComboBox" name="CBClientNames">
+               <property name="editable">
+                <bool>true</bool>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QPushButton" name="PBRunzLeaf">
