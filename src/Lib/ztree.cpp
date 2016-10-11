@@ -27,8 +27,9 @@
 extern std::unique_ptr< lc::Settings > settings;
 
 lc::ZTree::ZTree( const QString &argZTreeDataTargetPath, const int &argZTreePort,
-                  const QString &argZTreeVersionPath ) {
-    QString program{ settings->tasksetCmd };
+                  const QString &argZTreeVersionPath, QObject *argParent ) :
+    QObject{ argParent }
+{
     QStringList arguments{ QStringList{} << "0x00000001" << settings->wineCmd
                                          << QString{ settings->zTreeInstDir + "/zTree_"
                                             + argZTreeVersionPath + "/ztree.exe" }
@@ -41,14 +42,9 @@ lc::ZTree::ZTree( const QString &argZTreeDataTargetPath, const int &argZTreePort
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     zTreeInstance.setProcessEnvironment( env );
-    zTreeInstance.startDetached( program, arguments, QDir::currentPath(), &pid );
+    zTreeInstance.start( settings->tasksetCmd, arguments, QIODevice::NotOpen );
     connect( &zTreeInstance, SIGNAL( finished( int ) ),
-             this, SLOT( ZTreeInstanceClosed() ) );
+             this, SIGNAL( ZTreeClosed( int ) ) );
 
-    // Output message via the debug messages tab
-    qDebug() << program << arguments.join( " " );
-}
-
-void lc::ZTree::ZTreeInstanceClosed() {
-    emit ZTreeClosed();
+    qDebug() << settings->tasksetCmd << arguments.join( " " );
 }

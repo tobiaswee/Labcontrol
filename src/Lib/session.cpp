@@ -19,8 +19,6 @@
 
 #include <memory>
 
-#include <QDebug>
-
 #include "session.h"
 #include "settings.h"
 
@@ -29,7 +27,8 @@ extern std::unique_ptr< lc::Settings > settings;
 lc::Session::Session( const QString &argZTreeDataTargetPath, const quint16 argZTreePort,
                       const QString &argZTreeVersionPath, bool argPrintReceiptsForLocalClients,
                       const QString &argAnonymousReceiptsPlaceholder,
-                      const QString &argLatexHeaderName ):
+                      const QString &argLatexHeaderName, QObject *argParent ):
+    QObject{ argParent },
     zTreePort{ argZTreePort },
     anonymousReceiptsPlaceholder{ argAnonymousReceiptsPlaceholder },
     latexHeaderName{ argLatexHeaderName },
@@ -79,7 +78,9 @@ void lc::Session::InitializeClasses() {
     zTreeDataTargetPath.append( "/" + date_string + "-" + QString::number( zTreePort ) );
     qDebug() << "New session's chosen_zTree_data_target_path:" << zTreeDataTargetPath;
 
-    zTreeInstance = new ZTree{ zTreeDataTargetPath, zTreePort, zTreeVersionPath };
+    zTreeInstance = new ZTree{ zTreeDataTargetPath, zTreePort, zTreeVersionPath, this };
+    connect( zTreeInstance, &ZTree::ZTreeClosed,
+             this, &Session::OnzTreeClosed );
     // Only create a 'Receipts_Handler' instance, if all neccessary variables were set
     if ( latexHeaderName != "None found" && !settings->dvipsCmd.isEmpty()
          && !settings->latexCmd.isEmpty() ) {
@@ -90,6 +91,11 @@ void lc::Session::InitializeClasses() {
     } else {
         qDebug() << "No 'ReceiptsHandler' instance was created.";
     }
+}
+
+void lc::Session::OnzTreeClosed( int argExitCode ) {
+    qDebug() << "z-Tree running on port" << zTreePort << "closed with exit code" << argExitCode;
+    emit SessionFinished( this );
 }
 
 void lc::Session::RenameWindow() {

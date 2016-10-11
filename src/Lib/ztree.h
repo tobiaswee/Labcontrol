@@ -37,16 +37,13 @@ class ZTree: public QObject {
 
 public:
     ZTree( const QString &argZTreeDataTargetPath,
-           const int &argZTreePort, const QString &argZTreeVersionPath );
+           const int &argZTreePort, const QString &argZTreeVersionPath,
+           QObject *argParent = nullptr );
 
 signals:
-    void ZTreeClosed();
-
-private slots:
-    void ZTreeInstanceClosed();
+    void ZTreeClosed( int argExitCode );
 
 private:
-    qint64 pid = 0;
     QProcess zTreeInstance;
 };
 

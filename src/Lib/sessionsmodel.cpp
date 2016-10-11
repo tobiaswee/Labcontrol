@@ -17,22 +17,17 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QDebug>
+
 #include "sessionsmodel.h"
 
 lc::SessionsModel::SessionsModel( QObject *argParent ) :
-    QAbstractTableModel{ argParent },
-    sessions_vector{ new QVector< Session* > }
+    QAbstractTableModel{ argParent }
 {
 }
 
-lc::SessionsModel::~SessionsModel() {
-    for (auto s: *sessions_vector)
-        delete s;
-    delete sessions_vector;
-}
-
 lc::Session *lc::SessionsModel::back() const {
-    return sessions_vector->back();
+    return sessionsList.back();
 }
 
 int lc::SessionsModel::columnCount(const QModelIndex &parent) const {
@@ -44,11 +39,11 @@ QVariant lc::SessionsModel::data(const QModelIndex &index, int role) const {
     if (!index.isValid())
         return QVariant{};
 
-    if (index.row() >= sessions_vector->size() || index.row() < 0)
+    if (index.row() >= sessionsList.size() || index.row() < 0)
         return QVariant{};
 
     if (role == Qt::DisplayRole)
-        return sessions_vector->at( index.row() )->GetDataItem( index.column() );
+        return sessionsList.at( index.row() )->GetDataItem( index.column() );
 
     return QVariant{};
 }
@@ -72,10 +67,20 @@ QVariant lc::SessionsModel::headerData(int section, Qt::Orientation orientation,
 }
 
 void lc::SessionsModel::push_back( Session *argSession ) {
-    sessions_vector->push_back( argSession );
+    connect( argSession, &Session::SessionFinished,
+             this, &SessionsModel::RemoveSession );
+    argSession->setParent( this );
+    sessionsList.push_back( argSession );
+}
+
+void lc::SessionsModel::RemoveSession( Session *argSession ) {
+    if ( sessionsList.removeAll( argSession ) ) {
+        qDebug() << "Successfully removed" << argSession << "from lc::SessionsModel";
+        argSession->deleteLater();
+    }
 }
 
 int lc::SessionsModel::rowCount(const QModelIndex &parent) const {
     Q_UNUSED(parent);
-    return sessions_vector->length();
+    return sessionsList.length();
 }

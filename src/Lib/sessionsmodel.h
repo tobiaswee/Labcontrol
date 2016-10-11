@@ -30,7 +30,6 @@ class SessionsModel : public QAbstractTableModel {
     Q_OBJECT
 public:
     explicit SessionsModel(QObject *parent = 0);
-    ~SessionsModel();
     SessionsModel(const SessionsModel&) = delete;
     Session *back() const;
     int columnCount(const QModelIndex &parent) const;
@@ -39,13 +38,15 @@ public:
     void push_back( Session *argSession );
     int rowCount(const QModelIndex &parent) const;
 
-
 signals:
 
 public slots:
 
 private:
-    QVector< Session* > *sessions_vector = nullptr;
+    QList< Session* > sessionsList;
+
+private slots:
+    void RemoveSession( Session *argSession );
 };
 
 }

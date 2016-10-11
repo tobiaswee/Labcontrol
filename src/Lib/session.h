@@ -39,8 +39,9 @@ public:
     const int zTreePort = 7000;                             //! The port this session's zTree instance is running on
 
     Session( const QString &argZTreeDataTargetPath, const quint16 argZTreePort,
-             const QString &argZTreeVersionPath, bool argPrintReceiptsForLocalClients, const QString &argAnonymousReceiptsPlaceholder,
-             const QString &argLatexHeaderName );
+             const QString &argZTreeVersionPath, bool argPrintReceiptsForLocalClients,
+             const QString &argAnonymousReceiptsPlaceholder,
+             const QString &argLatexHeaderName, QObject *argParent = nullptr );
     ~Session();
 
     /*! Returns the data item with the given index
@@ -53,12 +54,13 @@ public:
     class lcDataTargetPathCreationFailed {};
 
 signals:
-    // void session_started();
+    void SessionFinished( Session *argSession );
 
 private slots:
     /*! Starts the session by creating instances of the relevant classes
      */
     void InitializeClasses();
+    void OnzTreeClosed( int argExitCode );
     /*! Changes zTree's window title to contain its port number to make zTree windows distinguishable
      */
     void RenameWindow();
