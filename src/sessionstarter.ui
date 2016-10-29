@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>640</width>
-    <height>576</height>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -254,11 +254,24 @@ Warning: If this is disabled no receipts will be printed for ANY participant who
    </item>
    <item>
     <widget class="QCheckBox" name="ChBSessionWithoutClients">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="toolTip">
       <string>This allows an experimenter to override the normally hard requirement of choosing clients to be attached to the started session and start a session without attached clients.</string>
      </property>
      <property name="text">
       <string>Allow session without attached clients</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="ChBautoStartClientZleaf">
+     <property name="text">
+      <string>Start z-Leaf on clients with the session</string>
      </property>
     </widget>
    </item>

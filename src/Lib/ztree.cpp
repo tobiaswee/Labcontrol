@@ -30,7 +30,7 @@ lc::ZTree::ZTree( const QString &argZTreeDataTargetPath, const int &argZTreePort
                   const QString &argZTreeVersionPath, QObject *argParent ) :
     QObject{ argParent }
 {
-    QStringList arguments{ QStringList{} << "0x00000001" << settings->wineCmd
+    QStringList arguments{ QStringList{} << "-c" << "0" << settings->wineCmd
                                          << QString{ settings->zTreeInstDir + "/zTree_"
                                             + argZTreeVersionPath + "/ztree.exe" }
                                          << "/datadir" << QString{ "Z:/" + argZTreeDataTargetPath }
@@ -42,6 +42,7 @@ lc::ZTree::ZTree( const QString &argZTreeDataTargetPath, const int &argZTreePort
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     zTreeInstance.setProcessEnvironment( env );
+    zTreeInstance.setWorkingDirectory( QDir::homePath() );
     zTreeInstance.start( settings->tasksetCmd, arguments, QIODevice::NotOpen );
     connect( &zTreeInstance, SIGNAL( finished( int ) ),
              this, SIGNAL( ZTreeClosed( int ) ) );

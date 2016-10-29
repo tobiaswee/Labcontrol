@@ -116,6 +116,7 @@ private slots:
                                QString argAnonymousReceiptsPlaceholder,
                                QString argLatexHeaderName,
                                QString argDateString );
+    void on_PBrestartCrashedSession_clicked();
 };
 
 }

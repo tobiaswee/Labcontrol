@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>864</height>
+    <height>900</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -186,6 +186,13 @@
                </item>
               </layout>
              </item>
+             <item>
+              <widget class="QPushButton" name="PBrestartCrashedSession">
+               <property name="text">
+                <string>Restart crashed session</string>
+               </property>
+              </widget>
+             </item>
             </layout>
            </widget>
           </item>
@@ -203,7 +210,13 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="CBWebcamChooser"/>
+              <widget class="QComboBox" name="CBWebcamChooser">
+               <item>
+                <property name="text">
+                 <string>Choose webcam</string>
+                </property>
+               </item>
+              </widget>
              </item>
              <item>
               <widget class="QPushButton" name="PBDeactivateScreensaver">
@@ -261,7 +274,7 @@
                  <item>
                   <widget class="QPushButton" name="PBChooseFile">
                    <property name="text">
-                    <string>Choose file</string>
+                    <string>Choose folder</string>
                    </property>
                   </widget>
                  </item>
@@ -277,7 +290,7 @@
                <item>
                 <widget class="QPushButton" name="PBBeamFile">
                  <property name="text">
-                  <string>Beam file to ~/media4zTree</string>
+                  <string>Beam folder to ~/media4zTree on all clients</string>
                  </property>
                 </widget>
                </item>

@@ -475,7 +475,12 @@ void lc::MainWindow::on_PBShutdown_clicked() {
     for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
             Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            client->Shutdown();
+            // Do not shut down the server itself
+            if ( client->name == "self"){
+                QMessageBox::information(NULL, "Shutdown canceled", "It is not allowed to shutdown the server itself via labcontrol!");
+            } else {
+                client->Shutdown();
+            }
         }
     }
 }
@@ -672,6 +677,10 @@ void lc::MainWindow::StartLocalzLeaf( QString argzLeafName, QString argzLeafVers
               << QString{ settings->zTreeInstDir + "/zTree_" + argzLeafVersion + "/zleaf.exe" }
               << "/server" << "127.0.0.1" << "/channel"
               << QString::number( argzTreePort - 7000 ) << "/name" << argzLeafName;
+    if ( !settings->localzLeafSize.isEmpty() ) {
+      arguments << "/size" << QString{ settings->localzLeafSize };
+    }
+	      
     startProc.startDetached( settings->tasksetCmd, arguments );
 }
 
@@ -716,5 +725,14 @@ void lc::MainWindow::UpdateClientsTableView() {
             s->setBackground( QBrush( QColor( 255, 128, 128, 255 ) ) );
             break;
         }
+    }
+}
+
+// TODO: Implement the functionality of the script in here
+void lc::MainWindow::on_PBrestartCrashedSession_clicked() {
+    QProcess startProc;
+    startProc.setProcessEnvironment( QProcessEnvironment::systemEnvironment() );
+    if ( !settings->restartCrashedSessionScript.isEmpty() ) {
+        startProc.startDetached( settings->restartCrashedSessionScript);
     }
 }

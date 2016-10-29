@@ -186,6 +186,16 @@ void lc::SessionStarter::on_PBStartSession_clicked() {
                             static_cast< quint16 >( ui->SBPort->value() ),
                             ui->CBzTreeVersion->currentText() );
 
+    //Start z-Leaf on selected clients if checkbox is activated
+    if( ui->ChBautoStartClientZleaf->isChecked() ) {
+        for ( auto cit = activatedItems.cbegin(); cit != activatedItems.cend(); ++cit ) {
+            if ( ( *cit ).data( Qt::DisplayRole ).type() != 0 ) {
+                Client *client = static_cast< Client* >( ( *cit ).data( Qt::UserRole ).value< void * >() );
+                client->StartZLeaf( nullptr );
+            }
+        }
+    }
+
     this->deleteLater();
 }
 

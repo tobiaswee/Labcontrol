@@ -54,6 +54,7 @@ public:
     const QString latexCmd;
     const QString lcInstDir;
     const QString localUserName;
+    const QString localzLeafSize;
     const QString lprCmd;
     const QString netstatCmd;
     const QString netwBrdAddr;
@@ -78,6 +79,7 @@ public:
     const QString wmctrlCmd;
     const QString xsetCmd;
     const QString zTreeInstDir;
+    const QString restartCrashedSessionScript;
     const QStringList adminUsers;
     const QStringList installedLaTeXHeaders;
     const QStringList installedZTreeVersions;
