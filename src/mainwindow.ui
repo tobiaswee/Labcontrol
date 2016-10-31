@@ -40,15 +40,21 @@
        <layout class="QHBoxLayout" name="HLExperimenterTab" stretch="1,1">
         <item>
          <layout class="QVBoxLayout" name="VLzTreeClientActions">
-          <item>
+          <item alignment="Qt::AlignTop">
            <widget class="QGroupBox" name="GBzTree">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="title">
              <string>z-Tree</string>
             </property>
             <property name="flat">
              <bool>false</bool>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_4">
+            <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,0,0,0">
              <item>
               <widget class="QPushButton" name="PBStartSession">
                <property name="toolTip">
@@ -66,6 +72,16 @@
                </property>
                <property name="text">
                 <string>Show Sessions</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="PBKillzTree">
+               <property name="toolTip">
+                <string>Kill all local z-Tree instances</string>
+               </property>
+               <property name="text">
+                <string>Kill z-Tree</string>
                </property>
               </widget>
              </item>
@@ -99,6 +115,16 @@
               </widget>
              </item>
              <item>
+              <widget class="QPushButton" name="PBShutdown">
+               <property name="toolTip">
+                <string>Turns off the selected clients.</string>
+               </property>
+               <property name="text">
+                <string>Shutdown</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QPushButton" name="PBStartzLeaf">
                <property name="toolTip">
                 <string>Starts zLeaf on the selected clients with the port given in the 'zTree' groupbox.</string>
@@ -115,16 +141,6 @@
                </property>
                <property name="text">
                 <string>Kill z-Leaf</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="PBShutdown">
-               <property name="toolTip">
-                <string>Turns off the selected clients.</string>
-               </property>
-               <property name="text">
-                <string>Shutdown</string>
                </property>
               </widget>
              </item>
@@ -219,12 +235,26 @@
               </widget>
              </item>
              <item>
+              <widget class="Line" name="line">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QPushButton" name="PBDeactivateScreensaver">
                <property name="toolTip">
                 <string>Deactivates the screensavers on the selected clients.</string>
                </property>
                <property name="text">
                 <string>Deactivate screensaver</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="Line" name="line_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
                </property>
               </widget>
              </item>
@@ -240,7 +270,7 @@
                 </size>
                </property>
                <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Run zLeaf with another name than the client's.&lt;br/&gt;Choose the name the zLeaf shall have:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Run zLeaf with another name than the client's:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="textFormat">
                 <enum>Qt::RichText</enum>
@@ -258,12 +288,31 @@
                <property name="editable">
                 <bool>true</bool>
                </property>
+               <item>
+                <property name="text">
+                 <string>Choose the name the z-Leaf shall have</string>
+                </property>
+               </item>
               </widget>
              </item>
              <item>
               <widget class="QPushButton" name="PBRunzLeaf">
                <property name="text">
-                <string>Run z-Leaf</string>
+                <string>Run z-Leaf with chosen name</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="Line" name="line_3">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="LUploadFolder">
+               <property name="text">
+                <string>Upoad folder:</string>
                </property>
               </widget>
              </item>

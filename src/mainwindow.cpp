@@ -471,17 +471,24 @@ void lc::MainWindow::on_PBShowSessions_clicked() {
 }
 
 void lc::MainWindow::on_PBShutdown_clicked() {
-    QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
-    for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
-        if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
-            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            // Do not shut down the server itself
-            if ( client->name == "self"){
-                QMessageBox::information(NULL, "Shutdown canceled", "It is not allowed to shutdown the server itself via labcontrol!");
-            } else {
-                client->Shutdown();
+    // Confirmation dialog
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Confirm", "Really shutdown the selected clients?", QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::Yes) {
+        QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
+        for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
+            if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
+                Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
+                // Do not shut down the server itself
+                if ( client->name == "self"){
+                    QMessageBox::information(NULL, "Shutdown canceled", "It is not allowed to shutdown the server itself via labcontrol!");
+                } else {
+                    client->Shutdown();
+                }
             }
         }
+    } else {
+            qDebug() << "Canceled shutting down the selected clients";
     }
 }
 
@@ -734,5 +741,26 @@ void lc::MainWindow::on_PBrestartCrashedSession_clicked() {
     startProc.setProcessEnvironment( QProcessEnvironment::systemEnvironment() );
     if ( !settings->restartCrashedSessionScript.isEmpty() ) {
         startProc.startDetached( settings->restartCrashedSessionScript);
+    }
+}
+
+void lc::MainWindow::on_PBKillzTree_clicked()
+{
+    QString program{ settings->killallCmd };
+    QStringList arguments;
+    arguments << "-I" << "-q" << "ztree.exe";
+    // Confirmation dialog
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Confirm", "Really kill all z-Tree instances?", QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::Yes) {
+        // Kill all z-Tree processes
+        QProcess killLocalzLeafProc;
+        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+        killLocalzLeafProc.setProcessEnvironment( env );
+        killLocalzLeafProc.startDetached( program, arguments );
+        // Output message via the debug messages tab
+        qDebug() << program << arguments;
+    } else {
+            qDebug() << "Canceled killing all z-Tree processes";
     }
 }

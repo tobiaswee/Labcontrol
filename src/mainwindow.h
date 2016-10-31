@@ -117,6 +117,7 @@ private slots:
                                QString argLatexHeaderName,
                                QString argDateString );
     void on_PBrestartCrashedSession_clicked();
+    void on_PBKillzTree_clicked();
 };
 
 }
