@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 ### Removed
 
+## [v2.1.4] - 2017-08-27
+* Added dialog for Upload folder button
 ## [v2.1.0] - 2016-10-12
 ### Added
 * Manual printing of _z-Tree_ payment files
