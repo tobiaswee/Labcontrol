@@ -81,7 +81,7 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
         ui->CBClientNames->setEnabled( false );
         ui->CBWebcamChooser->setEnabled( false );
         ui->GBClientActions->setEnabled( false );
-        ui->GBzTree->setEnabled( false );
+        //ui->GBzTree->setEnabled( false );
         ui->LEFilePath->setEnabled( false );
         ui->LFakeName->setEnabled( false );
         ui->LWebcamChooser->setEnabled( false );
@@ -117,7 +117,7 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
         ui->LFakeName->setEnabled( false );
         ui->PBBeamFile->setEnabled( false );
         ui->PBChooseFile->setEnabled( false );
-        ui->PBDeactivateScreensaver->setEnabled( false );
+        //ui->PBDeactivateScreensaver->setEnabled( false );
         ui->PBKillzLeaf->setEnabled( false );
         ui->PBRunzLeaf->setEnabled( false );
         ui->PBShutdown->setEnabled( false );
@@ -171,7 +171,7 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
         ui->CBClientNames->setEnabled( false );
         ui->LFakeName->setEnabled( false );
         ui->PBRunzLeaf->setEnabled( false );
-        ui->PBStartSession->setEnabled( false );
+        //ui->PBStartSession->setEnabled( false );
         ui->PBStartLocalzLeaf->setEnabled( false );
         ui->PBStartzLeaf->setEnabled( false );
     }
@@ -184,7 +184,7 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
 
     // Disable 'PBViewDesktop' if 'vnc_viewer' was not set
     if ( settings->vncViewer.isEmpty() ) {
-        ui->PBViewDesktop->setEnabled( false );
+        //ui->PBViewDesktop->setEnabled( false );
     }
 
     // Disable 'PBBoot' if 'wakeonlan_command' was not set
@@ -203,21 +203,21 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
         ui->CBClientNames->setEnabled( false );
         ui->LFakeName->setEnabled( false );
         ui->PBRunzLeaf->setEnabled( false );
-        ui->PBStartSession->setEnabled( false );
+        //ui->PBStartSession->setEnabled( false );
         ui->PBStartLocalzLeaf->setEnabled( false );
         ui->PBStartzLeaf->setEnabled( false );
     }
 
     // Disable the disable screensaver function if the 'xset_command' was not set
-    if ( settings->xsetCmd.isEmpty() ) {
-        ui->PBDeactivateScreensaver->setEnabled( false );
-    }
+    //if ( settings->xsetCmd.isEmpty() ) {
+    //    ui->PBDeactivateScreensaver->setEnabled( false );
+    //}
 
     if ( settings->zTreeInstDir.isEmpty() ) {
         ui->CBClientNames->setEnabled( false );
         ui->LFakeName->setEnabled( false );
         ui->PBRunzLeaf->setEnabled( false );
-        ui->PBStartSession->setEnabled( false );
+        //ui->PBStartSession->setEnabled( false );
         ui->PBStartLocalzLeaf->setEnabled( false );
         ui->PBStartzLeaf->setEnabled( false );
     }
@@ -297,12 +297,12 @@ void lc::MainWindow::on_PBChooseFile_clicked() {
     delete file_dialog;
 }
 
-void lc::MainWindow::on_PBDeactivateScreensaver_clicked() {
+/*void lc::MainWindow::on_PBDeactivateScreensaver_clicked() {
     for ( auto s : settings->GetClients() ) {
         if ( s->GetClientState() >= state_t::RESPONDING )
             s->DeactiveScreensaver();
     }
-}
+}*/
 
 void lc::MainWindow::on_PBExecute_clicked() {
     // This will be set to false, if the command shall be executed only on the chosen clients (that's if not all clients are up)
@@ -615,7 +615,7 @@ void lc::MainWindow::SetupWidgets() {
     const QStringList &zTreeEntries = settings->installedZTreeVersions;
     if ( zTreeEntries.isEmpty() ) {
         ui->CBClientNames->setEnabled( false );
-        ui->GBzTree->setEnabled( false );
+        //ui->GBzTree->setEnabled( false );
         ui->LFakeName->setEnabled( false );
         ui->PBRunzLeaf->setEnabled( false );
         ui->PBStartLocalzLeaf->setEnabled( false );

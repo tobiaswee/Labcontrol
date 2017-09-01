@@ -105,7 +105,7 @@ void lc::Client::Boot() {
     GotStatusChanged( state_t::BOOTING );
 }
 
-void lc::Client::DeactiveScreensaver() {
+/*void lc::Client::DeactiveScreensaver() {
     QStringList arguments;
     arguments << "-i" << settings->pkeyPathUser
               << QString{ settings->userNameOnClients + "@" + ip }
@@ -119,7 +119,7 @@ void lc::Client::DeactiveScreensaver() {
 
     // Output message via the debug messages tab
     qDebug() << settings->sshCmd << arguments.join( " " );
-}
+}*/
 
 void lc::Client::GotStatusChanged( state_t argState ) {
     if ( ( protectedCycles > 0 ) && ( state == state_t::BOOTING ) && ( argState != state_t::RESPONDING ) ) {

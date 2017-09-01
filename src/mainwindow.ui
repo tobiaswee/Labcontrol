@@ -40,69 +40,30 @@
        <layout class="QHBoxLayout" name="HLExperimenterTab" stretch="1,1">
         <item>
          <layout class="QVBoxLayout" name="VLzTreeClientActions">
-          <item alignment="Qt::AlignTop">
-           <widget class="QGroupBox" name="GBzTree">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
+          <item>
+           <widget class="QGroupBox" name="GBLocalActions">
             <property name="title">
-             <string>z-Tree</string>
+             <string>Experiment preparation / server actions</string>
             </property>
-            <property name="flat">
-             <bool>false</bool>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,0,0,0,0,0,0">
+            <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
-              <widget class="QPushButton" name="PBStartSession">
-               <property name="toolTip">
-                <string>Start a new session. A new window will be opened to enter all required parameters.</string>
-               </property>
+              <widget class="QPushButton" name="PBShowORSEE">
                <property name="text">
-                <string>Start session</string>
+                <string>Show ORSEE</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="PBShowSessions">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="text">
-                <string>Show sessions</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="PBKillzTree">
-               <property name="toolTip">
-                <string>Kill all local z-Tree instances</string>
-               </property>
-               <property name="text">
-                <string>Terminate z-Tree</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="Line" name="line_4">
+              <widget class="Line" name="line">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="label">
+              <widget class="QPushButton" name="PBShowPreprints">
                <property name="text">
-                <string>Session recovery:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="PBrestartCrashedSession">
-               <property name="text">
-                <string>Continue crashed session</string>
+                <string>Show preprints</string>
                </property>
               </widget>
              </item>
@@ -116,92 +77,34 @@
                </property>
               </widget>
              </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
-           <widget class="QGroupBox" name="GBClientActions">
-            <property name="title">
-             <string>Client actions</string>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout">
              <item>
-              <widget class="QPushButton" name="PBBoot">
+              <widget class="Line" name="line_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="PBKillzTree">
                <property name="toolTip">
-                <string>Boots the selected clients.</string>
+                <string>Stop all local z-Tree instances</string>
                </property>
                <property name="text">
-                <string>Boot</string>
+                <string>Stop z-Tree</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="PBShutdown">
-               <property name="toolTip">
-                <string>Turns off the selected clients.</string>
-               </property>
+              <widget class="QPushButton" name="PBrestartCrashedSession">
                <property name="text">
-                <string>Shutdown</string>
+                <string>Continue crashed session</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="PBStartzLeaf">
-               <property name="toolTip">
-                <string>Starts zLeaf on the selected clients with the port given in the 'zTree' groupbox.</string>
-               </property>
-               <property name="text">
-                <string>Start z-Leaf</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="PBKillzLeaf">
-               <property name="toolTip">
-                <string>Kills zLeaf on all selected clients.</string>
-               </property>
-               <property name="text">
-                <string>Terminate z-Leaf</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="PBViewDesktop">
-               <property name="toolTip">
-                <string>Shows the desktop of the selected clients.</string>
-               </property>
-               <property name="text">
-                <string>View desktop</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="VLFurtherSpecialActions">
-          <property name="spacing">
-           <number>6</number>
-          </property>
-          <item>
-           <widget class="QGroupBox" name="GBFurtherLocalActions">
-            <property name="title">
-             <string>Further local actions</string>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_3">
-             <item>
-              <widget class="QPushButton" name="PBShowORSEE">
-               <property name="text">
-                <string>Show ORSEE</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="PBShowPreprints">
-               <property name="text">
-                <string>Show preprints</string>
+              <widget class="Line" name="line_4">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
                </property>
               </widget>
              </item>
@@ -217,56 +120,14 @@
                <item>
                 <widget class="QPushButton" name="PBKillLocalzLeaf">
                  <property name="text">
-                  <string>Kill local z-Leaf</string>
+                  <string>Stop local z-Leaf</string>
                  </property>
                 </widget>
                </item>
               </layout>
              </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
-           <widget class="QGroupBox" name="GBSpecialActions">
-            <property name="title">
-             <string>Special actions</string>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_5">
              <item>
-              <widget class="QLabel" name="LWebcamChooser">
-               <property name="text">
-                <string>Show webcam:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="CBWebcamChooser">
-               <item>
-                <property name="text">
-                 <string>Choose webcam</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-             <item>
-              <widget class="Line" name="line">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="PBDeactivateScreensaver">
-               <property name="toolTip">
-                <string>Deactivates the screensavers on the selected clients.</string>
-               </property>
-               <property name="text">
-                <string>Deactivate screensaver</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="Line" name="line_2">
+              <widget class="Line" name="line_3">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -317,43 +178,206 @@
               </widget>
              </item>
              <item>
-              <widget class="Line" name="line_3">
+              <widget class="Line" name="line_5">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="LUploadFolder">
+              <widget class="QLabel" name="LWebcamChooser">
                <property name="text">
-                <string>Upoad folder:</string>
+                <string>Show webcams:</string>
                </property>
               </widget>
              </item>
              <item>
-              <layout class="QVBoxLayout" name="VLFileBeamer">
+              <widget class="QComboBox" name="CBWebcamChooser">
                <item>
-                <layout class="QHBoxLayout" name="HLFileChooser">
+                <property name="text">
+                 <string>Choose webcam</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="VLFurtherSpecialActions">
+          <property name="spacing">
+           <number>6</number>
+          </property>
+          <item>
+           <widget class="QGroupBox" name="GBClientActions">
+            <property name="title">
+             <string>Client actions</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <item>
+              <widget class="QPushButton" name="PBBoot">
+               <property name="toolTip">
+                <string>Boots the selected clients.</string>
+               </property>
+               <property name="text">
+                <string>Boot</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="PBShutdown">
+               <property name="toolTip">
+                <string>Turns off the selected clients.</string>
+               </property>
+               <property name="text">
+                <string>Shutdown</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="Line" name="line_6">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="PBStartzLeaf">
+               <property name="toolTip">
+                <string>Starts zLeaf on the selected clients with the port given in the 'zTree' groupbox.</string>
+               </property>
+               <property name="text">
+                <string>Start z-Leaf on selected clients</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="PBKillzLeaf">
+               <property name="toolTip">
+                <string>Stops zLeaf on all selected clients</string>
+               </property>
+               <property name="text">
+                <string>Stop z-Leaf on selected clients</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="Line" name="line_7">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="PBViewDesktopViewOnly">
+               <property name="toolTip">
+                <string>Shows the desktop of the selected clients.</string>
+               </property>
+               <property name="text">
+                <string>View desktop of selected clients (viel only)</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="PBViewDesktopFullControl">
+               <property name="text">
+                <string>View desktop of selected clients (full control)</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="Line" name="line_8">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="HLFileChooser">
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout">
                  <item>
-                  <widget class="QPushButton" name="PBChooseFile">
+                  <widget class="QLabel" name="label">
                    <property name="text">
-                    <string>Choose folder</string>
+                    <string>Upload folder to all selected clients:</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="LEFilePath">
-                   <property name="readOnly">
-                    <bool>true</bool>
+                  <layout class="QHBoxLayout" name="horizontalLayout_2">
+                   <item>
+                    <widget class="QPushButton" name="PBChooseFile">
+                     <property name="text">
+                      <string>Choose folder</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="LEFilePath">
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="PBBeamFile">
+                   <property name="text">
+                    <string>Start to upload folder</string>
                    </property>
                   </widget>
                  </item>
                 </layout>
                </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="Line" name="line_9">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="LStartBrowser">
+               <property name="text">
+                <string>Start browser on all selected clients:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout">
                <item>
-                <widget class="QPushButton" name="PBBeamFile">
+                <widget class="QLabel" name="LURL">
                  <property name="text">
-                  <string>Beam folder to ~/media4zTree on all clients</string>
+                  <string>URL:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="lineEdit"/>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_4">
+               <item>
+                <widget class="QPushButton" name="pushButton">
+                 <property name="text">
+                  <string>Start browser</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pushButton_2">
+                 <property name="text">
+                  <string>Stop browser</string>
                  </property>
                 </widget>
                </item>
@@ -365,6 +389,30 @@
          </layout>
         </item>
        </layout>
+      </widget>
+      <widget class="QWidget" name="TSessionStart">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <attribute name="title">
+        <string>Start session</string>
+       </attribute>
+       <widget class="QWidget" name="verticalLayoutWidget_2">
+        <property name="geometry">
+         <rect>
+          <x>9</x>
+          <y>9</y>
+          <width>761</width>
+          <height>411</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_2"/>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Settings</string>
+       </attribute>
       </widget>
       <widget class="QWidget" name="TAdminActions">
        <property name="enabled">
@@ -507,6 +555,9 @@
     </item>
     <item>
      <widget class="QTableView" name="TVClients">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="minimumSize">
        <size>
         <width>0</width>

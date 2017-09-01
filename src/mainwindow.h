@@ -61,7 +61,6 @@ private slots:
     void on_PBBeamFile_clicked();
     void on_PBBoot_clicked();
     void on_PBChooseFile_clicked();
-    void on_PBDeactivateScreensaver_clicked();
     void on_PBExecute_clicked();
     void on_PBKillLocalzLeaf_clicked();
     void on_PBKillzLeaf_clicked();
