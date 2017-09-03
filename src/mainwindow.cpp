@@ -71,6 +71,16 @@ bool lc::MainWindow::CheckIfUserIsAdmin() {
 }
 
 void lc::MainWindow::DisableDisfunctionalWidgets() {
+    const QStringList &zTreeEntries = settings->installedZTreeVersions;
+    if ( zTreeEntries.isEmpty() ) {
+        ui->CBClientNames->setEnabled( false );
+        //ui->GBzTree->setEnabled( false );
+        ui->LFakeName->setEnabled( false );
+        ui->PBRunzLeaf->setEnabled( false );
+        ui->PBStartLocalzLeaf->setEnabled( false );
+        ui->PBStartzLeaf->setEnabled( false );
+    }
+
     // Disable all z-Leaf killing related buttons if the 'killall' command is not available
     if ( settings->killallCmd.isEmpty() ) {
         ui->PBKillLocalzLeaf->setEnabled( false );
@@ -462,14 +472,6 @@ void lc::MainWindow::on_PBShowPreprints_clicked() {
     lablib->ShowPreprints();
 }
 
-void lc::MainWindow::on_PBShowSessions_clicked() {
-    QWidget *sessionDisplay = new SessionDisplay{ lablib->GetSessionsModel(), this };
-    sessionDisplay->setWindowFlags( Qt::Window );
-    sessionDisplay->show();
-    connect( sessionDisplay, &SessionDisplay::destroyed,
-             sessionDisplay, &SessionDisplay::deleteLater );
-}
-
 void lc::MainWindow::on_PBShutdown_clicked() {
     // Confirmation dialog
     QMessageBox::StandardButton reply;
@@ -612,16 +614,6 @@ void lc::MainWindow::SetupWidgets() {
             ui->CBWebcamChooser->addItem( s );
     }
 
-    const QStringList &zTreeEntries = settings->installedZTreeVersions;
-    if ( zTreeEntries.isEmpty() ) {
-        ui->CBClientNames->setEnabled( false );
-        //ui->GBzTree->setEnabled( false );
-        ui->LFakeName->setEnabled( false );
-        ui->PBRunzLeaf->setEnabled( false );
-        ui->PBStartLocalzLeaf->setEnabled( false );
-        ui->PBStartzLeaf->setEnabled( false );
-    }
-
     // Disable the admin tab if the user has no administrative rights and set it up
     if ( CheckIfUserIsAdmin() ) {
         ui->TAdminActions->setEnabled( true );
@@ -654,10 +646,15 @@ void lc::MainWindow::SetupWidgets() {
                                           << "apt full-upgrade -y" << "reboot" << "uname -a" );
     }
 
-    DisableDisfunctionalWidgets();
+    // Disable buttons which are not configured
+    //DisableDisfunctionalWidgets();
 
     // Set the info text in LInfo on the TInfo tab
-    ui->LInfo->setText( "This is Labcontrol.\n\nCopyright 2014-2016 Markus Prasser\n\n\n"
+    ui->LInfo->setText( "This is Labcontrol.\n\nDevelopers\n\n"
+                        "0day-2016 Henning Prömpers\n"
+                        "2014-2016 Markus Prasser\n"
+                        "2016 - now WiwilabHiwiOrgaization\n\n\n"
+                        "\n\nCopyright\n\n\n"
                         "Labcontrol is free software: you can redistribute it and/or modify\n"
                         "it under the terms of the GNU General Public License as published by\n"
                         "the Free Software Foundation, either version 3 of the License, or\n"
@@ -735,7 +732,7 @@ void lc::MainWindow::UpdateClientsTableView() {
     }
 }
 
-// TODO: Implement the functionality of the script in here
+// TODO: Implement the functionality of the restore session script in here (no zenity script)
 void lc::MainWindow::on_PBrestartCrashedSession_clicked() {
     QProcess startProc;
     startProc.setProcessEnvironment( QProcessEnvironment::systemEnvironment() );
@@ -762,5 +759,16 @@ void lc::MainWindow::on_PBKillzTree_clicked()
         qDebug() << program << arguments;
     } else {
             qDebug() << "Canceled killing all z-Tree processes";
+    }
+}
+
+void lc::MainWindow::on_PBstartBrowser_clicked()
+{
+    QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
+    for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
+        if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
+            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
+            client->StartZLeaf( nullptr );
+        }
     }
 }

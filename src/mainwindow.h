@@ -25,7 +25,6 @@ enum class icons_t : unsigned short int { UNKNOWN, OFF, DOWN, BOOT, ON, ZLEAF, I
 #include "Lib/client.h"
 #include "Lib/lablib.h"
 #include "sessionstarter.h"
-#include "sessiondisplay.h"
 #include "ui_mainwindow.h"
 
 #include <cmath>
@@ -70,7 +69,6 @@ private slots:
     void on_PBRunzLeaf_clicked();
     void on_PBShowORSEE_clicked();
     void on_PBShowPreprints_clicked();
-    void on_PBShowSessions_clicked();
     void on_PBShutdown_clicked();
     void on_PBStartLocalzLeaf_clicked();
     void on_PBStartSession_clicked();
@@ -117,6 +115,7 @@ private slots:
                                QString argDateString );
     void on_PBrestartCrashedSession_clicked();
     void on_PBKillzTree_clicked();
+    void on_PBstartBrowser_clicked();
 };
 
 }

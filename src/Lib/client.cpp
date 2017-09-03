@@ -105,22 +105,6 @@ void lc::Client::Boot() {
     GotStatusChanged( state_t::BOOTING );
 }
 
-/*void lc::Client::DeactiveScreensaver() {
-    QStringList arguments;
-    arguments << "-i" << settings->pkeyPathUser
-              << QString{ settings->userNameOnClients + "@" + ip }
-              << settings->xsetCmd << "-display" << ":0.0" << "dpms" << "force" <<  "on";
-
-    // Start the process
-    QProcess deactiveScreensaverProcess;
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    deactiveScreensaverProcess.setProcessEnvironment( env );
-    deactiveScreensaverProcess.startDetached( settings->sshCmd, arguments );
-
-    // Output message via the debug messages tab
-    qDebug() << settings->sshCmd << arguments.join( " " );
-}*/
-
 void lc::Client::GotStatusChanged( state_t argState ) {
     if ( ( protectedCycles > 0 ) && ( state == state_t::BOOTING ) && ( argState != state_t::RESPONDING ) ) {
         return;
@@ -318,4 +302,18 @@ void lc::Client::StartZLeaf( const QString * const argFakeName ) {
         // Output message via the debug messages tab
         qDebug() << settings->sshCmd << arguments.join( " " );
     }
+}
+
+void lc::Client::StartClientBrowser( const QString * const argURL ) {
+    //Declarations
+    QStringList arguments;
+
+    // Start the process
+    QProcess startClientBrowserProcess;
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    startClientBrowserProcess.setProcessEnvironment( env );
+    startClientBrowserProcess.startDetached( settings->clientBrowserCmd, arguments );
+
+    // Output message via the debug messages tab
+    qDebug() << settings->clientBrowserCmd << arguments.join( " " );
 }

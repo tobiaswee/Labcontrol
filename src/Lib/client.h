@@ -113,6 +113,10 @@ public:
      @param argFakeName                     The name the zLeaf instance shall have (if not the default, which is the hostname of the client)
     */
     void StartZLeaf( const QString * const argFakeName = nullptr );
+    /*!
+     @param argURL                     URL to open in clients browser
+    */
+    void StartClientBrowser( const QString * const argURL = nullptr );
 
 private:
     const QString &GetzLeafVersion() const { return zLeafVersion; }

@@ -84,6 +84,7 @@ public:
     const QStringList installedLaTeXHeaders;
     const QStringList installedZTreeVersions;
     const quint16 clientHelpNotificationServerPort = 0;
+    const QString clientBrowserCmd;
 
 private:
     static bool CheckPathAndComplain( const QString &argPath, const QString &argVariableName,
