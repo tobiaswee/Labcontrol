@@ -758,17 +758,37 @@ void lc::MainWindow::on_PBKillzTree_clicked()
         // Output message via the debug messages tab
         qDebug() << program << arguments;
     } else {
-            qDebug() << "Canceled killing all z-Tree processes";
+            qDebug() << "Canceled stopping all z-Tree processes";
     }
 }
 
 void lc::MainWindow::on_PBstartBrowser_clicked()
 {
+    QString argURL = ui->LEURL->text();
+    bool argFullscreen = ui->CBFullscreen->checkState();
     QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
     for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
             Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            client->StartZLeaf( nullptr );
+            client->StartClientBrowser( &argURL, &argFullscreen );
         }
+    }
+}
+
+void lc::MainWindow::on_PBstopBrowser_clicked()
+{
+    // Confirmation dialog
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Confirm", "Really kill all selected browser instances?", QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::Yes) {
+        QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
+        for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
+            if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
+                Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
+                client->StopClientBrowser( );
+            }
+        }
+    } else {
+            qDebug() << "Canceled stopping all selected browser processes";
     }
 }

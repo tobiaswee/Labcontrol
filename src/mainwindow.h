@@ -116,6 +116,7 @@ private slots:
     void on_PBrestartCrashedSession_clicked();
     void on_PBKillzTree_clicked();
     void on_PBstartBrowser_clicked();
+    void on_PBstopBrowser_clicked();
 };
 
 }

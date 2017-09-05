@@ -112,11 +112,16 @@ public:
     /*!
      @param argFakeName                     The name the zLeaf instance shall have (if not the default, which is the hostname of the client)
     */
-    void StartZLeaf( const QString * const argFakeName = nullptr );
+    void StartZLeaf(const QString *argFakeName = nullptr );
     /*!
-     @param argURL                     URL to open in clients browser
+    * \brief Opens a browser window on the client
+    * @param argURL                     URL to open in clients browser
     */
-    void StartClientBrowser( const QString * const argURL = nullptr );
+    void StartClientBrowser( const QString *argURL = nullptr, const bool *argFullscreen = nullptr );
+    /*!
+    * \brief Closes all browser instances
+    */
+    void StopClientBrowser();
 
 private:
     const QString &GetzLeafVersion() const { return zLeafVersion; }

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>658</width>
     <height>900</height>
    </rect>
   </property>
@@ -163,6 +163,9 @@
                <property name="editable">
                 <bool>true</bool>
                </property>
+               <property name="currentText">
+                <string>Choose the name z-Leaf shall have</string>
+               </property>
                <item>
                 <property name="text">
                  <string>Choose the name the z-Leaf shall have</string>
@@ -201,7 +204,7 @@
               </widget>
              </item>
              <item>
-              <spacer name="verticalSpacer_3">
+              <spacer name="verticalSpacer_ServerActions">
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
                </property>
@@ -383,9 +386,12 @@
               </layout>
              </item>
              <item>
-              <widget class="QCheckBox" name="checkBox">
+              <widget class="QCheckBox" name="CBFullscreen">
                <property name="text">
                 <string>Fullscreen</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -399,7 +405,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="PBstopBrowser_2">
+                <widget class="QPushButton" name="PBstopBrowser">
                  <property name="text">
                   <string>Stop browser</string>
                  </property>
@@ -408,7 +414,7 @@
               </layout>
              </item>
              <item>
-              <spacer name="verticalSpacer_4">
+              <spacer name="verticalSpacer_ClientActions">
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
                </property>
@@ -438,9 +444,9 @@
         <property name="geometry">
          <rect>
           <x>9</x>
-          <y>79</y>
-          <width>371</width>
-          <height>381</height>
+          <y>69</y>
+          <width>311</width>
+          <height>391</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -458,6 +464,12 @@
          </property>
          <item>
           <widget class="QLabel" name="label">
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
            <property name="text">
             <string>New session</string>
            </property>
@@ -554,29 +566,24 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="verticalLayoutWidget_3">
-        <property name="geometry">
-         <rect>
-          <x>390</x>
-          <y>140</y>
-          <width>381</width>
-          <height>321</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_4"/>
-       </widget>
        <widget class="QWidget" name="verticalLayoutWidget">
         <property name="geometry">
          <rect>
           <x>10</x>
           <y>10</y>
-          <width>761</width>
-          <height>57</height>
+          <width>621</width>
+          <height>55</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
           <widget class="QLabel" name="label_15">
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
            <property name="text">
             <string>Cleanup / recover last session</string>
            </property>
@@ -612,10 +619,10 @@
        <widget class="QWidget" name="verticalLayoutWidget_6">
         <property name="geometry">
          <rect>
-          <x>388</x>
-          <y>108</y>
-          <width>381</width>
-          <height>321</height>
+          <x>330</x>
+          <y>100</y>
+          <width>301</width>
+          <height>361</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_13">

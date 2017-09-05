@@ -246,7 +246,7 @@ void lc::Client::Shutdown() {
     GotStatusChanged( state_t::SHUTTING_DOWN );
 }
 
-void lc::Client::StartZLeaf( const QString * const argFakeName ) {
+void lc::Client::StartZLeaf( const QString * argFakeName ) {
     if ( state < state_t::RESPONDING || zLeafVersion.isEmpty() || GetSessionPort() < 7000 ) {
         return;
     }
@@ -304,16 +304,49 @@ void lc::Client::StartZLeaf( const QString * const argFakeName ) {
     }
 }
 
-void lc::Client::StartClientBrowser( const QString * const argURL ) {
+void lc::Client::StartClientBrowser( const QString * const argURL, const bool * const argFullscreen ) {
     //Declarations
     QStringList arguments;
+
+    // Output message via the debug messages tab
+    qDebug() << settings->sshCmd << arguments.join( " " );
+
+    //Build arguments list for SSH command
+    arguments << "-i" << settings->pkeyPathUser
+              << QString{ settings->userNameOnClients + "@" + ip }
+              << "DISPLAY=:0.0"
+              << settings->clientBrowserCmd
+              << *argURL;
 
     // Start the process
     QProcess startClientBrowserProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     startClientBrowserProcess.setProcessEnvironment( env );
-    startClientBrowserProcess.startDetached( settings->clientBrowserCmd, arguments );
+    startClientBrowserProcess.startDetached( settings->sshCmd, arguments );
 
     // Output message via the debug messages tab
-    qDebug() << settings->clientBrowserCmd << arguments.join( " " );
+    qDebug() << settings->sshCmd << arguments.join( " " );
+}
+
+void lc::Client::StopClientBrowser() {
+    //Declarations
+    QStringList arguments;
+
+    //Build arguments list
+    arguments << "-i" << settings->pkeyPathUser
+              << QString{ settings->userNameOnClients + "@" + ip }
+              << "DISPLAY=:0.0"
+              << "killall"
+              << settings->clientBrowserCmd
+              << "&& sleep 1"
+              << "&& rm -R /home/ewfuser/.mozilla/firefox/*";
+
+    // Start the process
+    QProcess startClientBrowserProcess;
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    startClientBrowserProcess.setProcessEnvironment( env );
+    startClientBrowserProcess.startDetached( settings->sshCmd, arguments );
+
+    // Output message via the debug messages tab
+    qDebug() << settings->sshCmd << arguments.join( " " );
 }
