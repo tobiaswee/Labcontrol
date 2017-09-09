@@ -93,7 +93,7 @@ Like already mentioned all \emph{z-Tree} and \emph{z-Leaf} versions should be co
 
 The directories in the \texttt{data} directory should be copied to the \emph{zTree installation directory}.
 
-Afterwards place the \texttt{Labcontrol.conf} in a subfolder \texttt{Economic Laboratory} in the place where \emph{QSettings} stores its definitions on your platform (on \emph{Linux} this would be \texttt{/etc/xdg/Economic Laboratory/Labcontrol.conf}) and adjust it to your needs and prerequisites.
+Afterwards place the \texttt{Labcontrol.conf} in a subfolder \texttt{Labcontrol} in the place where \emph{QSettings} stores its definitions on your platform (on \emph{Linux} this would be \texttt{/etc/xdg/Labcontrol/Labcontrol.conf}) and adjust it to your needs and prerequisites.
 
 To allow \emph{Labcontrol} to control the clients password-less public-key authentication must be available at least for the experiment user on the clients. For administration this is also required for \texttt{root}. Also all clients should be known by \texttt{ /etc/ssh/ssh\_known\_hosts}. This file must be readable by the users! If this is missing \emph{Labcontrol} will query the user on every connection attempt, which is not user-friendly.
 

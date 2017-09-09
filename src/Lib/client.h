@@ -103,7 +103,8 @@ public:
     void SetSessionPort( int argSP ) { sessionPort = argSP; }
     void SetzLeafVersion( const QString &argzLeafV ) { zLeafVersion = argzLeafV; }
     //! Shows the desktop of the given client
-    void ShowDesktop();
+    void ShowDesktopViewOnly();
+    void ShowDesktopFullControl();
     /*!
      * \brief Shuts down the client
      */

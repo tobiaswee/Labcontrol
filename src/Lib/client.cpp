@@ -157,26 +157,13 @@ void lc::Client::OpenTerminal( const QString &argCommand, const bool &argOpenAsR
         QStringList *arguments = nullptr;
         arguments = new QStringList;
         if ( !argOpenAsRoot ) {
-            *arguments << "--title" << name << "-e" <<
-                          QString{ settings->sshCmd + " -i " + settings->pkeyPathUser + " "
-                                   + settings->userNameOnClients + "@" + ip };
+            *arguments << "-e"
+                       << QString{ "'" + settings->sshCmd + " -i " + settings->pkeyPathUser + " "
+                                   + settings->userNameOnClients + "@" + ip + "'"};
         } else {
-            *arguments << "--title" << name << "-e" <<
-                          QString{ settings->sshCmd + " -i " + settings->pkeyPathRoot
-                                   + " " + "root@" + ip };
-        }
-
-        if ( settings->termEmulCmd.contains( "konsole" ) ) {
-            arguments->prepend( "--new-tab" );
-            arguments->prepend( "--show-tabbar" );
-        } else {
-            if ( settings->termEmulCmd.contains( "gnome-terminal" ) ) {
-                arguments->prepend( "--tab" );
-            }
-        }
-
-        if ( !argCommand.isEmpty() ) {
-            arguments->last().append( " '" + argCommand + "'" );
+            *arguments << "-e" <<
+                          QString{ "'" + settings->sshCmd + " -i " + settings->pkeyPathRoot
+                                   + " " + "root@" + ip + "'"};
         }
 
         QProcess openTerminalProcess;
@@ -208,7 +195,20 @@ void lc::Client::SetStateToZLEAF_RUNNING( QString argClientIP ) {
     }
 }
 
-void lc::Client::ShowDesktop() {
+void lc::Client::ShowDesktopViewOnly() {
+    QStringList arguments;
+    arguments << ip;
+
+    QProcess showDesktopProcess;
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    showDesktopProcess.setProcessEnvironment( env );
+    showDesktopProcess.startDetached( settings->vncViewer, arguments );
+
+    // Output message via the debug messages tab
+    qDebug() << settings->vncViewer << arguments.join( " " );
+}
+
+void lc::Client::ShowDesktopFullControl() {
     QStringList arguments;
     arguments << ip;
 
@@ -308,15 +308,17 @@ void lc::Client::StartClientBrowser( const QString * const argURL, const bool * 
     //Declarations
     QStringList arguments;
 
-    // Output message via the debug messages tab
-    qDebug() << settings->sshCmd << arguments.join( " " );
-
-    //Build arguments list for SSH command
+    // Build arguments list for SSH command
     arguments << "-i" << settings->pkeyPathUser
               << QString{ settings->userNameOnClients + "@" + ip }
               << "DISPLAY=:0.0"
               << settings->clientBrowserCmd
               << *argURL;
+
+    // Add fullscreen toggle if checked
+    if (*argFullscreen == true){
+        arguments << "& sleep 3 && DISPLAY=:0.0 xdotool key --clearmodifiers F11";
+    }
 
     // Start the process
     QProcess startClientBrowserProcess;
@@ -335,11 +337,9 @@ void lc::Client::StopClientBrowser() {
     //Build arguments list
     arguments << "-i" << settings->pkeyPathUser
               << QString{ settings->userNameOnClients + "@" + ip }
-              << "DISPLAY=:0.0"
               << "killall"
               << settings->clientBrowserCmd
-              << "&& sleep 1"
-              << "&& rm -R /home/ewfuser/.mozilla/firefox/*";
+              << "& sleep 1 && rm -R /home/ewfuser/.mozilla/firefox/*";
 
     // Start the process
     QProcess startClientBrowserProcess;

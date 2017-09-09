@@ -98,6 +98,7 @@ lc::SessionStarter::SessionStarter( const QVector< quint16 > &argOccupiedPorts,
 lc::SessionStarter::~SessionStarter() {
     delete ui;
 }
+
 void lc::SessionStarter::CheckIfPortIsOccupied( quint16 argPort ) {
     if ( occupiedPorts.contains( argPort ) ) {
         CheckIfPortIsOccupied( argPort + 1 );

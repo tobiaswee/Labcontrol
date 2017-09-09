@@ -62,7 +62,6 @@ private slots:
     void on_PBChooseFile_clicked();
     void on_PBExecute_clicked();
     void on_PBKillLocalzLeaf_clicked();
-    void on_PBKillzLeaf_clicked();
     void on_PBOpenFilesystem_clicked();
     void on_PBOpenTerminal_clicked();
     void on_PBPrintPaymentFileManually_clicked();
@@ -73,7 +72,8 @@ private slots:
     void on_PBStartLocalzLeaf_clicked();
     void on_PBStartSession_clicked();
     void on_PBStartzLeaf_clicked();
-    void on_PBViewDesktop_clicked();
+    void on_PBViewDesktopViewOnly_clicked();
+    void on_PBViewDesktopFullControl_clicked();
     void on_RBUseLocalUser_toggled(bool checked);
     void StartLocalzLeaf( QString argzLeafName, QString argzLeafVersion, int argzTreePort );
     //! Updates the icons of the QTableView displaying the clients' states
@@ -84,6 +84,12 @@ private slots:
     void UpdateClientsTableView();
 
 signals:
+    /*Session actions*/
+    void RequestNewDataTargetPath();
+    void RequestNewSession( QVector< Client* > argAssocCl, QString argParticipNameReplacement,
+                            bool argPrintLocalReceipts, QString argReceiptsHeader,
+                            QString argzTreeDataTargetPath, quint16 argzTreePort,
+                            QString argzTreeVersion );
 
 private:
     //! Checks, if the user has administrative rights
@@ -113,10 +119,16 @@ private slots:
                                QString argAnonymousReceiptsPlaceholder,
                                QString argLatexHeaderName,
                                QString argDateString );
-    void on_PBrestartCrashedSession_clicked();
-    void on_PBKillzTree_clicked();
     void on_PBstartBrowser_clicked();
     void on_PBstopBrowser_clicked();
+
+    /* Session actions */
+    void on_PBStopZtree_clicked();
+    void on_PBRecoverCrashedSession_clicked();
+    void GetNewDataTargetPath();
+    void on_CBDataTargetPath_activated( int argIndex );
+    void on_CBReceiptsHeader_activated(int argIndex);
+    void on_ChBPrintanonymousreceipts_clicked();
 };
 
 }

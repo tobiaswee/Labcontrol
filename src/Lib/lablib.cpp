@@ -26,7 +26,7 @@
 
 lc::Lablib::Lablib( QObject *argParent ) :
     QObject{ argParent },
-    labSettings{ "Economic Laboratory", "Labcontrol", this },
+    labSettings{ "Labcontrol", "Labcontrol", this },
     sessionsModel{ new SessionsModel{ this } }
 {
     for ( const auto &s : settings->GetClients() ) {

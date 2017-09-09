@@ -47,6 +47,37 @@ lc::MainWindow::MainWindow( QWidget *argParent ) :
                  this, &MainWindow::UpdateClientsTableView );
         gui_update_timer->start( 500 );
     }
+
+   /* session actions */
+
+    // Add z-Tree versions to the corresponding combo box
+    ui->CBzTreeVersion->addItem( tr( "Please choose a version:" ) );
+    ui->CBzTreeVersion->addItems( settings->installedZTreeVersions );
+
+    // Add default path to the corresponding combo box
+    ui->CBDataTargetPath->addItem( tr( "Set a new path HERE" ) );
+    ui->CBDataTargetPath->addItem( QDir::homePath() );
+    ui->CBDataTargetPath->addItem( QDir::homePath() + "/zTreeData" );
+    ui->CBDataTargetPath->setCurrentIndex( 2 );
+    connect( this, &MainWindow::RequestNewDataTargetPath,
+             this, &MainWindow::GetNewDataTargetPath );
+
+    if ( settings->dvipsCmd.isEmpty() || settings->latexCmd.isEmpty()
+         || settings->lcInstDir.isEmpty() || settings->lprCmd.isEmpty()
+         || settings->postscriptViewer.isEmpty() || settings->ps2pdfCmd.isEmpty()
+         || settings->rmCmd.isEmpty() || settings->vncViewer.isEmpty() ) {
+        QMessageBox::information( this, tr( "Receipts printing will not work" ),
+                                  tr( "Some component essential for receipts creation and"
+                                      " printing is missing. No receipts will be created or"
+                                      " printed." ), QMessageBox::Ok );
+    } else {
+        ui->CBReceiptsHeader->addItems( settings->installedLaTeXHeaders );
+
+        if ( settings->defaultReceiptIndex
+             && settings->defaultReceiptIndex < ui->CBReceiptsHeader->count() ) {
+            ui->CBReceiptsHeader->setCurrentIndex( settings->defaultReceiptIndex );
+        }
+    }
 }
 
 lc::MainWindow::~MainWindow() {
@@ -218,11 +249,6 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
         ui->PBStartzLeaf->setEnabled( false );
     }
 
-    // Disable the disable screensaver function if the 'xset_command' was not set
-    //if ( settings->xsetCmd.isEmpty() ) {
-    //    ui->PBDeactivateScreensaver->setEnabled( false );
-    //}
-
     if ( settings->zTreeInstDir.isEmpty() ) {
         ui->CBClientNames->setEnabled( false );
         ui->LFakeName->setEnabled( false );
@@ -271,11 +297,18 @@ void lc::MainWindow::on_CBWebcamChooser_activated( int argIndex ) {
 void lc::MainWindow::on_PBBeamFile_clicked() {
     QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
     const QString fileToBeam{ ui->LEFilePath->text() };
+    if(fileToBeam == ""){
+        QMessageBox::information(this, "Upload failed", "You didn't choose any folder to upload.");
+    } else {
+    //Iterate over the selected clients to upload the file
     for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
             Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
             client->BeamFile( fileToBeam, &settings->pkeyPathUser, &settings->userNameOnClients );
         }
+    }
+    // Inform the user about the path
+    QMessageBox::information(this, "Upload completed", "The folder was copied to all selected clients.\nThe path on every client is /home/ewfuser" + fileToBeam.mid(fileToBeam.lastIndexOf('/')) +".\nDon't forget to adjust the media path within zTree!");
     }
 }
 
@@ -306,13 +339,6 @@ void lc::MainWindow::on_PBChooseFile_clicked() {
     }
     delete file_dialog;
 }
-
-/*void lc::MainWindow::on_PBDeactivateScreensaver_clicked() {
-    for ( auto s : settings->GetClients() ) {
-        if ( s->GetClientState() >= state_t::RESPONDING )
-            s->DeactiveScreensaver();
-    }
-}*/
 
 void lc::MainWindow::on_PBExecute_clicked() {
     // This will be set to false, if the command shall be executed only on the chosen clients (that's if not all clients are up)
@@ -382,16 +408,6 @@ void lc::MainWindow::on_PBKillLocalzLeaf_clicked() {
 
     // Output message via the debug messages tab
     qDebug() << program << arguments;
-}
-
-void lc::MainWindow::on_PBKillzLeaf_clicked() {
-    QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
-    for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
-        if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
-            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            client->KillZLeaf();
-        }
-    }
 }
 
 void lc::MainWindow::on_PBOpenFilesystem_clicked() {
@@ -504,55 +520,12 @@ void lc::MainWindow::on_PBStartLocalzLeaf_clicked() {
              localzLeafStarter, SLOT( deleteLater() ) );
 }
 
-void lc::MainWindow::on_PBStartSession_clicked() {
-    SessionStarter *sessionStarter = new SessionStarter{ lablib->GetOccupiedPorts(), this };
-    sessionStarter->setWindowFlags( Qt::Window );
-    sessionStarter->show();
-    connect( sessionStarter, &SessionStarter::RequestNewSession,
-             lablib, &Lablib::StartNewSession );
-    connect( sessionStarter, &SessionStarter::destroyed,
-             sessionStarter, &SessionStarter::deleteLater );
-//    // Show an error message, if no zTree version was chosen yet
-//    if (ui->CBzTreeVersion->currentIndex() == 0) {
-//        QMessageBox messageBox{ QMessageBox::Warning, tr("Unset zTree version"), tr("There is no zTree version chosen yet. Please choose one."), QMessageBox::Ok, this };
-//        messageBox.exec();
-//        return;
-//    }
-
-//    // Ask a second time, if no valid LaTeX header was set
-//    if (ui->CBReceiptsHeader->currentText() == "None found") {
-//        QMessageBox messageBox{ QMessageBox::Information, tr("No valid LaTeX header chosen"),
-//                    tr("No valid LaTeX header was chosen. Receipts creation and printing will not work. Shall a new zTree instance be started nonetheless?"), QMessageBox::Yes | QMessageBox::No, this };
-//        messageBox.exec();
-//        if (messageBox.clickedButton() == messageBox.button(QMessageBox::No))
-//            return;
-//    }
-
-//    ui->CBDataTargetPath->setStyleSheet( "" );
-//    ui->CBPrintanonymousreceipts->setStyleSheet( "" );
-//    ui->CBReceiptsHeader->setStyleSheet( "" );
-//    ui->CBReceiptsforLocalClients->setStyleSheet( "" );
-//    ui->SBPort->setStyleSheet( "" );
-
-//    lablib->StartNewZTreeInstance();
-}
-
 void lc::MainWindow::on_PBStartzLeaf_clicked() {
     QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
     for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
             Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
             client->StartZLeaf( nullptr );
-        }
-    }
-}
-
-void lc::MainWindow::on_PBViewDesktop_clicked() {
-    QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
-    for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
-        if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
-            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            client->ShowDesktop();
         }
     }
 }
@@ -595,7 +568,7 @@ void lc::MainWindow::SetupWidgets() {
         valid_items->squeeze();
     } else {
         QMessageBox messageBox{ QMessageBox::Warning, tr( "Could not construct clients view" ),
-                    tr( "The creation of the clients view failed. Please check the file '/etc/xdg/Economic Laboratory/Labcontrol.conf'." ), QMessageBox::Ok, this };
+                    tr( "The creation of the clients view failed. Please check the file '/etc/xdg/Labcontrol/Labcontrol.conf'." ), QMessageBox::Ok, this };
         messageBox.exec();
         ui->CBClientNames->setEnabled( false );
         ui->GBClientActions->setEnabled( false );
@@ -732,36 +705,6 @@ void lc::MainWindow::UpdateClientsTableView() {
     }
 }
 
-// TODO: Implement the functionality of the restore session script in here (no zenity script)
-void lc::MainWindow::on_PBrestartCrashedSession_clicked() {
-    QProcess startProc;
-    startProc.setProcessEnvironment( QProcessEnvironment::systemEnvironment() );
-    if ( !settings->restartCrashedSessionScript.isEmpty() ) {
-        startProc.startDetached( settings->restartCrashedSessionScript);
-    }
-}
-
-void lc::MainWindow::on_PBKillzTree_clicked()
-{
-    QString program{ settings->killallCmd };
-    QStringList arguments;
-    arguments << "-I" << "-q" << "ztree.exe";
-    // Confirmation dialog
-    QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(this, "Confirm", "Really kill all z-Tree instances?", QMessageBox::Yes|QMessageBox::No);
-    if (reply == QMessageBox::Yes) {
-        // Kill all z-Tree processes
-        QProcess killLocalzLeafProc;
-        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-        killLocalzLeafProc.setProcessEnvironment( env );
-        killLocalzLeafProc.startDetached( program, arguments );
-        // Output message via the debug messages tab
-        qDebug() << program << arguments;
-    } else {
-            qDebug() << "Canceled stopping all z-Tree processes";
-    }
-}
-
 void lc::MainWindow::on_PBstartBrowser_clicked()
 {
     QString argURL = ui->LEURL->text();
@@ -789,6 +732,153 @@ void lc::MainWindow::on_PBstopBrowser_clicked()
             }
         }
     } else {
-            qDebug() << "Canceled stopping all selected browser processes";
+        qDebug() << "Canceled stopping all selected browser processes";
     }
+}
+
+// View only VNC Button
+void lc::MainWindow::on_PBViewDesktopViewOnly_clicked()
+{
+    QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
+    for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
+        if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
+            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
+            client->ShowDesktopViewOnly();
+        }
+    }
+}
+
+void lc::MainWindow::on_PBViewDesktopFullControl_clicked()
+{
+    QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
+    for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
+        if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
+            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
+            client->ShowDesktopFullControl();
+        }
+    }
+}
+
+
+/* Session action functions */
+
+void lc::MainWindow::on_PBStopZtree_clicked()
+{
+    QString program{ settings->killallCmd };
+    QStringList arguments;
+    arguments << "-I" << "-q" << "ztree.exe";
+    // Confirmation dialog
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Confirm", "Really kill all z-Tree instances?", QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::Yes) {
+        // Kill all z-Tree processes
+        QProcess killLocalzLeafProc;
+        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+        killLocalzLeafProc.setProcessEnvironment( env );
+        killLocalzLeafProc.startDetached( program, arguments );
+        // Output message via the debug messages tab
+        qDebug() << program << arguments;
+    } else {
+        qDebug() << "Canceled stopping all z-Tree processes";
+    }
+}
+
+void lc::MainWindow::on_PBRecoverCrashedSession_clicked()
+{
+    // TODO: Implement the functionality of the restore session script in here (no zenity script)
+        QProcess startProc;
+        startProc.setProcessEnvironment( QProcessEnvironment::systemEnvironment() );
+        if ( !settings->restartCrashedSessionScript.isEmpty() ) {
+            startProc.startDetached( settings->restartCrashedSessionScript);
+        }
+}
+
+void lc::MainWindow::on_CBDataTargetPath_activated( int argIndex )
+{
+    if ( !argIndex ) {
+        emit RequestNewDataTargetPath();
+    }
+
+    ui->CBDataTargetPath->setStyleSheet( "" );
+}
+
+// Open a folder coose dialog if first position in the combo box is clicked
+void lc::MainWindow::GetNewDataTargetPath() {
+    QFileDialog fileDialog{ this };
+    fileDialog.setFileMode( QFileDialog::Directory );
+    fileDialog.setDirectory( QDir::homePath() );
+    fileDialog.setOption( QFileDialog::ShowDirsOnly, true );
+    fileDialog.setOption( QFileDialog::DontUseNativeDialog, true );
+    if ( fileDialog.exec() ) {
+        const QString fileName = fileDialog.selectedFiles().at( 0 );
+        ui->CBDataTargetPath->addItem( fileName );
+        ui->CBDataTargetPath->setCurrentText( fileName );
+    }
+}
+
+// Start session button actions
+void lc::MainWindow::on_PBStartSession_clicked() {
+    if ( ui->CBzTreeVersion->currentIndex() == 0 ) {
+        QMessageBox::information( this, tr( "No z-Tree version chosen" ),
+                                  tr( "A z-Tree version was not chosen, yet. This setting is"
+                                      " mandatory." ), QMessageBox::Ok );
+        return;
+    }
+
+    const QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
+    if( !ui->ChBSessionWithoutAttachedClients->isChecked() ) {
+        if ( !activatedItems.length() ) {
+            QMessageBox::information( this, tr( "Canceled, no clients were chosen" ),
+                                      tr( "The start of a new session was canceled."
+                                          " Some clients have to be selected first or the"
+                                          " creation of sessions without clients must be"
+                                          " allowed with the checkbox close to the bottom" ) );
+            return;
+        }
+    }
+
+    QString anonymousReceiptsPlaceholder;
+    if ( ui->ChBPrintAnonymousReceipts->isChecked() ) {
+        anonymousReceiptsPlaceholder = ui->CBReplaceParticipantNames->currentText();
+    }
+
+    QVector< Client* > associatedClients;
+    for ( auto cit = activatedItems.cbegin(); cit != activatedItems.cend(); ++cit ) {
+        if ( ( *cit ).data( Qt::DisplayRole ).type() != 0 ) {
+            Client *client = static_cast< Client* >( ( *cit ).data( Qt::UserRole ).value< void* >() );
+            client->SetSessionPort( ui->SBPort->value() );
+            client->SetzLeafVersion( ui->CBzTreeVersion->currentText() );
+            associatedClients.append( client );
+        }
+    }
+
+    emit RequestNewSession( associatedClients, anonymousReceiptsPlaceholder,
+                            ui->ChBReceiptsForLocalClients->isChecked(),
+                            ui->CBReceiptsHeader->currentText(),
+                            ui->CBDataTargetPath->currentText(),
+                            static_cast< quint16 >( ui->SBPort->value() ),
+                            ui->CBzTreeVersion->currentText() );
+
+    //Start z-Leaf on selected clients if checkbox is activated
+    if( ui->ChBautoStartClientZleaf->isChecked() ) {
+        for ( auto cit = activatedItems.cbegin(); cit != activatedItems.cend(); ++cit ) {
+            if ( ( *cit ).data( Qt::DisplayRole ).type() != 0 ) {
+                Client *client = static_cast< Client* >( ( *cit ).data( Qt::UserRole ).value< void * >() );
+                client->StartZLeaf( nullptr );
+            }
+        }
+    }
+}
+
+// Anonymous receipients header check box
+void lc::MainWindow::on_ChBPrintanonymousreceipts_clicked()
+{
+    ui->LReplaceParticipantNames->setEnabled(true);
+    ui->CBReplaceParticipantNames->setEnabled(true);
+}
+
+void lc::MainWindow::on_CBReceiptsHeader_activated(int argIndex)
+{
+    Q_UNUSED( argIndex );
+    ui->CBReceiptsHeader->setStyleSheet( "" );
 }
