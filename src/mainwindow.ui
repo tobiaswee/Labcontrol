@@ -406,7 +406,7 @@
           <x>10</x>
           <y>10</y>
           <width>691</width>
-          <height>103</height>
+          <height>71</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="VLcleanupRecoverLastSession">
@@ -433,6 +433,23 @@
             </widget>
            </item>
            <item>
+            <widget class="QPushButton" name="PBKillzLeaf">
+             <property name="toolTip">
+              <string>Stops zLeaf on all selected clients</string>
+             </property>
+             <property name="text">
+              <string>Stop z-Leaf on selected clients</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="Line" name="line">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QPushButton" name="PBRecoverCrashedSession">
              <property name="text">
               <string>Recover crashed session</string>
@@ -440,16 +457,6 @@
             </widget>
            </item>
           </layout>
-         </item>
-         <item>
-          <widget class="QPushButton" name="PBKillzLeaf">
-           <property name="toolTip">
-            <string>Stops zLeaf on all selected clients</string>
-           </property>
-           <property name="text">
-            <string>Stop z-Leaf on selected clients</string>
-           </property>
-          </widget>
          </item>
          <item>
           <widget class="Line" name="line_cleanupRecoverLastSession">
@@ -464,9 +471,9 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>120</y>
+          <y>88</y>
           <width>691</width>
-          <height>469</height>
+          <height>461</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="VLNewSession">
@@ -1049,6 +1056,15 @@
       <property name="layoutDirection">
        <enum>Qt::LeftToRight</enum>
       </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="sizeAdjustPolicy">
+       <enum>QAbstractScrollArea::AdjustToContents</enum>
+      </property>
       <property name="autoScroll">
        <bool>false</bool>
       </property>
@@ -1056,7 +1072,7 @@
        <bool>true</bool>
       </property>
       <property name="cornerButtonEnabled">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <attribute name="horizontalHeaderVisible">
        <bool>true</bool>
@@ -1071,7 +1087,7 @@
        <number>30</number>
       </attribute>
       <attribute name="horizontalHeaderStretchLastSection">
-       <bool>true</bool>
+       <bool>false</bool>
       </attribute>
       <attribute name="verticalHeaderVisible">
        <bool>true</bool>
@@ -1083,7 +1099,7 @@
        <number>25</number>
       </attribute>
       <attribute name="verticalHeaderStretchLastSection">
-       <bool>true</bool>
+       <bool>false</bool>
       </attribute>
      </widget>
     </item>

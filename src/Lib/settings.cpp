@@ -47,7 +47,7 @@ lc::Settings::Settings( const QSettings &argSettings, QObject *argParent ) :
                                 "Receipts creation will not work.",
                                 argSettings, true ) },
     lcInstDir{ ReadSettingsItem( "labcontrol_installation_directory",
-                                 "Labcontrol will missbehave with high propability.",
+                                 "Datapath not set. Labcontrol will missbehave with high propability.",
                                  argSettings, true ) },
     localUserName{ GetLocalUserName() },
     localzLeafSize{ ReadSettingsItem( "local_zLeaf_size",

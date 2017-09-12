@@ -24,7 +24,6 @@ enum class icons_t : unsigned short int { UNKNOWN, OFF, DOWN, BOOT, ON, ZLEAF, I
 
 #include "Lib/client.h"
 #include "Lib/lablib.h"
-#include "sessionstarter.h"
 #include "ui_mainwindow.h"
 
 #include <cmath>

@@ -88,12 +88,12 @@ public:
     void SetLocalZLeafDefaultName( const QString &argName );
     void ShowOrsee();
     void ShowPreprints();
-
-public slots:
     void StartNewSession( QVector< Client* > argAssocCl, QString argParticipNameReplacement,
                           bool argPrintLocalReceipts, QString argReceiptsHeader,
                           QString argzTreeDataTargetPath, quint16 argzTreePort,
                           QString argzTreeVersion );
+
+public slots:
 
 signals:
     void ZLEAF_RUNNING( QString argClientIP );

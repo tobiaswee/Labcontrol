@@ -166,6 +166,10 @@ void lc::Client::OpenTerminal( const QString &argCommand, const bool &argOpenAsR
                                    + " " + "root@" + ip + "'"};
         }
 
+        if ( !argCommand.isEmpty() ) {
+            arguments->last().append( " '" + argCommand + "'" );
+        }
+
         QProcess openTerminalProcess;
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
         openTerminalProcess.setProcessEnvironment( env );

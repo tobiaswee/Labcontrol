@@ -818,6 +818,7 @@ void lc::MainWindow::GetNewDataTargetPath() {
 
 // Start session button actions
 void lc::MainWindow::on_PBStartSession_clicked() {
+
     if ( ui->CBzTreeVersion->currentIndex() == 0 ) {
         QMessageBox::information( this, tr( "No z-Tree version chosen" ),
                                   tr( "A z-Tree version was not chosen, yet. This setting is"
@@ -829,10 +830,10 @@ void lc::MainWindow::on_PBStartSession_clicked() {
     if( !ui->ChBSessionWithoutAttachedClients->isChecked() ) {
         if ( !activatedItems.length() ) {
             QMessageBox::information( this, tr( "Canceled, no clients were chosen" ),
-                                      tr( "The start of a new session was canceled."
+                                      tr( "The start of a new session was canceled.\n"
                                           " Some clients have to be selected first or the"
                                           " creation of sessions without clients must be"
-                                          " allowed with the checkbox close to the bottom" ) );
+                                          " allowed with the checkbox." ) );
             return;
         }
     }
@@ -852,7 +853,7 @@ void lc::MainWindow::on_PBStartSession_clicked() {
         }
     }
 
-    emit RequestNewSession( associatedClients, anonymousReceiptsPlaceholder,
+    this->lablib->StartNewSession ( associatedClients, anonymousReceiptsPlaceholder,
                             ui->ChBReceiptsForLocalClients->isChecked(),
                             ui->CBReceiptsHeader->currentText(),
                             ui->CBDataTargetPath->currentText(),
@@ -868,6 +869,10 @@ void lc::MainWindow::on_PBStartSession_clicked() {
             }
         }
     }
+
+    //Set port to +1
+    int newPort = ui->SBPort->text().toInt() + 1;
+    ui->SBPort->setValue(newPort);
 }
 
 // Anonymous receipients header check box
