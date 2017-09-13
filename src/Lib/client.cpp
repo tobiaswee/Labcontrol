@@ -158,12 +158,12 @@ void lc::Client::OpenTerminal( const QString &argCommand, const bool &argOpenAsR
         arguments = new QStringList;
         if ( !argOpenAsRoot ) {
             *arguments << "-e"
-                       << QString{ "'" + settings->sshCmd + " -i " + settings->pkeyPathUser + " "
-                                   + settings->userNameOnClients + "@" + ip + "'"};
+                       << QString{ settings->sshCmd + " -i " + settings->pkeyPathUser + " "
+                                   + settings->userNameOnClients + "@" + ip };
         } else {
             *arguments << "-e" <<
-                          QString{ "'" + settings->sshCmd + " -i " + settings->pkeyPathRoot
-                                   + " " + "root@" + ip + "'"};
+                          QString{ settings->sshCmd + " -i " + settings->pkeyPathRoot
+                                   + " " + "root@" + ip};
         }
 
         if ( !argCommand.isEmpty() ) {

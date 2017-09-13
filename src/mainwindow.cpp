@@ -429,6 +429,7 @@ void lc::MainWindow::on_PBOpenFilesystem_clicked() {
     delete userToBeUsed;
 }
 
+// Issue open terminal call
 void lc::MainWindow::on_PBOpenTerminal_clicked() {
     QString pkeyPathUser;
     if ( ui->RBUseUserRoot->isChecked() ) {
@@ -816,6 +817,20 @@ void lc::MainWindow::GetNewDataTargetPath() {
     }
 }
 
+// Dummy function for enabling anonymous receipts section in UI
+void lc::MainWindow::on_CBReceiptsHeader_activated(int argIndex)
+{
+    Q_UNUSED( argIndex );
+    ui->CBReceiptsHeader->setStyleSheet( "" );
+}
+
+// Anonymous receipients header check box
+void lc::MainWindow::on_ChBPrintanonymousreceipts_clicked()
+{
+    ui->LReplaceParticipantNames->setEnabled(true);
+    ui->CBReplaceParticipantNames->setEnabled(true);
+}
+
 // Start session button actions
 void lc::MainWindow::on_PBStartSession_clicked() {
 
@@ -875,15 +890,13 @@ void lc::MainWindow::on_PBStartSession_clicked() {
     ui->SBPort->setValue(newPort);
 }
 
-// Anonymous receipients header check box
-void lc::MainWindow::on_ChBPrintanonymousreceipts_clicked()
+void lc::MainWindow::on_PBKillzLeaf_clicked()
 {
-    ui->LReplaceParticipantNames->setEnabled(true);
-    ui->CBReplaceParticipantNames->setEnabled(true);
-}
-
-void lc::MainWindow::on_CBReceiptsHeader_activated(int argIndex)
-{
-    Q_UNUSED( argIndex );
-    ui->CBReceiptsHeader->setStyleSheet( "" );
+    QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
+    for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
+        if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
+            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
+            client->KillZLeaf();
+        }
+    }
 }
