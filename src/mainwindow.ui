@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -64,7 +64,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <property name="usesScrollButtons">
        <bool>true</bool>
@@ -207,6 +207,13 @@
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
              <item>
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Switch the selected clients on or off</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QPushButton" name="PBBoot">
                <property name="toolTip">
                 <string>Boots the selected clients.</string>
@@ -241,19 +248,26 @@
               </widget>
              </item>
              <item>
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Remote control the selected clients</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QPushButton" name="PBViewDesktopViewOnly">
                <property name="toolTip">
                 <string>Shows the desktop of the selected clients.</string>
                </property>
                <property name="text">
-                <string>View desktop of selected clients (view only)</string>
+                <string>View desktop (view only)</string>
                </property>
               </widget>
              </item>
              <item>
               <widget class="QPushButton" name="PBViewDesktopFullControl">
                <property name="text">
-                <string>View desktop of selected clients (full control)</string>
+                <string>Control desktop (mouse and keyboard)</string>
                </property>
               </widget>
              </item>
@@ -271,7 +285,7 @@
                  <item>
                   <widget class="QLabel" name="LUploadFolder">
                    <property name="text">
-                    <string>Upload folder to all selected clients</string>
+                    <string>Upload folder to the selected clients</string>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
@@ -317,7 +331,7 @@
              <item>
               <widget class="QLabel" name="LBrowserActions">
                <property name="text">
-                <string>Start browser on all selected clients</string>
+                <string>Start browser on the selected clients</string>
                </property>
               </widget>
              </item>
@@ -923,87 +937,70 @@
        <attribute name="title">
         <string>Settings</string>
        </attribute>
-       <widget class="QWidget" name="formLayoutWidget">
+       <widget class="QPushButton" name="PBChangeSettingsTemp">
+        <property name="geometry">
+         <rect>
+          <x>240</x>
+          <y>520</y>
+          <width>201</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Change settings temporarly</string>
+        </property>
+       </widget>
+       <widget class="QScrollArea" name="scrollArea">
         <property name="geometry">
          <rect>
           <x>10</x>
           <y>10</y>
-          <width>311</width>
-          <height>201</height>
+          <width>691</width>
+          <height>501</height>
          </rect>
         </property>
-        <layout class="QFormLayout" name="formLayout">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_8">
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="lineEdit"/>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_9">
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_10">
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="label_11">
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="label_12">
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0">
-          <widget class="QLabel" name="label_13">
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="label_14">
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="lineEdit_2"/>
-         </item>
-         <item row="2" column="1">
-          <widget class="QLineEdit" name="lineEdit_3"/>
-         </item>
-         <item row="3" column="1">
-          <widget class="QLineEdit" name="lineEdit_4"/>
-         </item>
-         <item row="4" column="1">
-          <widget class="QLineEdit" name="lineEdit_5"/>
-         </item>
-         <item row="5" column="1">
-          <widget class="QLineEdit" name="lineEdit_6"/>
-         </item>
-         <item row="6" column="1">
-          <widget class="QLineEdit" name="lineEdit_7"/>
-         </item>
-        </layout>
+        <property name="verticalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOn</enum>
+        </property>
+        <property name="widgetResizable">
+         <bool>true</bool>
+        </property>
+        <widget class="QWidget" name="scrollAreaWidgetContents">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>675</width>
+           <height>499</height>
+          </rect>
+         </property>
+         <widget class="QWidget" name="formLayoutWidget">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>671</width>
+            <height>611</height>
+           </rect>
+          </property>
+          <layout class="QFormLayout" name="formLayout">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Server settings</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Client settings</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
        </widget>
       </widget>
       <widget class="QWidget" name="TInfo">
@@ -1011,7 +1008,7 @@
         <enum>Qt::RightToLeft</enum>
        </property>
        <attribute name="title">
-        <string>Credits</string>
+        <string>Info</string>
        </attribute>
        <layout class="QVBoxLayout" name="VLInfo">
         <item>
