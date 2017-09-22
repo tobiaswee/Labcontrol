@@ -107,7 +107,7 @@ void lc::Lablib::ShowPreprints() {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     showPreprintsProcess.setProcessEnvironment( env );
     QString program{ settings->fileMngr };
-    QStringList arguments{ QStringList{} << settings->lcInstDir +  "/preprints" };
+    QStringList arguments{ QStringList{} << settings->lcDataDir +  "/preprints" };
     showPreprintsProcess.startDetached( program, arguments );
 
     // Output message via the debug messages tab

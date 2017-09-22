@@ -32,6 +32,8 @@ class Settings : public QObject {
     Q_OBJECT
 
 public:
+    void SetLocalzLeafSize( QString arg);
+
     Settings() = delete;
     explicit Settings( const QSettings &argSettings, QObject *argParent = nullptr );
     Settings( const Settings &argSettings ) = delete;
@@ -53,9 +55,9 @@ public:
     const QString fileMngr;
     const QString killallCmd;
     const QString latexCmd;
-    const QString lcInstDir;
+    const QString lcDataDir;
     const QString localUserName;
-    const QString localzLeafSize;
+    QString localzLeafSize;
     const QString lprCmd;
     const QString netstatCmd;
     const QString netwBrdAddr;

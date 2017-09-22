@@ -34,7 +34,7 @@ lc::ManualPrintingSetup::ManualPrintingSetup( QWidget *argParent ) :
     ui->setupUi( this );
 
     if ( settings->dvipsCmd.isEmpty() || settings->latexCmd.isEmpty()
-         || settings->lcInstDir.isEmpty() || settings->lprCmd.isEmpty()
+         || settings->lcDataDir.isEmpty() || settings->lprCmd.isEmpty()
          || settings->postscriptViewer.isEmpty() || settings->ps2pdfCmd.isEmpty()
          || settings->rmCmd.isEmpty() || settings->vncViewer.isEmpty() ) {
         ui->VLManualPrintingSetup->setEnabled( false );

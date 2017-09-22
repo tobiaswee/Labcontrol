@@ -46,7 +46,7 @@ lc::Settings::Settings( const QSettings &argSettings, QObject *argParent ) :
     latexCmd{ ReadSettingsItem( "latex_command",
                                 "Receipts creation will not work.",
                                 argSettings, true ) },
-    lcInstDir{ ReadSettingsItem( "labcontrol_installation_directory",
+    lcDataDir{ ReadSettingsItem( "labcontrol_data_directory",
                                  "Datapath not set. Labcontrol will missbehave with high propability.",
                                  argSettings, true ) },
     localUserName{ GetLocalUserName() },
@@ -261,12 +261,12 @@ QMap< QString, lc::Client* > lc::Settings::CreateClIPsToClMap( const QVector< Cl
 QStringList lc::Settings::DetectInstalledLaTeXHeaders() const {
     QStringList tempLaTeXHeaders{ "None found" };
     // Detect the installed LaTeX headers
-    if ( !lcInstDir.isEmpty() ) {
-        QDir laTeXDirectory{ lcInstDir, "*_header.tex", QDir::Name,
+    if ( !lcDataDir.isEmpty() ) {
+        QDir laTeXDirectory{ lcDataDir, "*_header.tex", QDir::Name,
                              QDir::CaseSensitive | QDir::Files | QDir::Readable };
         if ( !laTeXDirectory.exists() || laTeXDirectory.entryList().isEmpty() ) {
             qDebug() << "Receipts printing will not work. No LaTeX headers could be found in"
-                     << lcInstDir;
+                     << lcDataDir;
         } else {
             tempLaTeXHeaders = laTeXDirectory.entryList();
             tempLaTeXHeaders.replaceInStrings( "_header.tex", "" );
@@ -378,3 +378,8 @@ QString lc::Settings::ReadSettingsItem( const QString &argVariableName,
     }
     return QString{};
 }
+
+void lc::Settings::SetLocalzLeafSize( QString arg) {
+    localzLeafSize = arg;
+}
+

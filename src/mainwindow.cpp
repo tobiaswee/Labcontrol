@@ -63,7 +63,7 @@ lc::MainWindow::MainWindow( QWidget *argParent ) :
              this, &MainWindow::GetNewDataTargetPath );
 
     if ( settings->dvipsCmd.isEmpty() || settings->latexCmd.isEmpty()
-         || settings->lcInstDir.isEmpty() || settings->lprCmd.isEmpty()
+         || settings->lcDataDir.isEmpty() || settings->lprCmd.isEmpty()
          || settings->postscriptViewer.isEmpty() || settings->ps2pdfCmd.isEmpty()
          || settings->rmCmd.isEmpty() || settings->vncViewer.isEmpty() ) {
         QMessageBox::information( this, tr( "Receipts printing will not work" ),
@@ -118,11 +118,10 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
         ui->PBKillzLeaf->setEnabled( false );
     }
     // Disable all functions relying on the labcontrol installation directory if it is not available
-    if ( settings->lcInstDir.isEmpty() ) {
+    if ( settings->lcDataDir.isEmpty() ) {
         ui->CBClientNames->setEnabled( false );
         ui->CBWebcamChooser->setEnabled( false );
         ui->GBClientActions->setEnabled( false );
-        //ui->GBzTree->setEnabled( false );
         ui->LEFilePath->setEnabled( false );
         ui->LFakeName->setEnabled( false );
         ui->LWebcamChooser->setEnabled( false );
@@ -158,7 +157,6 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
         ui->LFakeName->setEnabled( false );
         ui->PBBeamFile->setEnabled( false );
         ui->PBChooseFile->setEnabled( false );
-        //ui->PBDeactivateScreensaver->setEnabled( false );
         ui->PBKillzLeaf->setEnabled( false );
         ui->PBRunzLeaf->setEnabled( false );
         ui->PBShutdown->setEnabled( false );
@@ -212,7 +210,7 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
         ui->CBClientNames->setEnabled( false );
         ui->LFakeName->setEnabled( false );
         ui->PBRunzLeaf->setEnabled( false );
-        //ui->PBStartSession->setEnabled( false );
+        ui->PBStartSession->setEnabled( false );
         ui->PBStartLocalzLeaf->setEnabled( false );
         ui->PBStartzLeaf->setEnabled( false );
     }
@@ -225,7 +223,8 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
 
     // Disable 'PBViewDesktop' if 'vnc_viewer' was not set
     if ( settings->vncViewer.isEmpty() ) {
-        //ui->PBViewDesktop->setEnabled( false );
+        ui->PBViewDesktopViewOnly->setEnabled( false );
+        ui->PBViewDesktopFullControl->setEnabled( false );
     }
 
     // Disable 'PBBoot' if 'wakeonlan_command' was not set
@@ -253,14 +252,14 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
         ui->CBClientNames->setEnabled( false );
         ui->LFakeName->setEnabled( false );
         ui->PBRunzLeaf->setEnabled( false );
-        //ui->PBStartSession->setEnabled( false );
+        ui->PBStartSession->setEnabled( false );
         ui->PBStartLocalzLeaf->setEnabled( false );
         ui->PBStartzLeaf->setEnabled( false );
     }
 }
 
 void lc::MainWindow::LoadIconPixmaps() {
-    if ( settings->lcInstDir.isEmpty() ) {
+    if ( settings->lcDataDir.isEmpty() ) {
         return;
     }
 
@@ -273,42 +272,11 @@ void lc::MainWindow::LoadIconPixmaps() {
                          << "zLeaf.png" };
 
     for ( int i = 0; i < ( int )icons_t::ICON_QUANTITY; i++ ) {
-        if ( !icons[ i ].load( settings->lcInstDir + "/icons/" + iconNames[ i ] ) ) {
+        if ( !icons[ i ].load( settings->lcDataDir + "/icons/" + iconNames[ i ] ) ) {
             QMessageBox::information( this, tr( "Could not load icon '%1'" ).arg( iconNames[ i ] ),
                                       tr( "The icon in '%1/icons/%2' could not be loaded." )
-                                      .arg( settings->lcInstDir ).arg( iconNames[ i ] ), QMessageBox::Ok );
+                                      .arg( settings->lcDataDir ).arg( iconNames[ i ] ), QMessageBox::Ok );
         }
-    }
-}
-
-void lc::MainWindow::on_CBWebcamChooser_activated( int argIndex ) {
-    if (  argIndex != 0 ) {
-        QString program{ settings->webcamDisplayCmd };
-        QStringList arguments;
-        arguments << ui->CBWebcamChooser->currentText();
-
-        QProcess showWebcamProcess;
-        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-        showWebcamProcess.setProcessEnvironment( env );
-        showWebcamProcess.startDetached( program, arguments );
-    }
-}
-
-void lc::MainWindow::on_PBBeamFile_clicked() {
-    QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
-    const QString fileToBeam{ ui->LEFilePath->text() };
-    if(fileToBeam == ""){
-        QMessageBox::information(this, "Upload failed", "You didn't choose any folder to upload.");
-    } else {
-    //Iterate over the selected clients to upload the file
-    for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
-        if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
-            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            client->BeamFile( fileToBeam, &settings->pkeyPathUser, &settings->userNameOnClients );
-        }
-    }
-    // Inform the user about the path
-    QMessageBox::information(this, "Upload completed", "The folder was copied to all selected clients.\nThe path on every client is /home/ewfuser" + fileToBeam.mid(fileToBeam.lastIndexOf('/')) +".\nDon't forget to adjust the media path within zTree!");
     }
 }
 
@@ -338,6 +306,24 @@ void lc::MainWindow::on_PBChooseFile_clicked() {
         qDebug() << "File choosing cancelled";
     }
     delete file_dialog;
+}
+
+void lc::MainWindow::on_PBBeamFile_clicked() {
+    QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
+    const QString fileToBeam{ ui->LEFilePath->text() };
+    if(fileToBeam == ""){
+        QMessageBox::information(this, "Upload failed", "You didn't choose any folder to upload.");
+    } else {
+    //Iterate over the selected clients to upload the file
+    for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
+        if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
+            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
+            client->BeamFile( fileToBeam, &settings->pkeyPathUser, &settings->userNameOnClients );
+        }
+    }
+    // Inform the user about the path
+    QMessageBox::information(this, "Upload completed", "The folder was copied to all selected clients.\nThe path on every client is /home/ewfuser" + fileToBeam.mid(fileToBeam.lastIndexOf('/')) +".\nDon't forget to adjust the media path within zTree!");
+    }
 }
 
 void lc::MainWindow::on_PBExecute_clicked() {
@@ -429,23 +415,6 @@ void lc::MainWindow::on_PBOpenFilesystem_clicked() {
     delete userToBeUsed;
 }
 
-// Issue open terminal call
-void lc::MainWindow::on_PBOpenTerminal_clicked() {
-    QString pkeyPathUser;
-    if ( ui->RBUseUserRoot->isChecked() ) {
-        pkeyPathUser = settings->pkeyPathRoot;
-    } else {
-        pkeyPathUser = settings->pkeyPathUser;
-    }
-    QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
-    for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
-        if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
-            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            client->OpenTerminal( QString{}, ui->RBUseUserRoot->isChecked() );
-        }
-    }
-}
-
 void lc::MainWindow::on_PBPrintPaymentFileManually_clicked() {
     ManualPrintingSetup *manPrint = new ManualPrintingSetup{ this };
     manPrint->setWindowFlags( Qt::Window );
@@ -519,16 +488,6 @@ void lc::MainWindow::on_PBStartLocalzLeaf_clicked() {
              this, &MainWindow::StartLocalzLeaf );
     connect( localzLeafStarter, SIGNAL( LocalzLeafRequested( QString, QString, int ) ),
              localzLeafStarter, SLOT( deleteLater() ) );
-}
-
-void lc::MainWindow::on_PBStartzLeaf_clicked() {
-    QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
-    for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
-        if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
-            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            client->StartZLeaf( nullptr );
-        }
-    }
 }
 
 void lc::MainWindow::on_RBUseLocalUser_toggled(bool checked) {
@@ -624,11 +583,12 @@ void lc::MainWindow::SetupWidgets() {
     //DisableDisfunctionalWidgets();
 
     // Set the info text in LInfo on the TInfo tab
-    ui->LInfo->setText( "This is Labcontrol version 2.1.4\n\n\nDevelopers\n\n"
+    ui->LInfo->setText( "This is Labcontrol version 2.1.4\n\n\n\n\n\n"
+                        "Developers\n\n"
                         "0day-2016 Henning Prömpers\n"
                         "2014-2016 Markus Prasser\n"
                         "2016 - now WiwilabHiwiOrgaization\n\n\n"
-                        "\n\nCopyright\n\n\n"
+                        "Copyright\n\n"
                         "Labcontrol is free software: you can redistribute it and/or modify\n"
                         "it under the terms of the GNU General Public License as published by\n"
                         "the Free Software Foundation, either version 3 of the License, or\n"
@@ -639,27 +599,10 @@ void lc::MainWindow::SetupWidgets() {
                         "See the GNU General Public License for more details.\n\n"
                         "You should have received a copy of the GNU General Public License\n"
                         "along with Labcontrol. If not, see <http://www.gnu.org/licenses/>.\n\n\n" );
-}
 
-void lc::MainWindow::StartLocalzLeaf( QString argzLeafName, QString argzLeafVersion,
-                                      int argzTreePort ) {
-    if ( settings->tasksetCmd.isEmpty() || settings->wineCmd.isEmpty()
-         || settings->zTreeInstDir.isEmpty() ) {
-        return;
-    }
+    // Fill settings tab
+    ui->LESettingsServerLocalzLeafSize->setText ( settings->localzLeafSize );
 
-    QProcess startProc;
-    startProc.setProcessEnvironment( QProcessEnvironment::systemEnvironment() );
-    QStringList arguments;
-    arguments << "0x00000001" << settings->wineCmd
-              << QString{ settings->zTreeInstDir + "/zTree_" + argzLeafVersion + "/zleaf.exe" }
-              << "/server" << "127.0.0.1" << "/channel"
-              << QString::number( argzTreePort - 7000 ) << "/name" << argzLeafName;
-    if ( !settings->localzLeafSize.isEmpty() ) {
-      arguments << "/size" << QString{ settings->localzLeafSize };
-    }
-	      
-    startProc.startDetached( settings->tasksetCmd, arguments );
 }
 
 void lc::MainWindow::StartReceiptsHandler( QString argzTreeDataTargetPath,
@@ -706,6 +649,21 @@ void lc::MainWindow::UpdateClientsTableView() {
     }
 }
 
+/* Experiment tab functions */
+
+void lc::MainWindow::on_CBWebcamChooser_activated( int argIndex ) {
+    if (  argIndex != 0 ) {
+        QString program{ settings->webcamDisplayCmd };
+        QStringList arguments;
+        arguments << ui->CBWebcamChooser->currentText();
+
+        QProcess showWebcamProcess;
+        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+        showWebcamProcess.setProcessEnvironment( env );
+        showWebcamProcess.startDetached( program, arguments );
+    }
+}
+
 void lc::MainWindow::on_PBstartBrowser_clicked()
 {
     QString argURL = ui->LEURL->text();
@@ -737,7 +695,7 @@ void lc::MainWindow::on_PBstopBrowser_clicked()
     }
 }
 
-// View only VNC Button
+// View only VNC button
 void lc::MainWindow::on_PBViewDesktopViewOnly_clicked()
 {
     QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
@@ -749,6 +707,7 @@ void lc::MainWindow::on_PBViewDesktopViewOnly_clicked()
     }
 }
 
+// Full control VNC button
 void lc::MainWindow::on_PBViewDesktopFullControl_clicked()
 {
     QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
@@ -761,7 +720,38 @@ void lc::MainWindow::on_PBViewDesktopFullControl_clicked()
 }
 
 
-/* Session action functions */
+/* Session tab functions */
+
+void lc::MainWindow::on_PBStartzLeaf_clicked() {
+    QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
+    for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
+        if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
+            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
+            client->StartZLeaf( nullptr );
+        }
+    }
+}
+
+void lc::MainWindow::StartLocalzLeaf( QString argzLeafName, QString argzLeafVersion,
+                                      int argzTreePort ) {
+    if ( settings->tasksetCmd.isEmpty() || settings->wineCmd.isEmpty()
+         || settings->zTreeInstDir.isEmpty() ) {
+        return;
+    }
+
+    QProcess startProc;
+    startProc.setProcessEnvironment( QProcessEnvironment::systemEnvironment() );
+    QStringList arguments;
+    arguments << "0x00000001" << settings->wineCmd
+              << QString{ settings->zTreeInstDir + "/zTree_" + argzLeafVersion + "/zleaf.exe" }
+              << "/server" << "127.0.0.1" << "/channel"
+              << QString::number( argzTreePort - 7000 ) << "/name" << argzLeafName;
+    if ( !settings->localzLeafSize.isEmpty() ) {
+      arguments << "/size" << QString{ settings->localzLeafSize };
+    }
+
+    startProc.startDetached( settings->tasksetCmd, arguments );
+}
 
 void lc::MainWindow::on_PBStopZtree_clicked()
 {
@@ -803,7 +793,7 @@ void lc::MainWindow::on_CBDataTargetPath_activated( int argIndex )
     ui->CBDataTargetPath->setStyleSheet( "" );
 }
 
-// Open a folder coose dialog if first position in the combo box is clicked
+// Open a folder chooser dialog for zTree data path
 void lc::MainWindow::GetNewDataTargetPath() {
     QFileDialog fileDialog{ this };
     fileDialog.setFileMode( QFileDialog::Directory );
@@ -899,4 +889,31 @@ void lc::MainWindow::on_PBKillzLeaf_clicked()
             client->KillZLeaf();
         }
     }
+}
+
+/* Admin tab functions */
+
+// Issue open terminal call
+void lc::MainWindow::on_PBOpenTerminal_clicked() {
+    QString pkeyPathUser;
+    if ( ui->RBUseUserRoot->isChecked() ) {
+        pkeyPathUser = settings->pkeyPathRoot;
+    } else {
+        pkeyPathUser = settings->pkeyPathUser;
+    }
+    QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
+    for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
+        if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
+            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
+            client->OpenTerminal( QString{}, ui->RBUseUserRoot->isChecked() );
+        }
+    }
+}
+
+/* Settings tab functions */
+
+// Change settings temporarly call
+void lc::MainWindow::on_PBChangeSettingsTemp_clicked()
+{
+    settings->SetLocalzLeafSize( ui->LESettingsServerLocalzLeafSize->text() );
 }
