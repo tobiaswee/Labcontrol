@@ -214,7 +214,7 @@ void lc::Client::ShowDesktopViewOnly() {
 
 void lc::Client::ShowDesktopFullControl() {
     QStringList arguments;
-    arguments << ip;
+    arguments << ip + ":5901";
 
     QProcess showDesktopProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
