@@ -280,105 +280,6 @@ void lc::MainWindow::LoadIconPixmaps() {
     }
 }
 
-void lc::MainWindow::on_PBBoot_clicked() {
-    QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
-    for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
-        if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
-            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            client->Boot();
-        }
-    }
-}
-
-void lc::MainWindow::on_PBChooseFile_clicked() {
-    QFileDialog *file_dialog = new QFileDialog{ this, tr( "Choose a file to beam" ), QDir::homePath() };
-    file_dialog->setFileMode( QFileDialog::Directory );
-    file_dialog->setOption( QFileDialog::DontUseNativeDialog, true );
-    file_dialog->setOption( QFileDialog::ReadOnly, true );
-    file_dialog->setOption( QFileDialog::ShowDirsOnly, true );
-
-    if(file_dialog->exec()) {
-        ui->LEFilePath->setText(file_dialog->selectedFiles().at(0));
-        qDebug() << "Chose file" << ui->LEFilePath->text() << "for beaming.";
-    }
-    else {
-        ui->LEFilePath->setText( tr( "File choosing cancelled" ) );
-        qDebug() << "File choosing cancelled";
-    }
-    delete file_dialog;
-}
-
-void lc::MainWindow::on_PBBeamFile_clicked() {
-    QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
-    const QString fileToBeam{ ui->LEFilePath->text() };
-    if(fileToBeam == ""){
-        QMessageBox::information(this, "Upload failed", "You didn't choose any folder to upload.");
-    } else {
-    //Iterate over the selected clients to upload the file
-    for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
-        if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
-            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            client->BeamFile( fileToBeam, &settings->pkeyPathUser, &settings->userNameOnClients );
-        }
-    }
-    // Inform the user about the path
-    QMessageBox::information(this, "Upload completed", "The folder was copied to all selected clients.\nThe path on every client is /home/ewfuser" + fileToBeam.mid(fileToBeam.lastIndexOf('/')) +".\nDon't forget to adjust the media path within zTree!");
-    }
-}
-
-void lc::MainWindow::on_PBExecute_clicked() {
-    // This will be set to false, if the command shall be executed only on the chosen clients (that's if not all clients are up)
-    bool executeOnEveryClient = true;
-
-    // Cancel, if not all clients are up and running
-    for ( auto s: settings->GetClients() ) {
-        if ( !( s->name.contains( "backup", Qt::CaseInsensitive ) ) ) {
-            if ( s->GetClientState() < state_t::RESPONDING ) {
-                QMessageBox messageBox{ QMessageBox::Warning, tr( "Not all clients are running" ),
-                            tr( "Not all clients are running. The command could not be executed on every client and should therefore be canceled to keep the clients consistent.\n\nAre you sure you want to continue only with the currently chosen clients?" ), QMessageBox::No | QMessageBox::Yes, this };
-                messageBox.setDefaultButton( QMessageBox::No );
-                messageBox.exec();
-                executeOnEveryClient = false;
-                if ( messageBox.clickedButton() == messageBox.button( QMessageBox::No ) ) {
-                    return;
-                } else {
-                    break;
-                }
-            }
-        }
-    }
-
-    // Get the command to be executed ...
-    QString command = ui->CBCommandToExecute->currentText();
-
-    // Set the correct public key
-    QString pkeyPathUser;
-    if ( ui->RBUseUserRoot->isChecked() ) {
-        pkeyPathUser = settings->pkeyPathRoot;
-    } else {
-        pkeyPathUser = settings->pkeyPathUser;
-    }
-
-    // and execute it
-    if ( executeOnEveryClient ) {
-        qDebug() << "Executing command" << command << "on every client.";
-        for ( auto s: settings->GetClients() ) {
-            if ( !( s->name.contains( "backup", Qt::CaseInsensitive ) ) ) {
-                s->OpenTerminal( command, ui->RBUseUserRoot->isChecked() );
-            }
-        }
-    } else {
-        qDebug() << "Executing command" << command << "only on chosen clients.";
-        QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
-        for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
-            if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
-                Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-                client->OpenTerminal( command, ui->RBUseUserRoot->isChecked() );
-            }
-        }
-    }
-}
-
 void lc::MainWindow::on_PBKillLocalzLeaf_clicked() {
     QString program{ settings->killallCmd };
     QStringList arguments;
@@ -394,25 +295,6 @@ void lc::MainWindow::on_PBKillLocalzLeaf_clicked() {
 
     // Output message via the debug messages tab
     qDebug() << program << arguments;
-}
-
-void lc::MainWindow::on_PBOpenFilesystem_clicked() {
-    // Determine the correct user to be used
-    QString * userToBeUsed = nullptr;
-    if ( ui->RBUseUserRoot->isChecked() ) {
-        userToBeUsed = new QString{ "root" };
-    } else  {
-        userToBeUsed = new QString{ settings->userNameOnClients };
-    }
-
-    QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
-    for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
-        if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
-            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            client->OpenFilesystem( userToBeUsed );
-        }
-    }
-    delete userToBeUsed;
 }
 
 void lc::MainWindow::on_PBPrintPaymentFileManually_clicked() {
@@ -448,46 +330,6 @@ void lc::MainWindow::on_PBRunzLeaf_clicked() {
         }
         delete fakeName;
     }
-}
-
-void lc::MainWindow::on_PBShowORSEE_clicked() {
-    lablib->ShowOrsee();
-}
-
-void lc::MainWindow::on_PBShowPreprints_clicked() {
-    lablib->ShowPreprints();
-}
-
-void lc::MainWindow::on_PBShutdown_clicked() {
-    // Confirmation dialog
-    QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(this, "Confirm", "Really shutdown the selected clients?", QMessageBox::Yes|QMessageBox::No);
-    if (reply == QMessageBox::Yes) {
-        QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
-        for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
-            if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
-                Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-                // Do not shut down the server itself
-                if ( client->name == "self"){
-                    QMessageBox::information(NULL, "Shutdown canceled", "It is not allowed to shutdown the server itself via labcontrol!");
-                } else {
-                    client->Shutdown();
-                }
-            }
-        }
-    } else {
-            qDebug() << "Canceled shutting down the selected clients";
-    }
-}
-
-void lc::MainWindow::on_PBStartLocalzLeaf_clicked() {
-    LocalzLeafStarter *localzLeafStarter = new LocalzLeafStarter{ this };
-    localzLeafStarter->setWindowFlags( Qt::Window );
-    localzLeafStarter->show();
-    connect( localzLeafStarter, &LocalzLeafStarter::LocalzLeafRequested,
-             this, &MainWindow::StartLocalzLeaf );
-    connect( localzLeafStarter, SIGNAL( LocalzLeafRequested( QString, QString, int ) ),
-             localzLeafStarter, SLOT( deleteLater() ) );
 }
 
 void lc::MainWindow::on_RBUseLocalUser_toggled(bool checked) {
@@ -599,10 +441,6 @@ void lc::MainWindow::SetupWidgets() {
                         "See the GNU General Public License for more details.\n\n"
                         "You should have received a copy of the GNU General Public License\n"
                         "along with Labcontrol. If not, see <http://www.gnu.org/licenses/>.\n\n\n" );
-
-    // Fill settings tab
-    ui->LESettingsServerLocalzLeafSize->setText ( settings->localzLeafSize );
-
 }
 
 void lc::MainWindow::StartReceiptsHandler( QString argzTreeDataTargetPath,
@@ -650,6 +488,82 @@ void lc::MainWindow::UpdateClientsTableView() {
 }
 
 /* Experiment tab functions */
+
+void lc::MainWindow::on_PBBoot_clicked() {
+    QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
+    for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
+        if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
+            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
+            client->Boot();
+        }
+    }
+}
+
+void lc::MainWindow::on_PBChooseFile_clicked() {
+    QFileDialog *file_dialog = new QFileDialog{ this, tr( "Choose a file to beam" ), QDir::homePath() };
+    file_dialog->setFileMode( QFileDialog::Directory );
+    file_dialog->setOption( QFileDialog::DontUseNativeDialog, true );
+    file_dialog->setOption( QFileDialog::ReadOnly, true );
+    file_dialog->setOption( QFileDialog::ShowDirsOnly, true );
+
+    if(file_dialog->exec()) {
+        ui->LEFilePath->setText(file_dialog->selectedFiles().at(0));
+        qDebug() << "Chose file" << ui->LEFilePath->text() << "for beaming.";
+    }
+    else {
+        ui->LEFilePath->setText( tr( "File choosing cancelled" ) );
+        qDebug() << "File choosing cancelled";
+    }
+    delete file_dialog;
+}
+
+void lc::MainWindow::on_PBBeamFile_clicked() {
+    QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
+    const QString fileToBeam{ ui->LEFilePath->text() };
+    if(fileToBeam == ""){
+        QMessageBox::information(this, "Upload failed", "You didn't choose any folder to upload.");
+    } else {
+    //Iterate over the selected clients to upload the file
+    for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
+        if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
+            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
+            client->BeamFile( fileToBeam, &settings->pkeyPathUser, &settings->userNameOnClients );
+        }
+    }
+    // Inform the user about the path
+    QMessageBox::information(this, "Upload completed", "The folder was copied to all selected clients.\nThe path on every client is /home/ewfuser/media4ztree" + fileToBeam.mid(fileToBeam.lastIndexOf('/')) +".\nDon't forget to adjust the media path within zTree!");
+    }
+}
+
+void lc::MainWindow::on_PBShowORSEE_clicked() {
+    lablib->ShowOrsee();
+}
+
+void lc::MainWindow::on_PBShowPreprints_clicked() {
+    lablib->ShowPreprints();
+}
+
+void lc::MainWindow::on_PBShutdown_clicked() {
+    // Confirmation dialog
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Confirm", "Really shutdown the selected clients?", QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::Yes) {
+        QModelIndexList activatedItems = ui->TVClients->selectionModel()->selectedIndexes();
+        for ( QModelIndexList::ConstIterator it = activatedItems.cbegin(); it != activatedItems.cend(); ++it ) {
+            if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
+                Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
+                // Do not shut down the server itself
+                if ( client->name == "self"){
+                    QMessageBox::information(NULL, "Shutdown canceled", "It is not allowed to shutdown the server itself via labcontrol!");
+                } else {
+                    client->Shutdown();
+                }
+            }
+        }
+    } else {
+            qDebug() << "Canceled shutting down the selected clients";
+    }
+}
 
 void lc::MainWindow::on_CBWebcamChooser_activated( int argIndex ) {
     if (  argIndex != 0 ) {
@@ -730,6 +644,16 @@ void lc::MainWindow::on_PBStartzLeaf_clicked() {
             client->StartZLeaf( nullptr );
         }
     }
+}
+
+void lc::MainWindow::on_PBStartLocalzLeaf_clicked() {
+    LocalzLeafStarter *localzLeafStarter = new LocalzLeafStarter{ this };
+    localzLeafStarter->setWindowFlags( Qt::Window );
+    localzLeafStarter->show();
+    connect( localzLeafStarter, &LocalzLeafStarter::LocalzLeafRequested,
+             this, &MainWindow::StartLocalzLeaf );
+    connect( localzLeafStarter, SIGNAL( LocalzLeafRequested( QString, QString, int ) ),
+             localzLeafStarter, SLOT( deleteLater() ) );
 }
 
 void lc::MainWindow::StartLocalzLeaf( QString argzLeafName, QString argzLeafVersion,
@@ -877,6 +801,7 @@ void lc::MainWindow::on_PBStartSession_clicked() {
 
     //Set port to +1
     int newPort = ui->SBPort->text().toInt() + 1;
+    settings->SetChosenZTreePort(newPort);
     ui->SBPort->setValue(newPort);
 }
 
@@ -893,6 +818,49 @@ void lc::MainWindow::on_PBKillzLeaf_clicked()
 
 /* Admin tab functions */
 
+void lc::MainWindow::on_PBOpenFilesystem_clicked() {
+    // Determine the correct user to be used
+    QString * userToBeUsed = nullptr;
+    if ( ui->RBUseUserRoot->isChecked() ) {
+        userToBeUsed = new QString{ "root" };
+    } else  {
+        userToBeUsed = new QString{ settings->userNameOnClients };
+    }
+
+    QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
+    for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
+        if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
+            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
+            client->OpenFilesystem( userToBeUsed );
+        }
+    }
+    delete userToBeUsed;
+}
+
+void lc::MainWindow::on_PBExecute_clicked() {
+
+    // Get the command to be executed ...
+    QString command = ui->CBCommandToExecute->currentText();
+
+    // Set the correct public key
+    QString pkeyPathUser;
+    if ( ui->RBUseUserRoot->isChecked() ) {
+        pkeyPathUser = settings->pkeyPathRoot;
+    } else {
+        pkeyPathUser = settings->pkeyPathUser;
+    }
+
+    qDebug() << "Executing command" << command << " on chosen clients.";
+    QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
+    for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
+        if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
+            Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
+            client->OpenTerminal( command, ui->RBUseUserRoot->isChecked() );
+        }
+    }
+
+}
+
 // Issue open terminal call
 void lc::MainWindow::on_PBOpenTerminal_clicked() {
     QString pkeyPathUser;
@@ -908,12 +876,4 @@ void lc::MainWindow::on_PBOpenTerminal_clicked() {
             client->OpenTerminal( QString{}, ui->RBUseUserRoot->isChecked() );
         }
     }
-}
-
-/* Settings tab functions */
-
-// Change settings temporarly call
-void lc::MainWindow::on_PBChangeSettingsTemp_clicked()
-{
-    settings->SetLocalzLeafSize( ui->LESettingsServerLocalzLeafSize->text() );
 }

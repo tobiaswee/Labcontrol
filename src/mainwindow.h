@@ -129,9 +129,6 @@ private slots:
     void on_CBReceiptsHeader_activated(int argIndex);
     void on_ChBPrintanonymousreceipts_clicked();
     void on_PBKillzLeaf_clicked();
-
-    /* Settings actions */
-    void on_PBChangeSettingsTemp_clicked();
 };
 
 }

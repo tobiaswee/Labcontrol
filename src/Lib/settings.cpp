@@ -383,3 +383,7 @@ void lc::Settings::SetLocalzLeafSize( QString arg) {
     localzLeafSize = arg;
 }
 
+void lc::Settings::SetChosenZTreePort( const int argPort ){
+    chosenzTreePort = argPort;
+}
+

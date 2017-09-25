@@ -33,9 +33,14 @@ lc::LocalzLeafStarter::LocalzLeafStarter( QWidget *argParent ) :
 {
     ui->setupUi( this );
 
+    //Choose initial port from settings
     if ( settings->GetChosenZTreePort() ) {
         ui->SBzLeafPort->setValue( settings->GetChosenZTreePort() );
     }
+
+    //Choose initial z-Leave size from settings
+    ui->LELocalzLeafSize->setText( settings->GetLocalzLeafSize() );
+
 
     ui->CBzLeafVersion->addItem( tr( "Please choose a version" ) );
     if ( !settings->installedZTreeVersions.isEmpty() ) {
@@ -55,6 +60,10 @@ void lc::LocalzLeafStarter::on_PBStartLocalzLeaf_clicked() {
         return;
     }
 
+    //Set chosen z-Leaf size
+    settings->SetLocalzLeafSize( ui->LELocalzLeafSize->text() );
+
+    //Emit start local z-Leaf request to main window
     emit LocalzLeafRequested( ui->LEzLeafName->text(), ui->CBzLeafVersion->currentText(),
                               ui->SBzLeafPort->value() );
 }

@@ -32,8 +32,6 @@ class Settings : public QObject {
     Q_OBJECT
 
 public:
-    void SetLocalzLeafSize( QString arg);
-
     Settings() = delete;
     explicit Settings( const QSettings &argSettings, QObject *argParent = nullptr );
     Settings( const Settings &argSettings ) = delete;
@@ -58,6 +56,8 @@ public:
     const QString lcDataDir;
     const QString localUserName;
     QString localzLeafSize;
+    void SetLocalzLeafSize( QString arg);
+    QString GetLocalzLeafSize() const { return localzLeafSize; }
     const QString lprCmd;
     const QString netstatCmd;
     const QString netwBrdAddr;
@@ -118,11 +118,6 @@ public:
 
 inline QString lc::Settings::GetLocalzLeafName() const {
     return localzLeafName;
-}
-
-inline void lc::Settings::SetChosenZTreePort( const int argPort ) {
-    chosenzTreePort = argPort;
-    qDebug() << "'chosenZTreePort' set to:" << chosenzTreePort;
 }
 
 inline void lc::Settings::SetLocalzLeafName( const QString &argLocalzLeafName ) {
