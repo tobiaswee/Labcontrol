@@ -30,7 +30,7 @@
       <string>This sets the name with which this local z-Leaf will connect to z-Tree.</string>
      </property>
      <property name="styleSheet">
-      <string notr="true">background: cyan;</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>local</string>
@@ -53,7 +53,7 @@
       <string>Choose of which version the started z-Leaf shall be.</string>
      </property>
      <property name="styleSheet">
-      <string notr="true">background: cyan;</string>
+      <string notr="true"/>
      </property>
      <property name="maxVisibleItems">
       <number>32</number>
@@ -79,7 +79,7 @@
       <string>Set the port on which the z-Tree which shall be connected to listens.</string>
      </property>
      <property name="styleSheet">
-      <string notr="true">background: cyan;</string>
+      <string notr="true"/>
      </property>
      <property name="minimum">
       <number>7000</number>

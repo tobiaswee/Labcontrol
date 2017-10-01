@@ -666,7 +666,7 @@
              <item>
               <widget class="QCheckBox" name="ChBautoStartClientZleaf">
                <property name="text">
-                <string>Start z-Leaf on clients with the session</string>
+                <string>Start z-Leaf on clients with default parameters</string>
                </property>
                <property name="checked">
                 <bool>true</bool>
