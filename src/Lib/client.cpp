@@ -23,8 +23,10 @@
 
 #include "client.h"
 #include "settings.h"
+#include "lablib.h"
 
 extern std::unique_ptr< lc::Settings > settings;
+extern std::unique_ptr< lc::Lablib > lablib;
 
 lc::Client::Client( const QString &argIP, const QString &argMAC, const QString &argName,
                     unsigned short int argXPosition, unsigned short int argYPosition,
@@ -250,7 +252,7 @@ void lc::Client::Shutdown() {
     GotStatusChanged( state_t::SHUTTING_DOWN );
 }
 
-void lc::Client::StartZLeaf( const QString * argFakeName ) {
+void lc::Client::StartZLeaf( const QString * argFakeName, QString cmd ) {
     if ( state < state_t::RESPONDING || zLeafVersion.isEmpty() || GetSessionPort() < 7000 ) {
         return;
     }
@@ -269,32 +271,22 @@ void lc::Client::StartZLeaf( const QString * argFakeName ) {
 
     if ( ( messageBoxRunningZLeafFound.get() != nullptr
            && messageBoxRunningZLeafFound->clickedButton()
-              == messageBoxRunningZLeafFound->button( QMessageBox::Yes ) )
+           == messageBoxRunningZLeafFound->button( QMessageBox::Yes ) )
          || state != state_t::ZLEAF_RUNNING ) {
         QStringList arguments;
         if ( argFakeName  == nullptr && GetSessionPort() == 7000 ) {
             arguments << "-i" << settings->pkeyPathUser
                       << QString{ settings->userNameOnClients + "@" + ip }
-                      << "DISPLAY=:0.0" << settings->tasksetCmd << "0x00000001" << settings->wineCmd
-                      << QString{ settings->zTreeInstDir + "/zTree_" + GetzLeafVersion() + "/zleaf.exe" }
-                      << "/server" << settings->serverIP;
+                      << cmd;
+        } else if ( argFakeName  == nullptr ) {
+            arguments << "-i" << settings->pkeyPathUser
+                      << QString{ settings->userNameOnClients + "@" + ip }
+                      << cmd;
         } else {
-            if ( argFakeName  == nullptr ) {
-                arguments << "-i" << settings->pkeyPathUser
-                          << QString{ settings->userNameOnClients + "@" + ip }
-                          << "DISPLAY=:0.0" << settings->tasksetCmd << "0x00000001" << settings->wineCmd
-                          << QString{ settings->zTreeInstDir + "/zTree_" + GetzLeafVersion() + "/zleaf.exe" }
-                          << "/server" << settings->serverIP << "/channel"
-                          << QString::number( GetSessionPort() - 7000 );
-            } else {
-                arguments << "-i" << settings->pkeyPathUser
-                          << QString{ settings->userNameOnClients + "@" + ip }
-                          << "DISPLAY=:0.0" << settings->tasksetCmd << "0x00000001" << settings->wineCmd
-                          << QString{ settings->zTreeInstDir + "/zTree_" + GetzLeafVersion() + "/zleaf.exe" }
-                          << "/server" << settings->serverIP << "/channel"
-                          << QString::number( GetSessionPort() - 7000 )
-                          << "/name" << *argFakeName;
-            }
+            arguments << "-i" << settings->pkeyPathUser
+                      << QString{ settings->userNameOnClients + "@" + ip }
+                      << cmd
+                      << "/name" << *argFakeName;
         }
 
         // Start the process

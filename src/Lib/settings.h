@@ -78,6 +78,7 @@ public:
     const QString wakeonlanCmd;
     const QString webcamDisplayCmd;
     const QStringList webcams;
+    const QStringList webcams_names;
     const QString wineCmd;
     const QString wmctrlCmd;
     const QString xsetCmd;

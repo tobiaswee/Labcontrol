@@ -101,7 +101,7 @@
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
-              <widget class="QLabel" name="LPlanSession">
+              <widget class="QLabel" name="L_PlanSession">
                <property name="text">
                 <string>Plan a session or print attendee list</string>
                </property>
@@ -122,7 +122,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="LPrintLocalFiles">
+              <widget class="QLabel" name="L_PrintLocalFiles">
                <property name="text">
                 <string>Print local files</string>
                </property>
@@ -153,7 +153,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="LWebcamChooser">
+              <widget class="QLabel" name="L_WebcamChooser">
                <property name="text">
                 <string>Show webcams</string>
                </property>
@@ -207,7 +207,7 @@
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
              <item>
-              <widget class="QLabel" name="LClientBootShutdown">
+              <widget class="QLabel" name="L_ClientBootShutdown">
                <property name="text">
                 <string>Switch the selected clients on or off</string>
                </property>
@@ -248,7 +248,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="LVNC">
+              <widget class="QLabel" name="L_VNC">
                <property name="text">
                 <string>Remote control the selected clients</string>
                </property>
@@ -329,7 +329,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="LBrowserActions">
+              <widget class="QLabel" name="L_BrowserActions">
                <property name="text">
                 <string>Start browser on the selected clients</string>
                </property>
@@ -338,7 +338,7 @@
              <item>
               <layout class="QHBoxLayout" name="HLURL">
                <item>
-                <widget class="QLabel" name="LURL">
+                <widget class="QLabel" name="L_URL">
                  <property name="text">
                   <string>URL:</string>
                  </property>
@@ -425,7 +425,7 @@
         </property>
         <layout class="QVBoxLayout" name="VLcleanupRecoverLastSession">
          <item>
-          <widget class="QLabel" name="LcleanupRecoverLastSession">
+          <widget class="QLabel" name="L_cleanupRecoverLastSession">
            <property name="font">
             <font>
              <weight>50</weight>
@@ -530,7 +530,7 @@
              <item>
               <widget class="QLabel" name="LDataTargetPath">
                <property name="text">
-                <string>Data target path:</string>
+                <string>Data target path (No whitespaces allowed)</string>
                </property>
               </widget>
              </item>
@@ -708,14 +708,14 @@
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="label">
+              <widget class="QLabel" name="LzLeafCommandline">
                <property name="text">
                 <string>command line to be executed</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="lineEdit">
+              <widget class="QLineEdit" name="LEzLeafCommandline">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -742,7 +742,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="LFakeName">
+              <widget class="QLabel" name="L_FakeName">
                <property name="enabled">
                 <bool>true</bool>
                </property>
@@ -796,7 +796,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="label_2">
+              <widget class="QLabel" name="L_LocalZleaf">
                <property name="text">
                 <string>Local zLeaf</string>
                </property>
@@ -855,14 +855,14 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_7">
            <item>
-            <widget class="QLabel" name="LUserName">
+            <widget class="QLabel" name="L_UserName">
              <property name="text">
               <string>TextLabel</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="LAdministrativeRights">
+            <widget class="QLabel" name="L_AdministrativeRights">
              <property name="text">
               <string>TextLabel</string>
              </property>
@@ -880,7 +880,7 @@
            <item>
             <layout class="QVBoxLayout" name="VLUseUser">
              <item>
-              <widget class="QLabel" name="LUseUser">
+              <widget class="QLabel" name="L_UseUser">
                <property name="text">
                 <string>User to be used for remote terminal session:</string>
                </property>

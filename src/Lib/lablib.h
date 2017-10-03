@@ -93,6 +93,14 @@ public:
                           QString argzTreeDataTargetPath, quint16 argzTreePort,
                           QString argzTreeVersion );
 
+    /*!
+    * \brief Returns the commandline to issue on the client(s) in order to start zLeaf
+    * @param sessionPort The port zLeaf shall connect to
+    * @param zLeafVersion zLeaf Version to start
+    */
+    QStringList getzLeafArgs( int sessionPort, QString zleafVersion );
+
+
 public slots:
 
 signals:

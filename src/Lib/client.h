@@ -96,7 +96,7 @@ public:
     void OpenFilesystem( const QString * const argUserToBeUsed );
     /*!
      * \brief Opens a terminal for the client
-     * \param argCommand    A command which shall be executed in the terminal window (Pass an empty QString if not wanted)
+     * \param argCommand A command which shall be executed in the terminal window (Pass an empty QString if not wanted)
      * \param argOpenAsRoot Run the terminal session as root (true) or as normal user (false)
      */
     void OpenTerminal( const QString &argCommand, const bool &argOpenAsRoot );
@@ -109,16 +109,19 @@ public:
      * \brief Shuts down the client
      */
     void Shutdown();
-    //! Starts a zLeaf instance on the client
+
     /*!
-     @param argFakeName                     The name the zLeaf instance shall have (if not the default, which is the hostname of the client)
+    * \brief Starts a zLeaf instance on the client
+    * @param argFakeName The name the zLeaf instance shall have (if not the default, which is the hostname of the client)
     */
-    void StartZLeaf(const QString *argFakeName = nullptr );
+    void StartZLeaf(const QString *argFakeName = nullptr, QString cmd = "" );
+
     /*!
     * \brief Opens a browser window on the client
     * @param argURL                     URL to open in clients browser
     */
     void StartClientBrowser( const QString *argURL = nullptr, const bool *argFullscreen = nullptr );
+
     /*!
     * \brief Closes all browser instances
     */

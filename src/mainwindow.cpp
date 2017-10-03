@@ -106,7 +106,7 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
     if ( zTreeEntries.isEmpty() ) {
         ui->CBClientNames->setEnabled( false );
         //ui->GBzTree->setEnabled( false );
-        ui->LFakeName->setEnabled( false );
+        ui->L_FakeName->setEnabled( false );
         ui->PBRunzLeaf->setEnabled( false );
         ui->PBStartLocalzLeaf->setEnabled( false );
         ui->PBStartzLeaf->setEnabled( false );
@@ -123,8 +123,8 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
         ui->CBWebcamChooser->setEnabled( false );
         ui->GBClientActions->setEnabled( false );
         ui->LEFilePath->setEnabled( false );
-        ui->LFakeName->setEnabled( false );
-        ui->LWebcamChooser->setEnabled( false );
+        ui->L_FakeName->setEnabled( false );
+        ui->L_WebcamChooser->setEnabled( false );
         ui->PBBeamFile->setEnabled( false );
         ui->PBChooseFile->setEnabled( false );
         ui->PBKillLocalzLeaf->setEnabled( false );
@@ -154,7 +154,7 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
          || settings->userNameOnClients.isEmpty() ) {
         ui->CBClientNames->setEnabled( false );
         ui->LEFilePath->setEnabled( false );
-        ui->LFakeName->setEnabled( false );
+        ui->L_FakeName->setEnabled( false );
         ui->PBBeamFile->setEnabled( false );
         ui->PBChooseFile->setEnabled( false );
         ui->PBKillzLeaf->setEnabled( false );
@@ -195,7 +195,7 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
     if ( settings->sshCmd.isEmpty() ) {
         ui->CBClientNames->setEnabled( false );
         ui->GBClientActions->setEnabled( false );
-        ui->LFakeName->setEnabled( false );
+        ui->L_FakeName->setEnabled( false );
         ui->LEFilePath->setEnabled( false );
         ui->PBBeamFile->setEnabled( false );
         ui->PBChooseFile->setEnabled( false );
@@ -208,7 +208,7 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
 
     if ( settings->tasksetCmd.isEmpty() ) {
         ui->CBClientNames->setEnabled( false );
-        ui->LFakeName->setEnabled( false );
+        ui->L_FakeName->setEnabled( false );
         ui->PBRunzLeaf->setEnabled( false );
         ui->PBStartSession->setEnabled( false );
         ui->PBStartLocalzLeaf->setEnabled( false );
@@ -236,12 +236,12 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
     if ( settings->webcamDisplayCmd.isEmpty()
          || settings->webcams.isEmpty() ) {
         ui->CBWebcamChooser->setEnabled( false );
-        ui->LWebcamChooser->setEnabled( false );
+        ui->L_WebcamChooser->setEnabled( false );
     }
 
     if ( settings->wineCmd.isEmpty() ) {
         ui->CBClientNames->setEnabled( false );
-        ui->LFakeName->setEnabled( false );
+        ui->L_FakeName->setEnabled( false );
         ui->PBRunzLeaf->setEnabled( false );
         //ui->PBStartSession->setEnabled( false );
         ui->PBStartLocalzLeaf->setEnabled( false );
@@ -250,7 +250,7 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
 
     if ( settings->zTreeInstDir.isEmpty() ) {
         ui->CBClientNames->setEnabled( false );
-        ui->LFakeName->setEnabled( false );
+        ui->L_FakeName->setEnabled( false );
         ui->PBRunzLeaf->setEnabled( false );
         ui->PBStartSession->setEnabled( false );
         ui->PBStartLocalzLeaf->setEnabled( false );
@@ -375,7 +375,7 @@ void lc::MainWindow::SetupWidgets() {
         ui->CBClientNames->setEnabled( false );
         ui->GBClientActions->setEnabled( false );
         ui->LEFilePath->setEnabled( false );
-        ui->LFakeName->setEnabled( false );
+        ui->L_FakeName->setEnabled( false );
         ui->PBBeamFile->setEnabled( false );
         ui->PBChooseFile->setEnabled( false );
         ui->PBRunzLeaf->setEnabled( false );
@@ -385,18 +385,18 @@ void lc::MainWindow::SetupWidgets() {
 
     // Fill the 'CBWebcamChooser' with all available network webcams
     if ( !settings->webcams.isEmpty() ) {
-        for ( const auto &s : settings->webcams )
+        for ( const auto &s : settings->webcams_names )
             ui->CBWebcamChooser->addItem( s );
     }
 
     // Disable the admin tab if the user has no administrative rights and set it up
     if ( CheckIfUserIsAdmin() ) {
         ui->TAdminActions->setEnabled( true );
-        ui->LAdministrativeRights->setText( tr( "You have administrative rights." ) );
+        ui->L_AdministrativeRights->setText( tr( "You have administrative rights." ) );
     } else {
-        ui->LAdministrativeRights->setText( tr( "You don't have administrative rights." ) );
+        ui->L_AdministrativeRights->setText( tr( "You don't have administrative rights." ) );
     }
-    ui->LUserName->setText( tr( "You are user %1" ).arg( settings->localUserName ) );
+    ui->L_UserName->setText( tr( "You are user %1" ).arg( settings->localUserName ) );
     if ( !settings->userNameOnClients.isEmpty() ) {
         ui->RBUseLocalUser->setText( settings->userNameOnClients );
     } else {
@@ -569,7 +569,10 @@ void lc::MainWindow::on_CBWebcamChooser_activated( int argIndex ) {
     if (  argIndex != 0 ) {
         QString program{ settings->webcamDisplayCmd };
         QStringList arguments;
-        arguments << ui->CBWebcamChooser->currentText();
+
+        // Attention argIndex is NOT 0-based
+        arguments << settings->webcams[argIndex-1];
+        qDebug() << "Webcam" << arguments << "will be opened";
 
         QProcess showWebcamProcess;
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
@@ -674,6 +677,7 @@ void lc::MainWindow::StartLocalzLeaf( QString argzLeafName, QString argzLeafVers
       arguments << "/size" << QString{ settings->localzLeafSize };
     }
 
+    qDebug() << "Start local zLeaf:" << arguments;
     startProc.startDetached( settings->tasksetCmd, arguments );
 }
 
@@ -789,19 +793,24 @@ void lc::MainWindow::on_PBStartSession_clicked() {
                             static_cast< quint16 >( ui->SBPort->value() ),
                             ui->CBzTreeVersion->currentText() );
 
+    //Display the command line
+    QString cmd = this->lablib->getzLeafArgs( ui->SBPort->value(), ui->CBzTreeVersion->currentText()).join(" ");
+    ui->LEzLeafCommandline->setText(cmd);
+
     //Start z-Leaf on selected clients if checkbox is activated
     if( ui->ChBautoStartClientZleaf->isChecked() ) {
         for ( auto cit = activatedItems.cbegin(); cit != activatedItems.cend(); ++cit ) {
             if ( ( *cit ).data( Qt::DisplayRole ).type() != 0 ) {
                 Client *client = static_cast< Client* >( ( *cit ).data( Qt::UserRole ).value< void * >() );
-                client->StartZLeaf( nullptr );
+                client->StartZLeaf( nullptr, cmd );
             }
         }
     }
 
-    //Set port to +1
+    //Set chosen Port
+    settings->SetChosenZTreePort(ui->SBPort->text().toInt());
+    // Increment port number
     int newPort = ui->SBPort->text().toInt() + 1;
-    settings->SetChosenZTreePort(newPort);
     ui->SBPort->setValue(newPort);
 }
 

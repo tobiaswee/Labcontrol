@@ -112,6 +112,8 @@ lc::Settings::Settings( const QSettings &argSettings, QObject *argParent ) :
                                         argSettings, true ) },
     webcams{ argSettings.value( "webcams", "" ).toString().split( '|', QString::SkipEmptyParts,
                                                                   Qt::CaseInsensitive ) },
+    webcams_names{ argSettings.value( "webcams_names", "" ).toString().split( '|', QString::SkipEmptyParts,
+                                                                  Qt::CaseInsensitive ) },
     wineCmd{ ReadSettingsItem( "wine_command",
                                "Running z-Leaves or z-Tree will be possible.",
                                argSettings, true ) },

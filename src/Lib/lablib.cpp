@@ -167,3 +167,20 @@ void lc::Lablib::SetLocalZLeafDefaultName( const QString &argName ) {
     settings->SetLocalzLeafName( argName );
     labSettings.setValue( "local_zLeaf_name", argName );
 }
+
+//Returns the commandline that is issued on the client when zleaf is started
+QStringList lc::Lablib::getzLeafArgs( int sessionPort, QString zleafVersion ){
+    QStringList arguments;
+    if ( sessionPort == 7000 ) {
+        arguments << "DISPLAY=:0.0" << settings->tasksetCmd << "0x00000001" << settings->wineCmd
+                  << QString{ settings->zTreeInstDir + "/zTree_" + zleafVersion + "/zleaf.exe" }
+                  << "/server" << settings->serverIP;
+    } else {
+        arguments << "DISPLAY=:0.0" << settings->tasksetCmd << "0x00000001" << settings->wineCmd
+                  << QString{ settings->zTreeInstDir + "/zTree_" + zleafVersion + "/zleaf.exe" }
+                  << "/server" << settings->serverIP << "/channel"
+                  << QString::number( sessionPort- 7000 );
+    }
+
+    return arguments;
+}
