@@ -10,8 +10,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 ### Removed
 
-## [v2.1.4] - 2017-08-27
-* Added dialog for Upload folder button
+## [v2.1.4] - 2017-10-03
+### Added
+* Dialog for Upload folder button
+* Open browser on clients 
+* Full Control VNC Button
+* LineEdit for zLeaf CMD
+### Changed
+* Session popup is now a tab
+* Tab layout separated in prep / session / admin / info
+* Version info displayed in info
 ## [v2.1.0] - 2016-10-12
 ### Added
 * Manual printing of _z-Tree_ payment files
