@@ -638,13 +638,12 @@ void lc::MainWindow::on_PBViewDesktopFullControl_clicked()
 
 
 /* Session tab functions */
-
 void lc::MainWindow::on_PBStartzLeaf_clicked() {
     QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
     for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
             Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            client->StartZLeaf( nullptr );
+            client->StartZLeaf( nullptr, ui->LEzLeafCommandline->text() );
         }
     }
 }
@@ -807,7 +806,7 @@ void lc::MainWindow::on_PBStartSession_clicked() {
         }
     }
 
-    //Set chosen Port
+    // Set chosen Port
     settings->SetChosenZTreePort(ui->SBPort->text().toInt());
     // Increment port number
     int newPort = ui->SBPort->text().toInt() + 1;

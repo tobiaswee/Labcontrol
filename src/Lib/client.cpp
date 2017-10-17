@@ -274,11 +274,7 @@ void lc::Client::StartZLeaf( const QString * argFakeName, QString cmd ) {
            == messageBoxRunningZLeafFound->button( QMessageBox::Yes ) )
          || state != state_t::ZLEAF_RUNNING ) {
         QStringList arguments;
-        if ( argFakeName  == nullptr && GetSessionPort() == 7000 ) {
-            arguments << "-i" << settings->pkeyPathUser
-                      << QString{ settings->userNameOnClients + "@" + ip }
-                      << cmd;
-        } else if ( argFakeName  == nullptr ) {
+        if ( argFakeName  == nullptr ) {
             arguments << "-i" << settings->pkeyPathUser
                       << QString{ settings->userNameOnClients + "@" + ip }
                       << cmd;

@@ -182,5 +182,6 @@ QStringList lc::Lablib::getzLeafArgs( int sessionPort, QString zleafVersion ){
                   << QString::number( sessionPort- 7000 );
     }
 
+    //Return the crafted QStringList
     return arguments;
 }
