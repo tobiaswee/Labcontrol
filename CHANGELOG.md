@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 ### Removed
 
-## [v2.1.4] - 2017-10-03
+## [v2.1.5] - 2017-10-21
 ### Added
 * Dialog for Upload folder button
 * Open browser on clients 
@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Session popup is now a tab
 * Tab layout separated in prep / session / admin / info
 * Version info displayed in info
+
 ## [v2.1.0] - 2016-10-12
 ### Added
 * Manual printing of _z-Tree_ payment files

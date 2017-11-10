@@ -425,7 +425,7 @@ void lc::MainWindow::SetupWidgets() {
     //DisableDisfunctionalWidgets();
 
     // Set the info text in LInfo on the TInfo tab
-    ui->LInfo->setText( "This is Labcontrol version 2.1.4\n\n\n\n\n\n"
+    ui->LInfo->setText( "This is Labcontrol version 2.1.5\n\n\n\n\n\n"
                         "Developers\n\n"
                         "0day-2016 Henning Prömpers\n"
                         "2014-2016 Markus Prasser\n"
