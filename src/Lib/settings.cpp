@@ -31,6 +31,9 @@ lc::Settings::Settings( const QSettings &argSettings, QObject *argParent ) :
     browserCmd{ ReadSettingsItem( "browser_command",
                                   "Opening ORSEE in a browser will not work.",
                                   argSettings, true ) },
+    clientBrowserCmd{ ReadSettingsItem( "client_browser_command",
+                                  "Opening a browser window on clients will not work.",
+                                  argSettings, false ) },
     dvipsCmd{ ReadSettingsItem( "dvips_command",
                                 "Receipts creation will not work.",
                                 argSettings, true ) },
@@ -43,8 +46,8 @@ lc::Settings::Settings( const QSettings &argSettings, QObject *argParent ) :
     latexCmd{ ReadSettingsItem( "latex_command",
                                 "Receipts creation will not work.",
                                 argSettings, true ) },
-    lcInstDir{ ReadSettingsItem( "labcontrol_installation_directory",
-                                 "Labcontrol will missbehave with high propability.",
+    lcDataDir{ ReadSettingsItem( "labcontrol_data_directory",
+                                 "Datapath not set. Labcontrol will missbehave with high propability.",
                                  argSettings, true ) },
     localUserName{ GetLocalUserName() },
     localzLeafSize{ ReadSettingsItem( "local_zLeaf_size",
@@ -108,6 +111,8 @@ lc::Settings::Settings( const QSettings &argSettings, QObject *argParent ) :
                                         "Displaying the laboratory's webcams will not work.",
                                         argSettings, true ) },
     webcams{ argSettings.value( "webcams", "" ).toString().split( '|', QString::SkipEmptyParts,
+                                                                  Qt::CaseInsensitive ) },
+    webcams_names{ argSettings.value( "webcams_names", "" ).toString().split( '|', QString::SkipEmptyParts,
                                                                   Qt::CaseInsensitive ) },
     wineCmd{ ReadSettingsItem( "wine_command",
                                "Running z-Leaves or z-Tree will be possible.",
@@ -258,12 +263,12 @@ QMap< QString, lc::Client* > lc::Settings::CreateClIPsToClMap( const QVector< Cl
 QStringList lc::Settings::DetectInstalledLaTeXHeaders() const {
     QStringList tempLaTeXHeaders{ "None found" };
     // Detect the installed LaTeX headers
-    if ( !lcInstDir.isEmpty() ) {
-        QDir laTeXDirectory{ lcInstDir, "*_header.tex", QDir::Name,
+    if ( !lcDataDir.isEmpty() ) {
+        QDir laTeXDirectory{ lcDataDir, "*_header.tex", QDir::Name,
                              QDir::CaseSensitive | QDir::Files | QDir::Readable };
         if ( !laTeXDirectory.exists() || laTeXDirectory.entryList().isEmpty() ) {
             qDebug() << "Receipts printing will not work. No LaTeX headers could be found in"
-                     << lcInstDir;
+                     << lcDataDir;
         } else {
             tempLaTeXHeaders = laTeXDirectory.entryList();
             tempLaTeXHeaders.replaceInStrings( "_header.tex", "" );
@@ -375,3 +380,12 @@ QString lc::Settings::ReadSettingsItem( const QString &argVariableName,
     }
     return QString{};
 }
+
+void lc::Settings::SetLocalzLeafSize( QString arg) {
+    localzLeafSize = arg;
+}
+
+void lc::Settings::SetChosenZTreePort( const int argPort ){
+    chosenzTreePort = argPort;
+}
+

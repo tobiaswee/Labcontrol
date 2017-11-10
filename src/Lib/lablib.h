@@ -88,12 +88,20 @@ public:
     void SetLocalZLeafDefaultName( const QString &argName );
     void ShowOrsee();
     void ShowPreprints();
-
-public slots:
     void StartNewSession( QVector< Client* > argAssocCl, QString argParticipNameReplacement,
                           bool argPrintLocalReceipts, QString argReceiptsHeader,
                           QString argzTreeDataTargetPath, quint16 argzTreePort,
                           QString argzTreeVersion );
+
+    /*!
+    * \brief Returns the commandline to issue on the client(s) in order to start zLeaf
+    * @param sessionPort The port zLeaf shall connect to
+    * @param zLeafVersion zLeaf Version to start
+    */
+    QStringList getzLeafArgs( int sessionPort, QString zleafVersion );
+
+
+public slots:
 
 signals:
     void ZLEAF_RUNNING( QString argClientIP );

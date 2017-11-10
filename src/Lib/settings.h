@@ -48,13 +48,16 @@ public:
 
     const int defaultReceiptIndex = 0;
     const QString browserCmd;
+    const QString clientBrowserCmd;
     const QString dvipsCmd;
     const QString fileMngr;
     const QString killallCmd;
     const QString latexCmd;
-    const QString lcInstDir;
+    const QString lcDataDir;
     const QString localUserName;
-    const QString localzLeafSize;
+    QString localzLeafSize;
+    void SetLocalzLeafSize( QString arg);
+    QString GetLocalzLeafSize() const { return localzLeafSize; }
     const QString lprCmd;
     const QString netstatCmd;
     const QString netwBrdAddr;
@@ -75,6 +78,7 @@ public:
     const QString wakeonlanCmd;
     const QString webcamDisplayCmd;
     const QStringList webcams;
+    const QStringList webcams_names;
     const QString wineCmd;
     const QString wmctrlCmd;
     const QString xsetCmd;
@@ -115,11 +119,6 @@ public:
 
 inline QString lc::Settings::GetLocalzLeafName() const {
     return localzLeafName;
-}
-
-inline void lc::Settings::SetChosenZTreePort( const int argPort ) {
-    chosenzTreePort = argPort;
-    qDebug() << "'chosenZTreePort' set to:" << chosenzTreePort;
 }
 
 inline void lc::Settings::SetLocalzLeafName( const QString &argLocalzLeafName ) {

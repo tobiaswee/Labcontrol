@@ -8,8 +8,6 @@ SOURCES += src/localzleafstarter.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
     src/manualprintingsetup.cpp \
-    src/sessiondisplay.cpp \
-    src/sessionstarter.cpp \
     src/Lib/client.cpp \
     src/Lib/clienthelpnotificationserver.cpp \
     src/Lib/clientpinger.cpp \
@@ -25,8 +23,6 @@ SOURCES += src/localzleafstarter.cpp \
 HEADERS  += src/localzleafstarter.h \
     src/mainwindow.h \
     src/manualprintingsetup.h \
-    src/sessiondisplay.h \
-    src/sessionstarter.h \
     src/Lib/client.h \
     src/Lib/clienthelpnotificationserver.h \
     src/Lib/clientpinger.h \
@@ -42,9 +38,7 @@ HEADERS  += src/localzleafstarter.h \
 
 FORMS    += src/localzleafstarter.ui \
     src/mainwindow.ui \
-    src/manualprintingsetup.ui \
-    src/sessiondisplay.ui \
-    src/sessionstarter.ui
+    src/manualprintingsetup.ui
 
 QMAKE_CXXFLAGS += -std=c++11
 

@@ -26,7 +26,7 @@
 
 lc::Lablib::Lablib( QObject *argParent ) :
     QObject{ argParent },
-    labSettings{ "Economic Laboratory", "Labcontrol", this },
+    labSettings{ "Labcontrol", "Labcontrol", this },
     sessionsModel{ new SessionsModel{ this } }
 {
     for ( const auto &s : settings->GetClients() ) {
@@ -107,7 +107,7 @@ void lc::Lablib::ShowPreprints() {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     showPreprintsProcess.setProcessEnvironment( env );
     QString program{ settings->fileMngr };
-    QStringList arguments{ QStringList{} << settings->lcInstDir +  "/preprints" };
+    QStringList arguments{ QStringList{} << settings->lcDataDir +  "/preprints" };
     showPreprintsProcess.startDetached( program, arguments );
 
     // Output message via the debug messages tab
@@ -166,4 +166,22 @@ void lc::Lablib::StartNewSession( QVector< Client* > argAssocCl,
 void lc::Lablib::SetLocalZLeafDefaultName( const QString &argName ) {
     settings->SetLocalzLeafName( argName );
     labSettings.setValue( "local_zLeaf_name", argName );
+}
+
+//Returns the commandline that is issued on the client when zleaf is started
+QStringList lc::Lablib::getzLeafArgs( int sessionPort, QString zleafVersion ){
+    QStringList arguments;
+    if ( sessionPort == 7000 ) {
+        arguments << "DISPLAY=:0.0" << settings->tasksetCmd << "0x00000001" << settings->wineCmd
+                  << QString{ settings->zTreeInstDir + "/zTree_" + zleafVersion + "/zleaf.exe" }
+                  << "/server" << settings->serverIP;
+    } else {
+        arguments << "DISPLAY=:0.0" << settings->tasksetCmd << "0x00000001" << settings->wineCmd
+                  << QString{ settings->zTreeInstDir + "/zTree_" + zleafVersion + "/zleaf.exe" }
+                  << "/server" << settings->serverIP << "/channel"
+                  << QString::number( sessionPort- 7000 );
+    }
+
+    //Return the crafted QStringList
+    return arguments;
 }

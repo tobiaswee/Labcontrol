@@ -28,7 +28,7 @@ std::unique_ptr< lc::Settings > settings;
 
 int main( int argc, char *argv[] ) {
     QApplication a{ argc, argv };
-    settings.reset( new lc::Settings{ QSettings{ "Economic Laboratory", "Labcontrol" } } );
+    settings.reset( new lc::Settings{ QSettings{ "Labcontrol", "Labcontrol" } } );
     lc::MainWindow w;
     w.show();
     

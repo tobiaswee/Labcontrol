@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>352</width>
+    <width>371</width>
     <height>352</height>
    </rect>
   </property>
@@ -20,7 +20,7 @@
       <string>This sets the name with which this local z-Leaf will connect to z-Tree.</string>
      </property>
      <property name="text">
-      <string>Set the name of the to be started z-Leaf:</string>
+      <string>Set the name of the to be started z-Leaf</string>
      </property>
     </widget>
    </item>
@@ -30,7 +30,7 @@
       <string>This sets the name with which this local z-Leaf will connect to z-Tree.</string>
      </property>
      <property name="styleSheet">
-      <string notr="true">background: cyan;</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>local</string>
@@ -43,7 +43,7 @@
       <string>Choose of which version the started z-Leaf shall be.</string>
      </property>
      <property name="text">
-      <string>Choose the version of the to be started z-Leaf:</string>
+      <string>Choose the version of the to be started z-Leaf</string>
      </property>
     </widget>
    </item>
@@ -53,7 +53,7 @@
       <string>Choose of which version the started z-Leaf shall be.</string>
      </property>
      <property name="styleSheet">
-      <string notr="true">background: cyan;</string>
+      <string notr="true"/>
      </property>
      <property name="maxVisibleItems">
       <number>32</number>
@@ -66,17 +66,20 @@
       <string>Set the port on which the z-Tree which shall be connected to listens.</string>
      </property>
      <property name="text">
-      <string>Choose the port the to be started z-Leaf shall listen on:</string>
+      <string>Choose the port the to be started z-Leaf shall listen on</string>
      </property>
     </widget>
    </item>
    <item>
     <widget class="QSpinBox" name="SBzLeafPort">
+     <property name="cursor">
+      <cursorShape>ArrowCursor</cursorShape>
+     </property>
      <property name="toolTip">
       <string>Set the port on which the z-Tree which shall be connected to listens.</string>
      </property>
      <property name="styleSheet">
-      <string notr="true">background: cyan;</string>
+      <string notr="true"/>
      </property>
      <property name="minimum">
       <number>7000</number>
@@ -86,6 +89,23 @@
      </property>
      <property name="value">
       <number>7000</number>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="LLocalzLeafSize">
+     <property name="text">
+      <string>Choose the size the local z-Leaf shall have</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="LELocalzLeafSize"/>
+   </item>
+   <item>
+    <widget class="Line" name="line_Start">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>

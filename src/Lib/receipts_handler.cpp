@@ -255,11 +255,11 @@ QVector<QString> *lc::ReceiptsHandler::GetParticipantsDataFromPaymentFile() {
 
 QString *lc::ReceiptsHandler::LoadLatexHeader() {
     // Prepare all facilities to read the latex header file
-    QFile latexHeaderFile( settings->lcInstDir + "/" + latexHeaderName + "_header.tex" );
+    QFile latexHeaderFile( settings->lcDataDir + "/" + latexHeaderName + "_header.tex" );
     if ( !latexHeaderFile.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
         QMessageBox messageBox{ QMessageBox::Critical, tr( "LaTeX header could not be loaded" ),
                                 tr( "The LaTeX header at '%1/%2_header.tex' could not be loaded. Receipts printing will not work." )
-                                .arg( settings->lcInstDir ).arg( latexHeaderName ), QMessageBox::Ok };
+                                .arg( settings->lcDataDir ).arg( latexHeaderName ), QMessageBox::Ok };
         messageBox.exec();
         return nullptr;
     }

@@ -23,8 +23,10 @@
 
 #include "client.h"
 #include "settings.h"
+#include "lablib.h"
 
 extern std::unique_ptr< lc::Settings > settings;
+extern std::unique_ptr< lc::Lablib > lablib;
 
 lc::Client::Client( const QString &argIP, const QString &argMAC, const QString &argName,
                     unsigned short int argXPosition, unsigned short int argYPosition,
@@ -105,22 +107,6 @@ void lc::Client::Boot() {
     GotStatusChanged( state_t::BOOTING );
 }
 
-void lc::Client::DeactiveScreensaver() {
-    QStringList arguments;
-    arguments << "-i" << settings->pkeyPathUser
-              << QString{ settings->userNameOnClients + "@" + ip }
-              << settings->xsetCmd << "-display" << ":0.0" << "dpms" << "force" <<  "on";
-
-    // Start the process
-    QProcess deactiveScreensaverProcess;
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    deactiveScreensaverProcess.setProcessEnvironment( env );
-    deactiveScreensaverProcess.startDetached( settings->sshCmd, arguments );
-
-    // Output message via the debug messages tab
-    qDebug() << settings->sshCmd << arguments.join( " " );
-}
-
 void lc::Client::GotStatusChanged( state_t argState ) {
     if ( ( protectedCycles > 0 ) && ( state == state_t::BOOTING ) && ( argState != state_t::RESPONDING ) ) {
         return;
@@ -173,22 +159,13 @@ void lc::Client::OpenTerminal( const QString &argCommand, const bool &argOpenAsR
         QStringList *arguments = nullptr;
         arguments = new QStringList;
         if ( !argOpenAsRoot ) {
-            *arguments << "--title" << name << "-e" <<
-                          QString{ settings->sshCmd + " -i " + settings->pkeyPathUser + " "
+            *arguments << "-e"
+                       << QString{ settings->sshCmd + " -i " + settings->pkeyPathUser + " "
                                    + settings->userNameOnClients + "@" + ip };
         } else {
-            *arguments << "--title" << name << "-e" <<
+            *arguments << "-e" <<
                           QString{ settings->sshCmd + " -i " + settings->pkeyPathRoot
-                                   + " " + "root@" + ip };
-        }
-
-        if ( settings->termEmulCmd.contains( "konsole" ) ) {
-            arguments->prepend( "--new-tab" );
-            arguments->prepend( "--show-tabbar" );
-        } else {
-            if ( settings->termEmulCmd.contains( "gnome-terminal" ) ) {
-                arguments->prepend( "--tab" );
-            }
+                                   + " " + "root@" + ip};
         }
 
         if ( !argCommand.isEmpty() ) {
@@ -224,9 +201,22 @@ void lc::Client::SetStateToZLEAF_RUNNING( QString argClientIP ) {
     }
 }
 
-void lc::Client::ShowDesktop() {
+void lc::Client::ShowDesktopViewOnly() {
     QStringList arguments;
     arguments << ip;
+
+    QProcess showDesktopProcess;
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    showDesktopProcess.setProcessEnvironment( env );
+    showDesktopProcess.startDetached( settings->vncViewer, arguments );
+
+    // Output message via the debug messages tab
+    qDebug() << settings->vncViewer << arguments.join( " " );
+}
+
+void lc::Client::ShowDesktopFullControl() {
+    QStringList arguments;
+    arguments << ip + ":5901";
 
     QProcess showDesktopProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
@@ -262,7 +252,7 @@ void lc::Client::Shutdown() {
     GotStatusChanged( state_t::SHUTTING_DOWN );
 }
 
-void lc::Client::StartZLeaf( const QString * const argFakeName ) {
+void lc::Client::StartZLeaf( const QString * argFakeName, QString cmd ) {
     if ( state < state_t::RESPONDING || zLeafVersion.isEmpty() || GetSessionPort() < 7000 ) {
         return;
     }
@@ -281,32 +271,18 @@ void lc::Client::StartZLeaf( const QString * const argFakeName ) {
 
     if ( ( messageBoxRunningZLeafFound.get() != nullptr
            && messageBoxRunningZLeafFound->clickedButton()
-              == messageBoxRunningZLeafFound->button( QMessageBox::Yes ) )
+           == messageBoxRunningZLeafFound->button( QMessageBox::Yes ) )
          || state != state_t::ZLEAF_RUNNING ) {
         QStringList arguments;
-        if ( argFakeName  == nullptr && GetSessionPort() == 7000 ) {
+        if ( argFakeName  == nullptr ) {
             arguments << "-i" << settings->pkeyPathUser
                       << QString{ settings->userNameOnClients + "@" + ip }
-                      << "DISPLAY=:0.0" << settings->tasksetCmd << "0x00000001" << settings->wineCmd
-                      << QString{ settings->zTreeInstDir + "/zTree_" + GetzLeafVersion() + "/zleaf.exe" }
-                      << "/server" << settings->serverIP;
+                      << cmd;
         } else {
-            if ( argFakeName  == nullptr ) {
-                arguments << "-i" << settings->pkeyPathUser
-                          << QString{ settings->userNameOnClients + "@" + ip }
-                          << "DISPLAY=:0.0" << settings->tasksetCmd << "0x00000001" << settings->wineCmd
-                          << QString{ settings->zTreeInstDir + "/zTree_" + GetzLeafVersion() + "/zleaf.exe" }
-                          << "/server" << settings->serverIP << "/channel"
-                          << QString::number( GetSessionPort() - 7000 );
-            } else {
-                arguments << "-i" << settings->pkeyPathUser
-                          << QString{ settings->userNameOnClients + "@" + ip }
-                          << "DISPLAY=:0.0" << settings->tasksetCmd << "0x00000001" << settings->wineCmd
-                          << QString{ settings->zTreeInstDir + "/zTree_" + GetzLeafVersion() + "/zleaf.exe" }
-                          << "/server" << settings->serverIP << "/channel"
-                          << QString::number( GetSessionPort() - 7000 )
-                          << "/name" << *argFakeName;
-            }
+            arguments << "-i" << settings->pkeyPathUser
+                      << QString{ settings->userNameOnClients + "@" + ip }
+                      << cmd
+                      << "/name" << *argFakeName;
         }
 
         // Start the process
@@ -318,4 +294,51 @@ void lc::Client::StartZLeaf( const QString * const argFakeName ) {
         // Output message via the debug messages tab
         qDebug() << settings->sshCmd << arguments.join( " " );
     }
+}
+
+void lc::Client::StartClientBrowser( const QString * const argURL, const bool * const argFullscreen ) {
+    //Declarations
+    QStringList arguments;
+
+    // Build arguments list for SSH command
+    arguments << "-i" << settings->pkeyPathUser
+              << QString{ settings->userNameOnClients + "@" + ip }
+              << "DISPLAY=:0.0"
+              << settings->clientBrowserCmd
+              << *argURL;
+
+    // Add fullscreen toggle if checked
+    if (*argFullscreen == true){
+        arguments << "& sleep 3 && DISPLAY=:0.0 xdotool key --clearmodifiers F11";
+    }
+
+    // Start the process
+    QProcess startClientBrowserProcess;
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    startClientBrowserProcess.setProcessEnvironment( env );
+    startClientBrowserProcess.startDetached( settings->sshCmd, arguments );
+
+    // Output message via the debug messages tab
+    qDebug() << settings->sshCmd << arguments.join( " " );
+}
+
+void lc::Client::StopClientBrowser() {
+    //Declarations
+    QStringList arguments;
+
+    //Build arguments list
+    arguments << "-i" << settings->pkeyPathUser
+              << QString{ settings->userNameOnClients + "@" + ip }
+              << "killall"
+              << settings->clientBrowserCmd
+              << "& sleep 1 && rm -R /home/ewfuser/.mozilla/firefox/*";
+
+    // Start the process
+    QProcess startClientBrowserProcess;
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    startClientBrowserProcess.setProcessEnvironment( env );
+    startClientBrowserProcess.startDetached( settings->sshCmd, arguments );
+
+    // Output message via the debug messages tab
+    qDebug() << settings->sshCmd << arguments.join( " " );
 }
