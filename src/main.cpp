@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2018 Markus Prasser
  *
  * This file is part of Labcontrol.
  *
@@ -17,20 +17,22 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <memory>
-
-#include <QApplication>
-
 #include "mainwindow.h"
 #include "Lib/settings.h"
 
-std::unique_ptr< lc::Settings > settings;
+#include <QApplication>
 
-int main( int argc, char *argv[] ) {
-    QApplication a{ argc, argv };
-    settings.reset( new lc::Settings{ QSettings{ "Labcontrol", "Labcontrol" } } );
+#include <memory>
+
+std::unique_ptr<lc::Settings> settings;
+
+int main(int argc, char *argv[])
+{
+    QApplication a{argc, argv};
+    settings = std::make_unique<lc::Settings>(QSettings{"Labcontrol",
+                                                        "Labcontrol"});
     lc::MainWindow w;
     w.show();
-    
+
     return a.exec();
 }
