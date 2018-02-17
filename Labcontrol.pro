@@ -42,6 +42,9 @@ FORMS    += src/localzleafstarter.ui \
 
 QMAKE_CXXFLAGS += -std=c++11
 
+DISTFILES += \
+    codingStyle.astylerc
+
 OTHER_FILES += \
     labcontrol.desktop \
     LICENSE \
