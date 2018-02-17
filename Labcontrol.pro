@@ -40,8 +40,6 @@ FORMS    += src/localzleafstarter.ui \
     src/mainwindow.ui \
     src/manualprintingsetup.ui
 
-QMAKE_CXXFLAGS += -std=c++11
-
 DISTFILES += \
     codingStyle.astylerc
 
