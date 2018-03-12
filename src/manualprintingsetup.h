@@ -45,7 +45,7 @@ signals:
 
 private:
     QString dateString;
-    Ui::ManualPrintingSetup *ui = nullptr;
+    Ui::ManualPrintingSetup *const ui = nullptr;
     QString workPath;
 
 private slots:

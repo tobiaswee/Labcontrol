@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2018 Markus Prasser, Tobias Weiss
  *
  * This file is part of Labcontrol.
  *
@@ -17,53 +17,52 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <memory>
-
-#include <QDebug>
-
-#include "client.h"
-#include "settings.h"
+#include "clientpinger.h"
 #include "lablib.h"
 
-extern std::unique_ptr< lc::Settings > settings;
-extern std::unique_ptr< lc::Lablib > lablib;
+#include <memory>
 
-lc::Client::Client( const QString &argIP, const QString &argMAC, const QString &argName,
-                    unsigned short int argXPosition, unsigned short int argYPosition,
-                    const QString &argPingCmd ):
-    ip{ argIP },
-    mac{ argMAC },
-    name{ argName },
-    xPosition{ argXPosition },
-    yPosition{ argYPosition },
-    protectedCycles{ 0 }
+extern std::unique_ptr<lc::Settings> settings;
+extern std::unique_ptr<lc::Lablib> lablib;
+
+lc::Client::Client(const QString &argIP, const QString &argMAC, const QString &argName,
+                   const unsigned short int argXPosition,
+                   const unsigned short int argYPosition,
+                   const QString &argPingCmd):
+    ip{argIP},
+    mac{argMAC},
+    name{argName},
+    xPosition{argXPosition},
+    yPosition{argYPosition},
+    protectedCycles{0}
 {
-    qRegisterMetaType< state_t >( "STATE" );
+    qRegisterMetaType<state_t>("state_t");
 
-    if ( !argPingCmd.isEmpty() ) {
-        pinger = new ClientPinger{ ip, argPingCmd };
-        pinger->moveToThread( &pingerThread );
-        connect( &pingerThread, &QThread::finished,
-                 pinger, &QObject::deleteLater );
-        connect( this, &Client::PingWanted,
-                 pinger, &ClientPinger::doPing );
-        connect( pinger, &ClientPinger::PingFinished,
-                 this, &Client::GotStatusChanged );
+    if (!argPingCmd.isEmpty()) {
+        pinger = new ClientPinger{ip, argPingCmd};
+        pinger->moveToThread(&pingerThread);
+        connect(&pingerThread, &QThread::finished,
+                pinger, &QObject::deleteLater);
+        connect(this, &Client::PingWanted,
+                pinger, &ClientPinger::doPing);
+        connect(pinger, &ClientPinger::PingFinished,
+                this, &Client::GotStatusChanged);
         pingerThread.start();
 
-        pingTimer = new QTimer{ this };
-        connect( pingTimer, &QTimer::timeout,
-                 this, &Client::RequestAPing ) ;
-        pingTimer->start( 3000 );
+        pingTimer = new QTimer{this};
+        connect(pingTimer, &QTimer::timeout,
+                this, &Client::RequestAPing) ;
+        pingTimer->start(3000);
     }
 
     qDebug() << "Created client" << name << "with MAC" << mac << "and IP" << ip
-             << "at position" << QString{ QString::number( xPosition ) + "x"
-                                          + QString::number( yPosition ) };
+             << "at position" << QString{QString::number(xPosition) + "x"
+                                         + QString::number(yPosition)};
 }
 
-lc::Client::~Client() {
-    if ( pingTimer ) {
+lc::Client::~Client()
+{
+    if (pingTimer) {
         pingTimer->stop();
     }
     delete pingTimer;
@@ -71,274 +70,277 @@ lc::Client::~Client() {
     pingerThread.wait();
 }
 
-void lc::Client::BeamFile( const QString &argFileToBeam, const QString * const argPublickeyPathUser, const QString * const argUserNameOnClients ) {
-    if ( state < state_t::RESPONDING ) {
+void lc::Client::BeamFile(const QString &argFileToBeam,
+                          const QString *const argPublickeyPathUser,
+                          const QString *const argUserNameOnClients)
+{
+    if (state < state_t::RESPONDING) {
         return;
     }
 
-    QStringList arguments;
-    arguments << "-2" << "-i" << *argPublickeyPathUser << "-l" << "32768" << "-r"
-              << argFileToBeam << QString{ *argUserNameOnClients + "@" + ip + ":media4ztree" };
+    const QStringList arguments{"-2", "-i", *argPublickeyPathUser, "-l",
+        "32768", "-r", argFileToBeam,
+        QString{*argUserNameOnClients + "@" + ip + ":media4ztree"}};
 
     // Start the process
     QProcess beamFileProcess;
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    beamFileProcess.setProcessEnvironment( env );
-    beamFileProcess.startDetached( settings->scpCmd, arguments );
+    beamFileProcess.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+    beamFileProcess.startDetached(settings->scpCmd, arguments);
 
-    qDebug() << settings->scpCmd << arguments.join( " " );
+    qDebug() << settings->scpCmd << arguments.join(" ");
 }
 
-void lc::Client::Boot() {
-    QStringList arguments{ QStringList{} << "-i" << settings->netwBrdAddr << mac };
+void lc::Client::Boot()
+{
+    const QStringList arguments{"-i", settings->netwBrdAddr, mac};
 
     // Start the process
     QProcess wakeonlanProcess;
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    wakeonlanProcess.setProcessEnvironment( env );
-    wakeonlanProcess.startDetached( settings->wakeonlanCmd, arguments );
+    wakeonlanProcess.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+    wakeonlanProcess.startDetached(settings->wakeonlanCmd, arguments);
 
     // Output message via the debug messages tab
-    qDebug() << settings->wakeonlanCmd << arguments.join( " " );
+    qDebug() << settings->wakeonlanCmd << arguments.join(" ");
 
-    pingTimer->start( 3000 );
+    pingTimer->start(3000);
 
     protectedCycles = 7;
-    GotStatusChanged( state_t::BOOTING );
+    GotStatusChanged(state_t::BOOTING);
 }
 
-void lc::Client::GotStatusChanged( state_t argState ) {
-    if ( ( protectedCycles > 0 ) && ( state == state_t::BOOTING ) && ( argState != state_t::RESPONDING ) ) {
+void lc::Client::GotStatusChanged(state_t argState)
+{
+    if ((protectedCycles > 0) && (state == state_t::BOOTING)
+            && (argState != state_t::RESPONDING)) {
         return;
     }
-    if ( ( protectedCycles > 0 ) && ( state == state_t::SHUTTING_DOWN ) && argState != state_t::NOT_RESPONDING ) {
+    if ((protectedCycles > 0) && (state == state_t::SHUTTING_DOWN)
+            && argState != state_t::NOT_RESPONDING) {
         return;
     }
     state = argState;
-    qDebug() << name << "status changed to:" << static_cast< unsigned short int >( argState );
+    qDebug() << name << "status changed to:"
+             << static_cast<unsigned short int>(argState);
 }
 
-void lc::Client::KillZLeaf() {
-    QStringList arguments;
-    arguments << "-i" << settings->pkeyPathUser
-              << QString{ settings->userNameOnClients + "@" + ip }
-              << settings->killallCmd << "-I" << "-q" << "zleaf.exe";
+void lc::Client::KillZLeaf()
+{
+    const QStringList arguments{"-i", settings->pkeyPathUser,
+        QString{settings->userNameOnClients + "@" + ip},
+        settings->killallCmd, "-I", "-q", "zleaf.exe"};
 
     // Start the process
     QProcess killZLeafProcess;
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    killZLeafProcess.setProcessEnvironment( env );
-    killZLeafProcess.startDetached( settings->sshCmd, arguments );
+    killZLeafProcess.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+    killZLeafProcess.startDetached(settings->sshCmd, arguments);
 
     // Output message via the debug messages tab
-    qDebug() << settings->sshCmd << arguments.join( " " );
+    qDebug() << settings->sshCmd << arguments.join(" ");
 
     // Restart the ping_timer, because it is stopped when a zLeaf is started
-    pingTimer->start( 3000 );
+    pingTimer->start(3000);
 }
 
-void lc::Client::OpenFilesystem( const QString * const argUserToBeUsed ) {
-    if ( state < state_t::RESPONDING ) {
+void lc::Client::OpenFilesystem(const QString *const argUserToBeUsed)
+{
+    if (state < state_t::RESPONDING) {
         return;
     }
-    QStringList arguments = QStringList{} << QString{ "sftp://" + *argUserToBeUsed + "@" + ip };
+    const QStringList arguments{QString{ "sftp://" + *argUserToBeUsed + "@" + ip }};
 
     QProcess openFilesystemProcess;
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    openFilesystemProcess.setProcessEnvironment( env );
-    openFilesystemProcess.startDetached( settings->fileMngr, arguments );
-    qDebug() << settings->fileMngr << arguments.join( " " );
+    openFilesystemProcess.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+    openFilesystemProcess.startDetached(settings->fileMngr, arguments);
+    qDebug() << settings->fileMngr << arguments.join(" ");
 }
 
-void lc::Client::OpenTerminal( const QString &argCommand, const bool &argOpenAsRoot ) {
-    if ( !settings->termEmulCmd.isEmpty() ) {
-        if ( state < state_t::RESPONDING ) {
+void lc::Client::OpenTerminal(const QString &argCommand,
+                              const bool argOpenAsRoot)
+{
+    if (!settings->termEmulCmd.isEmpty()) {
+        if (state < state_t::RESPONDING) {
             return;
         }
 
-        QStringList *arguments = nullptr;
-        arguments = new QStringList;
-        if ( !argOpenAsRoot ) {
-            *arguments << "-e"
-                       << QString{ settings->sshCmd + " -i " + settings->pkeyPathUser + " "
-                                   + settings->userNameOnClients + "@" + ip };
+        QStringList arguments;
+        if (!argOpenAsRoot) {
+            arguments << "-e"
+                      << QString{settings->sshCmd + " -i " + settings->pkeyPathUser + " "
+                                 + settings->userNameOnClients + "@" + ip};
         } else {
-            *arguments << "-e" <<
-                          QString{ settings->sshCmd + " -i " + settings->pkeyPathRoot
-                                   + " " + "root@" + ip};
+            arguments << "-e" <<
+                      QString{settings->sshCmd + " -i " + settings->pkeyPathRoot
+                              + " " + "root@" + ip};
         }
 
-        if ( !argCommand.isEmpty() ) {
-            arguments->last().append( " '" + argCommand + "'" );
+        if (!argCommand.isEmpty()) {
+            arguments.last().append(" '" + argCommand + "'");
         }
 
         QProcess openTerminalProcess;
-        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-        openTerminalProcess.setProcessEnvironment( env );
-        openTerminalProcess.startDetached( settings->termEmulCmd, *arguments );
-        qDebug() << settings->termEmulCmd << arguments->join( " " );
-        delete arguments;
+        openTerminalProcess.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+        openTerminalProcess.startDetached(settings->termEmulCmd, arguments);
+        qDebug() << settings->termEmulCmd << arguments.join(" ");
     }
 }
 
-void lc::Client::RequestAPing() {
-    if ( protectedCycles > 0 ) {
+void lc::Client::RequestAPing()
+{
+    if (protectedCycles > 0) {
         --protectedCycles;
     }
     emit PingWanted();
 }
 
-void lc::Client::SetStateToZLEAF_RUNNING( QString argClientIP ) {
+void lc::Client::SetStateToZLEAF_RUNNING(const QString &argClientIP)
+{
     if ( argClientIP != ip ) {
         return;
     }
-    if ( state != state_t::ZLEAF_RUNNING ) {
+    if (state != state_t::ZLEAF_RUNNING) {
         pingTimer->stop();
         // Inform the ClientPinger instance, that zLeaf is now running
         pinger->setStateToZLEAF_RUNNING();
-        this->GotStatusChanged( state_t::ZLEAF_RUNNING );
+        this->GotStatusChanged(state_t::ZLEAF_RUNNING);
         qDebug() << "Client" << name << "got 'ZLEAF_RUNNING' signal.";
     }
 }
 
-void lc::Client::ShowDesktopViewOnly() {
-    QStringList arguments;
-    arguments << ip;
+void lc::Client::ShowDesktopViewOnly()
+{
+    QStringList arguments{ip};
 
     QProcess showDesktopProcess;
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    showDesktopProcess.setProcessEnvironment( env );
-    showDesktopProcess.startDetached( settings->vncViewer, arguments );
+    showDesktopProcess.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+    showDesktopProcess.startDetached( settings->vncViewer, QStringList{ip});
 
     // Output message via the debug messages tab
     qDebug() << settings->vncViewer << arguments.join( " " );
 }
 
-void lc::Client::ShowDesktopFullControl() {
-    QStringList arguments;
-    arguments << ip + ":5901";
+void lc::Client::ShowDesktopFullControl()
+{
+    const QStringList arguments{QString{ip + ":5901"}};
 
     QProcess showDesktopProcess;
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    showDesktopProcess.setProcessEnvironment( env );
-    showDesktopProcess.startDetached( settings->vncViewer, arguments );
+    showDesktopProcess.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+    showDesktopProcess.startDetached(settings->vncViewer, arguments);
 
     // Output message via the debug messages tab
-    qDebug() << settings->vncViewer << arguments.join( " " );
+    qDebug() << settings->vncViewer << arguments.join(" ");
 }
 
-void lc::Client::Shutdown() {
-    if ( state == state_t::NOT_RESPONDING || state == state_t::BOOTING
-         || state == state_t::SHUTTING_DOWN ) {
+void lc::Client::Shutdown()
+{
+    if (state == state_t::NOT_RESPONDING || state == state_t::BOOTING
+            || state == state_t::SHUTTING_DOWN) {
         return;
     }
-    QStringList arguments;
-    arguments << "-i" << settings->pkeyPathUser
-              << QString{ settings->userNameOnClients  + "@" + ip } << "sudo shutdown -P now";
+    const QStringList arguments{"-i", settings->pkeyPathUser,
+        QString{settings->userNameOnClients  + "@" + ip},
+        "sudo shutdown -P now"};
 
     // Start the process
     QProcess shutdownProcess;
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    shutdownProcess.setProcessEnvironment( env );
-    shutdownProcess.startDetached( settings->sshCmd, arguments );
+    shutdownProcess.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+    shutdownProcess.startDetached(settings->sshCmd, arguments);
 
     // Output message via the debug messages tab
-    qDebug() << settings->sshCmd << arguments.join( " " );
+    qDebug() << settings->sshCmd << arguments.join(" ");
 
     // This additional 'ping_timer' start is needed for the case that the clients are shut down without prior closing of zLeaves
-    pingTimer->start( 3000 );
+    pingTimer->start(3000);
 
     protectedCycles = 3;
-    GotStatusChanged( state_t::SHUTTING_DOWN );
+    GotStatusChanged(state_t::SHUTTING_DOWN);
 }
 
-void lc::Client::StartZLeaf( const QString * argFakeName, QString cmd ) {
-    if ( state < state_t::RESPONDING || zLeafVersion.isEmpty() || GetSessionPort() < 7000 ) {
+void lc::Client::StartZLeaf(const QString *argFakeName, QString cmd)
+{
+    if (state < state_t::RESPONDING
+            || zLeafVersion.isEmpty()
+            || GetSessionPort() < 7000) {
         return;
     }
 
     // Create a QMessageBox for user interaction if there is already a zLeaf running
-    std::unique_ptr< QMessageBox > messageBoxRunningZLeafFound;
-    if ( state == state_t::ZLEAF_RUNNING ) {
-        messageBoxRunningZLeafFound.reset( new QMessageBox{ QMessageBox::Warning, "Running zLeaf found",
-                QString{ "There is already a zLeaf running on " + name + "." },
-                QMessageBox::No | QMessageBox::Yes } );
-        messageBoxRunningZLeafFound->setInformativeText( "Do you want to start a zLeaf on client "
-                                                         + name + " nonetheless?" );
-        messageBoxRunningZLeafFound->setDefaultButton( QMessageBox::No );
+    std::unique_ptr<QMessageBox> messageBoxRunningZLeafFound;
+    if (state == state_t::ZLEAF_RUNNING) {
+        messageBoxRunningZLeafFound.reset(new QMessageBox{QMessageBox::Warning, "Running zLeaf found",
+                                                          QString{"There is already a zLeaf running on " + name + "."},
+                                                          QMessageBox::No | QMessageBox::Yes});
+        messageBoxRunningZLeafFound->setInformativeText("Do you want to start a zLeaf on client "
+                                                        + name + " nonetheless?");
+        messageBoxRunningZLeafFound->setDefaultButton(QMessageBox::No);
         messageBoxRunningZLeafFound->exec();
     }
 
-    if ( ( messageBoxRunningZLeafFound.get() != nullptr
-           && messageBoxRunningZLeafFound->clickedButton()
-           == messageBoxRunningZLeafFound->button( QMessageBox::Yes ) )
-         || state != state_t::ZLEAF_RUNNING ) {
+    if ((messageBoxRunningZLeafFound.get() != nullptr
+            && messageBoxRunningZLeafFound->clickedButton()
+            == messageBoxRunningZLeafFound->button(QMessageBox::Yes))
+            || state != state_t::ZLEAF_RUNNING) {
         QStringList arguments;
-        if ( argFakeName  == nullptr ) {
+        if (argFakeName  == nullptr) {
             arguments << "-i" << settings->pkeyPathUser
-                      << QString{ settings->userNameOnClients + "@" + ip }
+                      << QString{settings->userNameOnClients + "@" + ip}
                       << cmd;
         } else {
             arguments << "-i" << settings->pkeyPathUser
-                      << QString{ settings->userNameOnClients + "@" + ip }
+                      << QString{settings->userNameOnClients + "@" + ip}
                       << cmd
                       << "/name" << *argFakeName;
         }
 
         // Start the process
         QProcess startZLeafProcess;
-        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-        startZLeafProcess.setProcessEnvironment( env );
-        startZLeafProcess.startDetached( settings->sshCmd, arguments );
+        startZLeafProcess.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+        startZLeafProcess.startDetached(settings->sshCmd, arguments);
 
         // Output message via the debug messages tab
-        qDebug() << settings->sshCmd << arguments.join( " " );
+        qDebug() << settings->sshCmd << arguments.join(" ");
     }
 }
 
-void lc::Client::StartClientBrowser( const QString * const argURL, const bool * const argFullscreen ) {
+void lc::Client::StartClientBrowser(const QString *const argURL,
+                                    const bool *const argFullscreen)
+{
     //Declarations
     QStringList arguments;
 
     // Build arguments list for SSH command
     arguments << "-i" << settings->pkeyPathUser
-              << QString{ settings->userNameOnClients + "@" + ip }
+              << QString{settings->userNameOnClients + "@" + ip}
               << "DISPLAY=:0.0"
               << settings->clientBrowserCmd
               << *argURL;
 
     // Add fullscreen toggle if checked
-    if (*argFullscreen == true){
+    if (*argFullscreen == true) {
         arguments << "& sleep 3 && DISPLAY=:0.0 xdotool key --clearmodifiers F11";
     }
 
     // Start the process
     QProcess startClientBrowserProcess;
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    startClientBrowserProcess.setProcessEnvironment( env );
-    startClientBrowserProcess.startDetached( settings->sshCmd, arguments );
+    startClientBrowserProcess.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+    startClientBrowserProcess.startDetached(settings->sshCmd, arguments);
 
     // Output message via the debug messages tab
-    qDebug() << settings->sshCmd << arguments.join( " " );
+    qDebug() << settings->sshCmd << arguments.join(" ");
 }
 
-void lc::Client::StopClientBrowser() {
+void lc::Client::StopClientBrowser()
+{
     //Declarations
-    QStringList arguments;
-
-    //Build arguments list
-    arguments << "-i" << settings->pkeyPathUser
-              << QString{ settings->userNameOnClients + "@" + ip }
-              << "killall"
-              << settings->clientBrowserCmd
-              << "& sleep 1 && rm -R /home/ewfuser/.mozilla/firefox/*";
+    QStringList arguments{"-i", settings->pkeyPathUser,
+                          QString{settings->userNameOnClients + "@" + ip},
+                          "killall", settings->clientBrowserCmd,
+                          "& sleep 1 && rm -R /home/ewfuser/.mozilla/firefox/*"};
 
     // Start the process
     QProcess startClientBrowserProcess;
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    startClientBrowserProcess.setProcessEnvironment( env );
-    startClientBrowserProcess.startDetached( settings->sshCmd, arguments );
+    startClientBrowserProcess.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+    startClientBrowserProcess.startDetached(settings->sshCmd, arguments);
 
     // Output message via the debug messages tab
-    qDebug() << settings->sshCmd << arguments.join( " " );
+    qDebug() << settings->sshCmd << arguments.join(" ");
 }

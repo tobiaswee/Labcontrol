@@ -17,11 +17,19 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* #include "manualprintingsetup.h"
+#include "ui_manualprintingsetup.h"
+#include "Lib/settings.h"
+
+#include <QFileDialog>
+ */
+
 #include "manualprintingsetup.h"
 #include "ui_manualprintingsetup.h"
 #include "Lib/settings.h"
 
 #include <QFileDialog>
+#include <QMessageBox>
 
 #include <memory>
 
