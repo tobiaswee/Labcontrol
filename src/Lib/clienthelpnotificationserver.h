@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2018 Markus Prasser, Tobias Weiss
  *
  * This file is part of Labcontrol.
  *
@@ -20,23 +20,19 @@
 #ifndef CLIENTHELPNOTIFICATIONSERVER_H
 #define CLIENTHELPNOTIFICATIONSERVER_H
 
-#include "src/Lib/client.h"
-
-#include <QObject>
 #include <QHostAddress>
-#include <QMessageBox>
-#include <QtNetwork>
+
+class QNetworkSession;
+class QTcpServer;
 
 namespace lc {
 
-class ClientHelpNotificationServer : public QObject {
+class ClientHelpNotificationServer : public QObject
+{
     Q_OBJECT
+
 public:
-    explicit ClientHelpNotificationServer( QObject *argParent = nullptr );
-
-signals:
-
-public slots:
+    explicit ClientHelpNotificationServer(QObject *argParent = nullptr);
 
 private:
     QTcpServer *helpMessageServer = nullptr;
@@ -48,6 +44,6 @@ private slots:
     void SendReply();
 };
 
-}
+} // namespace lc
 
 #endif // CLIENTHELPNOTIFICATIONSERVER_H
