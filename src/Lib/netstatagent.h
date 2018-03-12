@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2018 Markus Prasser, Tobias Weiss
  *
  * This file is part of Labcontrol.
  *
@@ -31,27 +31,33 @@ namespace lc {
 /*!
   This class is just used for repetive executions of netstat.
 */
-class NetstatAgent : public QObject {
+class NetstatAgent : public QObject
+{
     Q_OBJECT
 
 public:
-    explicit NetstatAgent( const QString &argNetstatCommand, QObject *argParent = nullptr );
-    
+    explicit NetstatAgent(const QString &argNetstatCommand,
+                          QObject *argParent = nullptr);
+
 signals:
     //! This signal is emitted if the query of the currently active zLeaf connections finished
     void QueryFinished(QStringList *argActiveZLeafConnections);
-    
+
 public slots:
     void QueryClientConnections();
-    
+
 private:
-    const QRegularExpression extractionRegexp;
-    const QStringList netstatArguments;
-    const QString &netstatCommand;
+    const QRegularExpression extractionRegexp
+        = QRegularExpression{"\\d+\\.\\d+\\.\\d+\\.\\d+"};
+    const QStringList netstatArguments
+        = QStringList{"-anp", "--tcp"};
+    const QString netstatCommand;
     QProcess netstatQueryProcess;
-    const QRegularExpression searchRegexp;
+    const QRegularExpression searchRegexp
+    = QRegularExpression{"\\W(ESTABLISHED|VERBUNDEN)( +)(\\d+)(/ztree.exe)\\W",
+                         QRegularExpression::CaseInsensitiveOption};
 };
 
-}
+} // namespace lc
 
 #endif // NETSTATAGENT_H

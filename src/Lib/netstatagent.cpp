@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2018 Markus Prasser, Tobias Weiss
  *
  * This file is part of Labcontrol.
  *
@@ -19,33 +19,31 @@
 
 #include "netstatagent.h"
 
-lc::NetstatAgent::NetstatAgent( const QString &argNetstatCommand, QObject *argParent ) :
-    QObject{ argParent },
-    extractionRegexp{ "\\d+\\.\\d+\\.\\d+\\.\\d+" },
-    netstatArguments{ QStringList{} << "-anp" << "--tcp" },
-    netstatCommand{ argNetstatCommand },
-    netstatQueryProcess{ this },
-    searchRegexp{ "\\W(ESTABLISHED|VERBUNDEN)( +)(\\d+)(/ztree.exe)\\W", QRegularExpression::CaseInsensitiveOption }
+lc::NetstatAgent::NetstatAgent(const QString &argNetstatCommand,
+                               QObject *argParent) :
+    QObject{argParent},
+    netstatCommand{argNetstatCommand}
 {
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    netstatQueryProcess.setProcessEnvironment( env );
+    netstatQueryProcess.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
 }
 
-void lc::NetstatAgent::QueryClientConnections() {
-    netstatQueryProcess.start( netstatCommand, netstatArguments );
-    if ( !netstatQueryProcess.waitForFinished( 400 ) ) {
-        emit QueryFinished( nullptr );
+void lc::NetstatAgent::QueryClientConnections()
+{
+    netstatQueryProcess.start(netstatCommand, netstatArguments);
+    if (!netstatQueryProcess.waitForFinished(400)) {
+        emit QueryFinished(nullptr);
     } else {
         // Get all 'netstat_query_process' standard output and store it temporarily in 'temp_strings'
-        QByteArray netstatQueryProcessOutputByteArray = netstatQueryProcess.readAllStandardOutput();
-        QString netstatQueryProcessOutputString( netstatQueryProcessOutputByteArray );
-        QStringList tempStrings = netstatQueryProcessOutputString.split( '\n', QString::SkipEmptyParts );
+        const QString netstatQueryProcessOutputString{netstatQueryProcess.readAllStandardOutput()};
+        const QStringList tempStrings{
+            netstatQueryProcessOutputString.split('\n', QString::SkipEmptyParts)};
 
-        QStringList *netstatQueryProcessOutput = new QStringList;
-        for ( auto s: tempStrings ) {
-            if ( s.contains( searchRegexp ) ) {
-                QRegularExpressionMatch match = extractionRegexp.match( s, s.indexOf( ':', 0, Qt::CaseInsensitive ) );
-                netstatQueryProcessOutput->append( match.captured() );
+        const auto netstatQueryProcessOutput = new QStringList;
+        for (const auto &s : tempStrings) {
+            if (s.contains(searchRegexp)) {
+                QRegularExpressionMatch match{extractionRegexp.match(s, s.indexOf(':', 0,
+                                                                                  Qt::CaseInsensitive))};
+                netstatQueryProcessOutput->append(match.captured());
             }
         }
 
