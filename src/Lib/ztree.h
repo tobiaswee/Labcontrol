@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2018 Markus Prasser, Tobias Weiss
  *
  * This file is part of Labcontrol.
  *
@@ -20,11 +20,9 @@
 #ifndef ZTREE_H
 #define ZTREE_H
 
-#include <QDir>
-#include <QPlainTextEdit>
-#include <QProcess>
-
 #include "global.h"
+
+#include <QProcess>
 
 namespace lc {
 
@@ -32,21 +30,22 @@ namespace lc {
 /*!
   This class is element of every session and is used to handle all zTree related data.
 */
-class ZTree: public QObject {
+class ZTree: public QObject
+{
     Q_OBJECT
 
 public:
-    ZTree( const QString &argZTreeDataTargetPath,
-           const int &argZTreePort, const QString &argZTreeVersionPath,
-           QObject *argParent = nullptr );
+    ZTree(const QString &argZTreeDataTargetPath,
+          const int argZTreePort, const QString &argZTreeVersionPath,
+          QObject *argParent = nullptr);
 
 signals:
-    void ZTreeClosed( int argExitCode );
+    void ZTreeClosed(int argExitCode);
 
 private:
     QProcess zTreeInstance;
 };
 
-}
+} // namespace lc
 
 #endif // ZTREE_H

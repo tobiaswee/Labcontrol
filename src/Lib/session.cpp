@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2018 Markus Prasser, Tobias Weiss
  *
  * This file is part of Labcontrol.
  *
@@ -17,14 +17,16 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <memory>
-
 #include "session.h"
 #include "settings.h"
 
+#include <QDir>
+
+#include <memory>
+
 extern std::unique_ptr< lc::Settings > settings;
 
-lc::Session::Session( QVector< Client* > &&argAssocClients,
+lc::Session::Session( QVector< Client * > &&argAssocClients,
                       const QString &argZTreeDataTargetPath, const quint16 argZTreePort,
                       const QString &argZTreeVersionPath, bool argPrintReceiptsForLocalClients,
                       const QString &argAnonymousReceiptsPlaceholder,
@@ -54,14 +56,16 @@ lc::Session::Session( QVector< Client* > &&argAssocClients,
     }
 }
 
-lc::Session::~Session() {
+lc::Session::~Session()
+{
     for ( auto &client : assocClients ) {
         client->SetSessionPort( 0 );
         client->SetzLeafVersion( "" );
     }
 }
 
-QVariant lc::Session::GetDataItem( int argIndex ) {
+QVariant lc::Session::GetDataItem( int argIndex )
+{
     switch ( argIndex ) {
     case 0:
         return QVariant{ zTreeVersionPath.split( '_', QString::KeepEmptyParts, Qt::CaseInsensitive )[ 1 ] };
@@ -72,7 +76,8 @@ QVariant lc::Session::GetDataItem( int argIndex ) {
     }
 }
 
-void lc::Session::InitializeClasses() {
+void lc::Session::InitializeClasses()
+{
     // Create the new data directory
     QDir dir{ zTreeDataTargetPath };
     QString date_string( QDateTime::currentDateTime().toString( "yyMMdd_hhmm" ) );
@@ -87,7 +92,7 @@ void lc::Session::InitializeClasses() {
              this, &Session::OnzTreeClosed );
     // Only create a 'Receipts_Handler' instance, if all neccessary variables were set
     if ( latexHeaderName != "None found" && !settings->dvipsCmd.isEmpty()
-         && !settings->latexCmd.isEmpty() ) {
+            && !settings->latexCmd.isEmpty() ) {
         new ReceiptsHandler{ zTreeDataTargetPath, printReceiptsForLocalClients,
                              anonymousReceiptsPlaceholder, latexHeaderName, this };
     } else {
@@ -95,12 +100,14 @@ void lc::Session::InitializeClasses() {
     }
 }
 
-void lc::Session::OnzTreeClosed( int argExitCode ) {
+void lc::Session::OnzTreeClosed( int argExitCode )
+{
     qDebug() << "z-Tree running on port" << zTreePort << "closed with exit code" << argExitCode;
     emit SessionFinished( this );
 }
 
-void lc::Session::RenameWindow() {
+void lc::Session::RenameWindow()
+{
     // Example: wmctrl -r <window name> -T <new name>
 
     QStringList arguments;
