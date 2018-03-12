@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2018 Markus Prasser, Tobias Weiss
  *
  * This file is part of Labcontrol.
  *
@@ -19,45 +19,44 @@
 
 #include "clientpinger.h"
 
-lc::ClientPinger::ClientPinger( const QString &argIP,
-                                const QString &argPingCommand, QObject *argParent ) :
-    QObject{ argParent },
+lc::ClientPinger::ClientPinger(const QString &argIP,
+                               const QString &argPingCommand,
+                               QObject *argParent) :
+    QObject{argParent},
     // Arguments: -c 1 (send 1 ECHO_REQUEST packet) -w 1 (timeout after 1 second) -q (quiet output)
-    pingArguments{ QStringList{} << "-c" << "1" << "-w" << "1" << "-q" << argIP },
-    pingCommand{ argPingCommand },
-    pingProcess{ new QProcess{ this } },
-    state{ state_t::UNINITIALIZED }
+    pingArguments{"-c", "1", "-w", "1", "-q", argIP},
+    pingCommand{argPingCommand},
+    pingProcess{std::make_unique<QProcess>()}
 {
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    pingProcess->setProcessEnvironment(env);
+    pingProcess->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
     // emit ping_string(new QString(*ping_command + " " + ping_arguments->join(" ")));
 }
 
-lc::ClientPinger::~ClientPinger() {
-    delete pingProcess;
-}
-
-void lc::ClientPinger::doPing() {
+void lc::ClientPinger::doPing()
+{
     // Initialize the new state to be queried
     state_t newState = state_t::UNINITIALIZED;
 
     // Query the current state of the client
-    pingProcess->start( pingCommand, pingArguments );
-    if ( !pingProcess->waitForFinished( 2500 ) )
+    pingProcess->start(pingCommand, pingArguments);
+    if (!pingProcess->waitForFinished(2500)
+            || pingProcess->exitStatus() != QProcess::NormalExit)
         newState = state_t::ERROR;
     else {
-        if ( pingProcess->exitCode() == 0 )
+        if (pingProcess->exitCode() == 0) {
             newState = state_t::RESPONDING;
-        else
+        } else {
             newState = state_t::NOT_RESPONDING;
+        }
     }
 
-    if ( newState != state ) {
+    if (newState != state) {
         state = newState;
-        emit PingFinished( newState );
+        emit PingFinished(state);
     }
 }
 
-void lc::ClientPinger::setStateToZLEAF_RUNNING() {
+void lc::ClientPinger::setStateToZLEAF_RUNNING()
+{
     state = state_t::ZLEAF_RUNNING;
 }

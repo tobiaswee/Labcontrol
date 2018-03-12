@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2018 Markus Prasser, Tobias Weiss
  *
  * This file is part of Labcontrol.
  *
@@ -20,11 +20,14 @@
 #ifndef CLIENTPINGER_H
 #define CLIENTPINGER_H
 
+#include "global.h"
+
 #include <QObject>
 #include <QProcess>
-#include <QThread>
 
-#include "global.h"
+#include <memory>
+
+class QProcess;
 
 namespace lc {
 
@@ -32,7 +35,8 @@ namespace lc {
 /*!
   This class is just used for executing repetitive pings.
 */
-class ClientPinger : public QObject {
+class ClientPinger : public QObject
+{
     Q_OBJECT
 
 public:
@@ -42,10 +46,8 @@ public:
       @param argPingCommand     The path were the command to be executed for pings resides
       @param argParent          The ClientPinger's parent owning this instance of it
     */
-    explicit ClientPinger( const QString &argIP, const QString &argPingCommand,
-                           QObject *argParent = nullptr );
-    //! ClientPinger's destructor
-    ~ClientPinger();
+    explicit ClientPinger(const QString &argIP, const QString &argPingCommand,
+                          QObject *argParent = nullptr);
 
 public slots:
     //! This slot executes a ping when called.
@@ -54,17 +56,21 @@ public slots:
     void setStateToZLEAF_RUNNING();
 
 private:
-    const QStringList           pingArguments;          //! The arguments for the 'ping' command
-    const QString               pingCommand;            //! The 'ping' command itself
-    QProcess *                  pingProcess;            //! The 'ping' process which will be executed on every call of 'do_ping()'
-    state_t                     state;                  //! Stores the current state of the client
+    //! The arguments for the 'ping' command
+    const QStringList pingArguments;
+    //! The 'ping' command itself
+    const QString pingCommand;
+    //! The 'ping' process which will be executed on every call of 'do_ping()'
+    std::unique_ptr<QProcess> pingProcess;
+    //! Stores the current state of the client
+    state_t state = state_t::UNINITIALIZED;
 
 signals:
     //! This signal was just implemented for testing purposes
     //! This signal is emitted if the ping finished and the state of the client changed
-    void PingFinished( state_t state );
+    void PingFinished(state_t state);
 };
 
-}
+} // namespace lc
 
 #endif // CLIENTPINGER_H
