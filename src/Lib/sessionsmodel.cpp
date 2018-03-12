@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2018 Markus Prasser, Tobias Weiss
  *
  * This file is part of Labcontrol.
  *
@@ -19,23 +19,27 @@
 
 #include <QDebug>
 
+#include "session.h"
 #include "sessionsmodel.h"
 
-lc::SessionsModel::SessionsModel( QObject *argParent ) :
-    QAbstractTableModel{ argParent }
+lc::SessionsModel::SessionsModel(QObject *argParent) :
+    QAbstractTableModel{argParent}
 {
 }
 
-lc::Session *lc::SessionsModel::back() const {
+lc::Session *lc::SessionsModel::back() const
+{
     return sessionsList.back();
 }
 
-int lc::SessionsModel::columnCount(const QModelIndex &parent) const {
+int lc::SessionsModel::columnCount(const QModelIndex &parent) const
+{
     Q_UNUSED(parent);
     return 2;
 }
 
-QVariant lc::SessionsModel::data(const QModelIndex &index, int role) const {
+QVariant lc::SessionsModel::data(const QModelIndex &index, int role) const
+{
     if (!index.isValid())
         return QVariant{};
 
@@ -43,14 +47,16 @@ QVariant lc::SessionsModel::data(const QModelIndex &index, int role) const {
         return QVariant{};
 
     if (role == Qt::DisplayRole)
-        return sessionsList.at( index.row() )->GetDataItem( index.column() );
+        return sessionsList.at(index.row())->GetDataItem(index.column());
 
     return QVariant{};
 }
 
-QVariant lc::SessionsModel::headerData(int section, Qt::Orientation orientation, int role) const {
+QVariant lc::SessionsModel::headerData(int section, Qt::Orientation orientation,
+                                       int role) const
+{
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
-        switch(section) {
+        switch (section) {
         case 0:
             return tr("zTree Version");
         case 1:
@@ -66,21 +72,24 @@ QVariant lc::SessionsModel::headerData(int section, Qt::Orientation orientation,
     return QVariant{};
 }
 
-void lc::SessionsModel::push_back( Session *argSession ) {
+void lc::SessionsModel::push_back(Session *argSession)
+{
     connect( argSession, &Session::SessionFinished,
              this, &SessionsModel::RemoveSession );
-    argSession->setParent( this );
-    sessionsList.push_back( argSession );
+    argSession->setParent(this);
+    sessionsList.push_back(argSession);
 }
 
-void lc::SessionsModel::RemoveSession( Session *argSession ) {
-    if ( sessionsList.removeAll( argSession ) ) {
+void lc::SessionsModel::RemoveSession(Session *argSession)
+{
+    if (sessionsList.removeAll(argSession)) {
         qDebug() << "Successfully removed" << argSession << "from lc::SessionsModel";
         argSession->deleteLater();
     }
 }
 
-int lc::SessionsModel::rowCount(const QModelIndex &parent) const {
+int lc::SessionsModel::rowCount(const QModelIndex &parent) const
+{
     Q_UNUSED(parent);
     return sessionsList.length();
 }
