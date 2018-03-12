@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2018 Markus Prasser, Tobias Weiss
  *
  * This file is part of Labcontrol.
  *
@@ -26,20 +26,22 @@ namespace lc {
 
 namespace Ui {
 class LocalzLeafStarter;
-}
+} // namespace Ui
 
-class LocalzLeafStarter : public QWidget {
+class LocalzLeafStarter : public QWidget
+{
     Q_OBJECT
 
 public:
-    explicit LocalzLeafStarter( QWidget *argParent = nullptr );
-    ~LocalzLeafStarter();
+    explicit LocalzLeafStarter(QWidget *argParent = nullptr);
+    ~LocalzLeafStarter() override;
 
 signals:
-    void LocalzLeafRequested( QString argzLeafName, QString argzLeafVersion, int argzTreePort );
+    void LocalzLeafRequested(QString argzLeafName, QString argzLeafVersion,
+                             int argzTreePort);
 
 private:
-    Ui::LocalzLeafStarter *ui = nullptr;
+    Ui::LocalzLeafStarter *const ui = nullptr;
 
 private slots:
     void on_PBStartLocalzLeaf_clicked();
