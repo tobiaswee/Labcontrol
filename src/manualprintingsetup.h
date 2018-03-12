@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2018 Markus Prasser, Tobias Weiss
  *
  * This file is part of Labcontrol.
  *
@@ -26,21 +26,22 @@ namespace lc {
 
 namespace Ui {
 class ManualPrintingSetup;
-}
+} // namespace Ui
 
-class ManualPrintingSetup : public QWidget {
+class ManualPrintingSetup : public QWidget
+{
     Q_OBJECT
 
 public:
-    explicit ManualPrintingSetup( QWidget *argParent = nullptr );
-    ~ManualPrintingSetup();
+    explicit ManualPrintingSetup(QWidget *argParent = nullptr);
+    ~ManualPrintingSetup() override;
 
 signals:
-    void RequestReceiptsHandler( QString argzTreeDataTargetPath,
-                                 bool argReceiptsForLocalClients,
-                                 QString argAnonymousReceiptsPlaceholder,
-                                 QString argLatexHeaderName,
-                                 QString argDateString );
+    void RequestReceiptsHandler(QString argzTreeDataTargetPath,
+                                bool argReceiptsForLocalClients,
+                                QString argAnonymousReceiptsPlaceholder,
+                                QString argLatexHeaderName,
+                                QString argDateString);
 
 private:
     QString dateString;
@@ -48,12 +49,12 @@ private:
     QString workPath;
 
 private slots:
-    void on_CBReceiptsHeader_activated( int argIndex );
-    void on_ChBPrintAnonymousReceipts_clicked( bool argChecked );
+    void on_CBReceiptsHeader_activated(const int argIndex);
+    void on_ChBPrintAnonymousReceipts_clicked(const bool argChecked);
     void on_PBPrint_clicked();
     void on_PBSelectFile_clicked();
 };
 
-}
+} // namespace lc
 
 #endif // MANUALPRINTINGSETUP_H
