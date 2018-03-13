@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2018 Markus Prasser, Tobias Weiss
  *
  * This file is part of Labcontrol.
  *
@@ -28,23 +28,30 @@
 
 namespace lc {
 
-class Settings : public QObject {
+class Settings : public QObject
+{
     Q_OBJECT
 
 public:
     Settings() = delete;
-    explicit Settings( const QSettings &argSettings, QObject *argParent = nullptr );
-    Settings( const Settings &argSettings ) = delete;
-    Settings& operator=( const Settings &argSettings ) = delete;
-    Settings( Settings &&argSettings ) = delete;
-    Settings& operator=( Settings &&argSettings ) = delete;
+    explicit Settings(const QSettings &argSettings, QObject *argParent = nullptr);
+    Settings(const Settings &argSettings) = delete;
+    Settings &operator=(const Settings &argSettings) = delete;
+    Settings(Settings &&argSettings ) = delete;
+    Settings &operator=(Settings &&argSettings) = delete;
     ~Settings();
 
-    int GetChosenZTreePort() const { return chosenzTreePort; }
-    QVector< Client* > &GetClients() { return clients; }
+    int GetChosenZTreePort() const
+    {
+        return chosenzTreePort;
+    }
+    QVector< Client * > &GetClients()
+    {
+        return clients;
+    }
     QString GetLocalzLeafName() const;
-    void SetChosenZTreePort( const int argPort );
-    void SetLocalzLeafName( const QString &argLocalzLeafName );
+    void SetChosenZTreePort(const int argPort);
+    void SetLocalzLeafName(const QString &argLocalzLeafName);
 
     const int defaultReceiptIndex = 0;
     const QString browserCmd;
@@ -56,8 +63,11 @@ public:
     const QString lcDataDir;
     const QString localUserName;
     QString localzLeafSize;
-    void SetLocalzLeafSize( QString arg);
-    QString GetLocalzLeafSize() const { return localzLeafSize; }
+    void SetLocalzLeafSize(QString arg);
+    QString GetLocalzLeafSize() const
+    {
+        return localzLeafSize;
+    }
     const QString lprCmd;
     const QString netstatCmd;
     const QString netwBrdAddr;
@@ -90,38 +100,41 @@ public:
     const quint16 clientHelpNotificationServerPort = 0;
 
 private:
-    static bool CheckPathAndComplain( const QString &argPath, const QString &argVariableName,
-                                      const QString &argMessage );
-    static QVector< Client* > CreateClients( const QSettings &argSettings,
-                                             const QString &argPingCmd );
-    static QMap< QString, Client* > CreateClIPsToClMap( const QVector< Client* > &argClients );
+    static bool CheckPathAndComplain(const QString &argPath,
+                                     const QString &argVariableName,
+                                     const QString &argMessage);
+    static QVector<Client *> CreateClients(const QSettings &argSettings,
+                                           const QString &argPingCmd);
+    static QMap<QString, Client *> CreateClIPsToClMap(const QVector<Client *> &argClients);
     QStringList DetectInstalledLaTeXHeaders() const;
     QStringList DetectInstalledzTreeVersions() const;
-    static QStringList GetAdminUsers( const QSettings &argSettings );
-    static quint16 GetClientHelpNotificationServerPort( const QSettings &argSettings );
-    static int GetDefaultReceiptIndex( const QSettings &argSettings );
-    static int GetInitialPort( const QSettings &argSettings );
+    static QStringList GetAdminUsers(const QSettings &argSettings);
+    static quint16 GetClientHelpNotificationServerPort(const QSettings &argSettings);
+    static int GetDefaultReceiptIndex(const QSettings &argSettings);
+    static int GetInitialPort(const QSettings &argSettings);
     static QString GetLocalUserName();
-    static QString ReadSettingsItem( const QString &argVariableName,
-                                     const QString &argMessage,
-                                     const QSettings &argSettings,
-                                     bool argItemIsFile );
+    static QString ReadSettingsItem(const QString &argVariableName,
+                                    const QString &argMessage,
+                                    const QSettings &argSettings,
+                                    bool argItemIsFile);
 
     int chosenzTreePort = 0;
-    QVector< Client* > clients;
+    QVector< Client * > clients;
     QString localzLeafName;
 
 public:
-    const QMap< QString, Client* > clIPsToClMap;
+    const QMap<QString, Client *> clIPsToClMap;
 };
 
-}
+} // namespace lc
 
-inline QString lc::Settings::GetLocalzLeafName() const {
+inline QString lc::Settings::GetLocalzLeafName() const
+{
     return localzLeafName;
 }
 
-inline void lc::Settings::SetLocalzLeafName( const QString &argLocalzLeafName ) {
+inline void lc::Settings::SetLocalzLeafName(const QString &argLocalzLeafName)
+{
     localzLeafName = argLocalzLeafName;
 }
 
