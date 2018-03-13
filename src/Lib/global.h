@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2018 Markus Prasser, Tobias Weiss
  *
  * This file is part of Labcontrol.
  *
@@ -25,19 +25,20 @@
 //! Opens a terminal for the client
 enum class state_t : unsigned short int  {
     //! The client is booting but not yet responding
-    BOOTING,
+    BOOTING = 1 << 0,
     //! An error occurred determining the client's state
-    ERROR,
+    ERROR = 1 << 1,
     //! The client is not responding to pings
-    NOT_RESPONDING,
+    NOT_RESPONDING = 1 << 2,
     //! The client is shutting down but not yet stopped responding
-    SHUTTING_DOWN,
+    SHUTTING_DOWN = 1 << 3,
     //! The client's state is not yet defined (should only occur directly after client creation)
-    UNINITIALIZED,
+    UNINITIALIZED = 1 << 4,
     //! The client is responding to pings
-    RESPONDING,
+    RESPONDING = 1 << 5,
     //! The client is running a zLeaf
-    ZLEAF_RUNNING};
-Q_DECLARE_METATYPE( state_t )
+    ZLEAF_RUNNING = 1 << 6,
+};
+Q_DECLARE_METATYPE(state_t)
 
 #endif // GLOBAL_H
