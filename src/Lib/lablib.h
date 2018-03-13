@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2018 Markus Prasser, Tobias Weiss
  *
  * This file is part of Labcontrol.
  *
@@ -45,7 +45,7 @@
 #include "sessionsmodel.h"
 #include "settings.h"
 
-extern std::unique_ptr< lc::Settings > settings;
+extern std::unique_ptr<lc::Settings> settings;
 
 namespace lc {
 
@@ -56,15 +56,16 @@ namespace lc {
 class Lablib : public QObject
 {
     Q_OBJECT
+
 public:
     /*!
      * \brief Lablib's constructor
      * \param[in] argParent This 'lcLablib' instance's parent QObject
      */
-    Lablib( QObject *argParent = nullptr );
+    Lablib(QObject *argParent = nullptr);
     /** Lablib's destructor
      */
-    ~Lablib();
+    ~Lablib() override;
     /*!
      * \brief CheckIfUserIsAdmin checks if the account with the passed user name has administrative rights
      * \param argUserName The account name which shall checked for administrative rights
@@ -75,40 +76,46 @@ public:
      *
      * @return A pointer to a QVector<unsigned int> containing all occupied ports
      */
-    const QVector< quint16 > &GetOccupiedPorts () const { return occupiedPorts; }
+    const QVector<quint16> &GetOccupiedPorts () const
+    {
+        return occupiedPorts;
+    }
     /** Returns a pointer to the QAbstractTableModel storing the Session instances
      *
      * @return A pointer to the QAbstractTableModel storing the Session instances
      */
-    SessionsModel *GetSessionsModel () const { return sessionsModel; }
+    SessionsModel *GetSessionsModel () const
+    {
+        return sessionsModel;
+    }
     //! Sets the default name of local zLeaf instances
     /**
      * @param argName   The default name local zLeaf instances shall have
      */
-    void SetLocalZLeafDefaultName( const QString &argName );
+    void SetLocalZLeafDefaultName(const QString &argName);
     void ShowOrsee();
     void ShowPreprints();
-    void StartNewSession( QVector< Client* > argAssocCl, QString argParticipNameReplacement,
-                          bool argPrintLocalReceipts, QString argReceiptsHeader,
-                          QString argzTreeDataTargetPath, quint16 argzTreePort,
-                          QString argzTreeVersion );
+    void StartNewSession(QVector<Client *> argAssocCl, QString argParticipNameReplacement,
+                         bool argPrintLocalReceipts, QString argReceiptsHeader,
+                         QString argzTreeDataTargetPath, quint16 argzTreePort,
+                         QString argzTreeVersion);
 
     /*!
     * \brief Returns the commandline to issue on the client(s) in order to start zLeaf
     * @param sessionPort The port zLeaf shall connect to
     * @param zLeafVersion zLeaf Version to start
     */
-    QStringList getzLeafArgs( int sessionPort, QString zleafVersion );
+    QStringList getzLeafArgs(int sessionPort, QString zleafVersion);
 
 
 public slots:
 
 signals:
-    void ZLEAF_RUNNING( QString argClientIP );
+    void ZLEAF_RUNNING(QString argClientIP);
 
 private slots:
     //! Gets the output from NetstatAgent
-    void GotNetstatQueryResult( QStringList *argActiveZLeafConnections );
+    void GotNetstatQueryResult(QStringList *argActiveZLeafConnections);
 
 private:
     //! Detects installed zTree version and LaTeX headers
@@ -117,15 +124,19 @@ private:
      */
     void ReadSettings();
 
-    ClientHelpNotificationServer *clientHelpNotificationServer = nullptr;    //! A server to retrieve help requests from the clients
+    //! A server to retrieve help requests from the clients
+    ClientHelpNotificationServer *clientHelpNotificationServer = nullptr;
     QSettings labSettings;
-    NetstatAgent *netstatAgent = nullptr;           //! Tries to detect active zLeaf connections from the clients
+    //! Tries to detect active zLeaf connections from the clients
+    NetstatAgent *netstatAgent = nullptr;
     QThread netstatThread;
-    QTimer *netstatTimer = nullptr;                //! A timer for regular execution of the NetstatAgent instance's request mechanism
+    //! A timer for regular execution of the NetstatAgent instance's request mechanism
+    QTimer *netstatTimer = nullptr;
     QVector< quint16 > occupiedPorts;
-    SessionsModel *sessionsModel = nullptr;        //! A derivation from QAbstractTableModel used to store the single Session instances
+    //! A derivation from QAbstractTableModel used to store the single Session instances
+    SessionsModel *sessionsModel = nullptr;
 };
 
-}
+} // namespace lc
 
 #endif // LABLIB_H
