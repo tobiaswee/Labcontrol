@@ -28,6 +28,8 @@
 
 namespace lc {
 
+class Settings;
+
 //! A class for receipts creation.
 /*!
   This class is used to do the actual printing of the receipts in an own thread.
@@ -151,6 +153,7 @@ class ReceiptsPrinter : public QThread
     }
 public:
     explicit ReceiptsPrinter(const QString &argDateString,
+                             const Settings *const argSettings,
                              const QString &argWorkpath,
                              QObject *argParent = nullptr);
 

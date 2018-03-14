@@ -24,9 +24,8 @@
 #include "receipts_handler.h"
 #include "settings.h"
 
-extern std::unique_ptr<lc::Settings> settings;
-
-lc::ReceiptsHandler::ReceiptsHandler(const QString &argZTreeDataTargetPath,
+lc::ReceiptsHandler::ReceiptsHandler(const Settings *const argSettings,
+                                     const QString &argZTreeDataTargetPath,
                                      bool argPrintReceiptsForLocalClients,
                                      const QString &argAnonymousReceiptsPlaceholder,
                                      const QString &argLatexHeaderName,
@@ -39,6 +38,7 @@ lc::ReceiptsHandler::ReceiptsHandler(const QString &argZTreeDataTargetPath,
     latexHeaderName{argLatexHeaderName},
     paymentFile{expectedPaymentFilePath},
     printReceiptsForLocalClients{argPrintReceiptsForLocalClients},
+    settings{argSettings},
     timer{new QTimer{this}},
 zTreeDataTargetPath{argZTreeDataTargetPath}
 {
@@ -50,7 +50,8 @@ zTreeDataTargetPath{argZTreeDataTargetPath}
     timer->start(2000);
 }
 
-lc::ReceiptsHandler::ReceiptsHandler(const QString &argZTreeDataTargetPath,
+lc::ReceiptsHandler::ReceiptsHandler(const Settings *const argSettings,
+                                     const QString &argZTreeDataTargetPath,
                                      bool argPrintReceiptsForLocalClients,
                                      const QString &argAnonymousReceiptsPlaceholder,
                                      const QString &argLatexHeaderName,
@@ -63,6 +64,7 @@ lc::ReceiptsHandler::ReceiptsHandler(const QString &argZTreeDataTargetPath,
     latexHeaderName{argLatexHeaderName},
     paymentFile{expectedPaymentFilePath},
     printReceiptsForLocalClients{argPrintReceiptsForLocalClients},
+    settings{argSettings},
     zTreeDataTargetPath{argZTreeDataTargetPath}
 {
     qDebug() << "Expected payment file name is:" << expectedPaymentFilePath;
@@ -198,13 +200,14 @@ void lc::ReceiptsHandler::CreateReceiptsFromPaymentFile()
     }
 
     // Open a QTextStream to write to the file
-    QTextStream out(texFile);
+    QTextStream out{texFile};
 
     out << *latexText;
     delete latexText;
     latexText = nullptr;
 
-    receiptsPrinter = new ReceiptsPrinter{dateString, zTreeDataTargetPath, this};
+    receiptsPrinter = new ReceiptsPrinter{dateString, settings,
+                                          zTreeDataTargetPath, this};
     receiptsPrinter->start();
     connect(receiptsPrinter, &ReceiptsPrinter::PrintingFinished,
             this, &ReceiptsHandler::DeleteReceiptsPrinterInstance);

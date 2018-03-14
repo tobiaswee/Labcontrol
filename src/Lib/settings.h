@@ -45,7 +45,7 @@ public:
     {
         return chosenzTreePort;
     }
-    QVector< Client * > &GetClients()
+    const QVector<Client *> &GetClients() const
     {
         return clients;
     }

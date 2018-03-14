@@ -24,19 +24,19 @@
 
 #include <memory>
 
-extern std::unique_ptr<lc::Settings> settings;
-
 lc::Session::Session(QVector<Client *> &&argAssocClients,
                      const QString &argZTreeDataTargetPath, const quint16 argZTreePort,
                      const QString &argZTreeVersionPath, bool argPrintReceiptsForLocalClients,
                      const QString &argAnonymousReceiptsPlaceholder,
-                     const QString &argLatexHeaderName, QObject *argParent):
+                     const QString &argLatexHeaderName,
+                     const Settings *const argSettings,  QObject *argParent):
     QObject{argParent},
     zTreePort{argZTreePort},
     anonymousReceiptsPlaceholder{argAnonymousReceiptsPlaceholder},
     assocClients{std::move(argAssocClients)},
     latexHeaderName{argLatexHeaderName},
     printReceiptsForLocalClients{argPrintReceiptsForLocalClients},
+    settings{argSettings},
     zTreeDataTargetPath{argZTreeDataTargetPath},
     zTreeVersionPath{argZTreeVersionPath}
 {
@@ -88,14 +88,15 @@ void lc::Session::InitializeClasses()
     zTreeDataTargetPath.append("/" + date_string + "-" + QString::number(zTreePort));
     qDebug() << "New session's chosen_zTree_data_target_path:" << zTreeDataTargetPath;
 
-    zTreeInstance = new ZTree{zTreeDataTargetPath, zTreePort,
+    zTreeInstance = new ZTree{settings, zTreeDataTargetPath, zTreePort,
                               zTreeVersionPath, this};
     connect(zTreeInstance, &ZTree::ZTreeClosed,
             this, &Session::OnzTreeClosed);
     // Only create a 'Receipts_Handler' instance, if all neccessary variables were set
     if (latexHeaderName != "None found" && !settings->dvipsCmd.isEmpty()
             && !settings->latexCmd.isEmpty()) {
-        new ReceiptsHandler{zTreeDataTargetPath, printReceiptsForLocalClients,
+        new ReceiptsHandler{settings, zTreeDataTargetPath,
+                            printReceiptsForLocalClients,
                             anonymousReceiptsPlaceholder, latexHeaderName, this};
     } else {
         qDebug() << "No 'ReceiptsHandler' instance was created.";

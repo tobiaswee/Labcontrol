@@ -28,12 +28,15 @@ namespace Ui {
 class LocalzLeafStarter;
 } // namespace Ui
 
+class Settings;
+
 class LocalzLeafStarter : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit LocalzLeafStarter(QWidget *argParent = nullptr);
+    explicit LocalzLeafStarter(Settings *const argSettings,
+                               QWidget *argParent = nullptr);
     ~LocalzLeafStarter() override;
 
 signals:
@@ -41,6 +44,7 @@ signals:
                              int argzTreePort);
 
 private:
+    Settings *const settings = nullptr;
     Ui::LocalzLeafStarter *const ui = nullptr;
 
 private slots:

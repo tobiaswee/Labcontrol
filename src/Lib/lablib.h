@@ -45,8 +45,6 @@
 #include "sessionsmodel.h"
 #include "settings.h"
 
-extern std::unique_ptr<lc::Settings> settings;
-
 namespace lc {
 
 //! This class represents the entire lab and running sessions.
@@ -62,7 +60,7 @@ public:
      * \brief Lablib's constructor
      * \param[in] argParent This 'lcLablib' instance's parent QObject
      */
-    Lablib(QObject *argParent = nullptr);
+    Lablib(Settings *const argSettings, QObject *argParent = nullptr);
     /** Lablib's destructor
      */
     ~Lablib() override;
@@ -135,6 +133,7 @@ private:
     QVector< quint16 > occupiedPorts;
     //! A derivation from QAbstractTableModel used to store the single Session instances
     SessionsModel *sessionsModel = nullptr;
+    Settings *const settings = nullptr;
 };
 
 } // namespace lc

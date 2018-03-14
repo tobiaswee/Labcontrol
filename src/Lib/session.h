@@ -29,6 +29,7 @@
 namespace lc {
 
 class Client;
+class Settings;
 
 //! A class containing an entire session.
 /*!
@@ -46,7 +47,8 @@ public:
             const quint16 argZTreePort, const QString &argZTreeVersionPath,
             bool argPrintReceiptsForLocalClients,
             const QString &argAnonymousReceiptsPlaceholder,
-            const QString &argLatexHeaderName, QObject *argParent = nullptr);
+            const QString &argLatexHeaderName,
+            const Settings *const argSettings, QObject *argParent = nullptr);
     ~Session() override;
 
     /*! Returns the data item with the given index
@@ -78,6 +80,7 @@ private:
     const QString latexHeaderName;
     //! True if receipts shall be printed for local clients
     const bool printReceiptsForLocalClients = true;
+    const Settings *const settings;
     //! The path were the data of this zTree instance's session will be saved
     QString zTreeDataTargetPath;
     //! The session's zTree instance

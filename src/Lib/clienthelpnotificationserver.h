@@ -27,17 +27,21 @@ class QTcpServer;
 
 namespace lc {
 
+class Settings;
+
 class ClientHelpNotificationServer : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit ClientHelpNotificationServer(QObject *argParent = nullptr);
+    explicit ClientHelpNotificationServer(const Settings *const argSettings,
+                                          QObject *argParent = nullptr);
 
 private:
     QTcpServer *helpMessageServer = nullptr;
     const QHostAddress hostAddress;
     QNetworkSession *networkSession = nullptr;
+    const Settings *const settings = nullptr;
 
 private slots:
     void OpenSession();

@@ -24,10 +24,11 @@
 
 #include "lablib.h"
 
-lc::Lablib::Lablib(QObject *argParent) :
+lc::Lablib::Lablib(Settings *const argSettings, QObject *argParent) :
     QObject{argParent},
     labSettings{"Labcontrol", "Labcontrol", this},
-    sessionsModel{new SessionsModel{this}}
+    sessionsModel{new SessionsModel{this}},
+settings{argSettings}
 {
     for (const auto &s : settings->GetClients()) {
         connect(this, &Lablib::ZLEAF_RUNNING,
@@ -52,7 +53,8 @@ lc::Lablib::Lablib(QObject *argParent) :
     // Initialize the server for client help requests retrieval
     if (settings->clientHelpNotificationServerPort
             && !settings->serverIP.isEmpty()) {
-        clientHelpNotificationServer = new ClientHelpNotificationServer{this};
+        clientHelpNotificationServer
+            = new ClientHelpNotificationServer{settings, this};
     }
 }
 
@@ -157,7 +159,8 @@ void lc::Lablib::StartNewSession(QVector<Client *> argAssocCl,
                                              argzTreePort, argzTreeVersion,
                                              argPrintLocalReceipts,
                                              argParticipNameReplacement,
-                                             argReceiptsHeader});
+                                             argReceiptsHeader,
+                                             settings});
         occupiedPorts.append(sessionsModel->back()->zTreePort);
     } catch (Session::lcDataTargetPathCreationFailed) {
         QMessageBox::information(nullptr, tr("Chosen data target path could not be created"),

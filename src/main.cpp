@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     QApplication a{argc, argv};
     settings = std::make_unique<lc::Settings>(QSettings{"Labcontrol",
                                                         "Labcontrol"});
-    lc::MainWindow w;
+    lc::MainWindow w{settings.get()};
     w.show();
 
     return a.exec();

@@ -25,10 +25,10 @@
 
 #include <memory>
 
-extern std::unique_ptr<lc::Settings> settings;
-
-lc::LocalzLeafStarter::LocalzLeafStarter(QWidget *argParent) :
+lc::LocalzLeafStarter::LocalzLeafStarter(Settings *const argSettings,
+                                         QWidget *argParent) :
     QWidget{argParent},
+    settings{argSettings},
     ui{new Ui::LocalzLeafStarter}
 {
     ui->setupUi(this);

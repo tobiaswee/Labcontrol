@@ -42,6 +42,8 @@ struct paymentEntry_t {
     double payoff;
 };
 
+class Settings;
+
 //! A class to handle receipts printing.
 /*!
   This class is element of every session and is used to handle the receipts printing.
@@ -51,11 +53,13 @@ class ReceiptsHandler : public QObject
     Q_OBJECT
 
 public:
-    explicit ReceiptsHandler(const QString &argZTreeDataTargetPath,
+    explicit ReceiptsHandler(const Settings *const argSettings,
+                             const QString &argZTreeDataTargetPath,
                              bool argPrintReceiptsForLocalClients,
                              const QString &argAnonymousReceiptsPlaceholder,
                              const QString &argLatexHeaderName, QObject *argParent = nullptr);
-    explicit ReceiptsHandler(const QString &argZTreeDataTargetPath,
+    explicit ReceiptsHandler(const Settings *const argSettings,
+                             const QString &argZTreeDataTargetPath,
                              bool argPrintReceiptsForLocalClients,
                              const QString &argAnonymousReceiptsPlaceholder,
                              const QString &argLatexHeaderName,
@@ -98,6 +102,7 @@ private:
     const bool printReceiptsForLocalClients;
     //! Creates new thread for receipts printing
     ReceiptsPrinter *receiptsPrinter = nullptr;
+    const Settings *const settings = nullptr;
     //! Used for regular checking if the payment file was created
     QTimer *timer = nullptr;
     //! A reference to the data target path stored in the session class instance

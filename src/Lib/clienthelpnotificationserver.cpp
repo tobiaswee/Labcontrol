@@ -28,11 +28,11 @@
 
 #include <memory>
 
-extern std::unique_ptr<lc::Settings> settings;
-
-lc::ClientHelpNotificationServer::ClientHelpNotificationServer(QObject *argParent) :
+lc::ClientHelpNotificationServer::ClientHelpNotificationServer(const Settings *const argSettings,
+                                                               QObject *argParent) :
     QObject{argParent},
-    hostAddress{settings->serverIP}
+    hostAddress{settings->serverIP},
+    settings{argSettings}
 {
     QNetworkConfigurationManager manager;
     if (manager.capabilities()

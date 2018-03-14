@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2018 Markus Prasser, Tobias Weiss
  *
  * This file is part of Labcontrol.
  *
@@ -43,16 +43,20 @@ namespace Ui {
 class MainWindow;
 }
 
+class Settings;
+
 //! The class containing the graphical user interface.
 /*!
   This class represents the graphical user interface and all connected functionality.
 */
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow
+{
     Q_OBJECT
 
 public:
-    explicit MainWindow( QWidget *argParent = nullptr );
-    ~MainWindow();
+    explicit MainWindow(Settings *const argSettings,
+                        QWidget *argParent = nullptr);
+    ~MainWindow() override;
 
 private slots:
     void on_CBWebcamChooser_activated(int index);
@@ -85,10 +89,10 @@ private slots:
 signals:
     /*Session actions*/
     void RequestNewDataTargetPath();
-    void RequestNewSession( QVector< Client* > argAssocCl, QString argParticipNameReplacement,
-                            bool argPrintLocalReceipts, QString argReceiptsHeader,
-                            QString argzTreeDataTargetPath, quint16 argzTreePort,
-                            QString argzTreeVersion );
+    void RequestNewSession(QVector<Client *> argAssocCl, QString argParticipNameReplacement,
+                           bool argPrintLocalReceipts, QString argReceiptsHeader,
+                           QString argzTreeDataTargetPath, quint16 argzTreePort,
+                           QString argzTreeVersion);
 
 private:
     //! Checks, if the user has administrative rights
@@ -103,21 +107,31 @@ private:
     //! Sets up all used widgets
     void SetupWidgets();
 
-    QStandardItemModel *clients_view_model = nullptr;   //! The view storing all clients data
-    QTimer *gui_update_timer = nullptr;         //! A QTimer triggering updates of the graphical user interface
-    QVector< QPixmap > icons;                   //! Vector of pixmaps storing the icons indicating the clients' statuses
-    Lablib *lablib = nullptr;                   //! Accumulator of all program logic being accessed by the GUI
-    bool localzLeavesAreRunning = false;        //! Stores if a local z-Leaf instance is running on the server ('true' if local z-Leaf exists)
-    QButtonGroup *userChooseButtonGroup = nullptr;      //! Used to group the radio buttons choosing which user shall be used for administrative client actions
-    Ui::MainWindow *ui = nullptr;               //! Pointer storing all GUI items
-    QVector<QStandardItem *> *valid_items = nullptr;    //! Stores all valid Client instances displayed by the table view, its main use is as iterable object for 'update_clients_table_view()'
+    //! The view storing all clients data
+    QStandardItemModel *clients_view_model = nullptr;
+    //! A QTimer triggering updates of the graphical user interface
+    QTimer *gui_update_timer = nullptr;
+    //! Vector of pixmaps storing the icons indicating the clients' statuses
+    QVector<QPixmap> icons;
+    //! Accumulator of all program logic being accessed by the GUI
+    Lablib *lablib = nullptr;
+    //! Stores if a local z-Leaf instance is running on the server ('true' if local z-Leaf exists)
+    bool localzLeavesAreRunning = false;
+    Settings *const settings = nullptr;
+    //! Used to group the radio buttons choosing which user shall be used for administrative client actions
+    QButtonGroup *userChooseButtonGroup = nullptr;
+    //! Pointer storing all GUI items
+    Ui::MainWindow *const ui = nullptr;
+    //! Stores all valid Client instances displayed by the table view, its main use is as iterable object for 'update_clients_table_view()'
+    QVector<QStandardItem *> *valid_items = nullptr;
 
 private slots:
-    void StartReceiptsHandler( QString argzTreeDataTargetPath,
-                               bool argReceiptsForLocalClients,
-                               QString argAnonymousReceiptsPlaceholder,
-                               QString argLatexHeaderName,
-                               QString argDateString );
+    void StartReceiptsHandler(QString argzTreeDataTargetPath,
+                              bool argReceiptsForLocalClients,
+                              QString argAnonymousReceiptsPlaceholder,
+                              QString argLatexHeaderName,
+                              QString argDateString
+                             );
     void on_PBstartBrowser_clicked();
     void on_PBstopBrowser_clicked();
 
@@ -125,12 +139,12 @@ private slots:
     void on_PBStopZtree_clicked();
     void on_PBRecoverCrashedSession_clicked();
     void GetNewDataTargetPath();
-    void on_CBDataTargetPath_activated( int argIndex );
+    void on_CBDataTargetPath_activated(int argIndex);
     void on_CBReceiptsHeader_activated(int argIndex);
     void on_ChBPrintanonymousreceipts_clicked();
     void on_PBKillzLeaf_clicked();
 };
 
-}
+} // namespace lc
 
 #endif // MAINWINDOW_H

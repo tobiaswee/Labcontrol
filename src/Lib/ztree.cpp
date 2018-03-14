@@ -25,11 +25,11 @@
 
 #include <memory>
 
-extern std::unique_ptr<lc::Settings> settings;
-
-lc::ZTree::ZTree(const QString &argZTreeDataTargetPath, const int argZTreePort,
+lc::ZTree::ZTree(const Settings *const argSettings,
+                 const QString &argZTreeDataTargetPath, const int argZTreePort,
                  const QString &argZTreeVersionPath, QObject *argParent) :
-    QObject{argParent}
+    QObject{argParent},
+    settings{argSettings}
 {
     QStringList arguments{QStringList{} << "-c" << "0" << settings->wineCmd
                           << QString{settings->zTreeInstDir + "/zTree_"

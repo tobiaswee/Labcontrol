@@ -26,6 +26,8 @@
 
 namespace lc {
 
+class Settings;
+
 //! A class to contain running zTree instances.
 /*!
   This class is element of every session and is used to handle all zTree related data.
@@ -35,7 +37,8 @@ class ZTree: public QObject
     Q_OBJECT
 
 public:
-    ZTree(const QString &argZTreeDataTargetPath,
+    ZTree(const Settings *const argSettings,
+          const QString &argZTreeDataTargetPath,
           const int argZTreePort, const QString &argZTreeVersionPath,
           QObject *argParent = nullptr);
 
@@ -43,6 +46,7 @@ signals:
     void ZTreeClosed(int argExitCode);
 
 private:
+    const Settings *const settings = nullptr;
     QProcess zTreeInstance;
 };
 

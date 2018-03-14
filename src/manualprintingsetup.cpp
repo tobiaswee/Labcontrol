@@ -17,13 +17,6 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* #include "manualprintingsetup.h"
-#include "ui_manualprintingsetup.h"
-#include "Lib/settings.h"
-
-#include <QFileDialog>
- */
-
 #include "manualprintingsetup.h"
 #include "ui_manualprintingsetup.h"
 #include "Lib/settings.h"
@@ -33,10 +26,10 @@
 
 #include <memory>
 
-extern std::unique_ptr<lc::Settings> settings;
-
-lc::ManualPrintingSetup::ManualPrintingSetup(QWidget *argParent) :
+lc::ManualPrintingSetup::ManualPrintingSetup(const Settings *const argSettings,
+                                             QWidget *argParent) :
     QWidget{argParent},
+    settings{argSettings},
     ui{new Ui::ManualPrintingSetup}
 {
     ui->setupUi(this);

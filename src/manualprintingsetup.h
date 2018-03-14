@@ -28,12 +28,15 @@ namespace Ui {
 class ManualPrintingSetup;
 } // namespace Ui
 
+class Settings;
+
 class ManualPrintingSetup : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit ManualPrintingSetup(QWidget *argParent = nullptr);
+    explicit ManualPrintingSetup(const Settings *const argSettings,
+                                 QWidget *argParent = nullptr);
     ~ManualPrintingSetup() override;
 
 signals:
@@ -45,6 +48,7 @@ signals:
 
 private:
     QString dateString;
+    const Settings *const settings = nullptr;
     Ui::ManualPrintingSetup *const ui = nullptr;
     QString workPath;
 
