@@ -18,14 +18,13 @@
  */
 
 #include "clientpinger.h"
-#include "lablib.h"
+#include "settings.h"
 
-#include <memory>
-
-extern std::unique_ptr<lc::Settings> settings;
-extern std::unique_ptr<lc::Lablib> lablib;
+#include <QMessageBox>
+#include <QTimer>
 
 lc::Client::Client(const QString &argIP, const QString &argMAC, const QString &argName,
+                   const Settings *const argSettings,
                    const unsigned short int argXPosition,
                    const unsigned short int argYPosition,
                    const QString &argPingCmd):
@@ -34,7 +33,8 @@ lc::Client::Client(const QString &argIP, const QString &argMAC, const QString &a
     name{argName},
     xPosition{argXPosition},
     yPosition{argYPosition},
-    protectedCycles{0}
+    protectedCycles{0},
+    settings{argSettings}
 {
     qRegisterMetaType<state_t>("state_t");
 

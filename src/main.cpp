@@ -22,16 +22,11 @@
 
 #include <QApplication>
 
-#include <memory>
-
-std::unique_ptr<lc::Settings> settings;
-
 int main(int argc, char *argv[])
 {
     QApplication a{argc, argv};
-    settings = std::make_unique<lc::Settings>(QSettings{"Labcontrol",
-                                                        "Labcontrol"});
-    lc::MainWindow w{settings.get()};
+    lc::Settings settings{QSettings{"Labcontrol", "Labcontrol"}};
+    lc::MainWindow w{&settings};
     w.show();
 
     return a.exec();

@@ -23,8 +23,6 @@
 
 #include <QMessageBox>
 
-#include <memory>
-
 lc::LocalzLeafStarter::LocalzLeafStarter(Settings *const argSettings,
                                          QWidget *argParent) :
     QWidget{argParent},

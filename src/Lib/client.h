@@ -29,6 +29,7 @@ class QTimer;
 namespace lc {
 
 class ClientPinger;
+class Settings;
 
 //! Class which represents the clients in the lab
 /*!
@@ -58,6 +59,7 @@ public:
      * \param argYPosition  The client's y coordinate in the lab's grid
      */
     Client(const QString &argIP, const QString &argMAC, const QString &argName,
+           const Settings *const argSettings,
            const unsigned short int argXPosition,
            const unsigned short int argYPosition,
            const QString &argPingCmd);
@@ -148,6 +150,7 @@ private:
     unsigned short int protectedCycles;
     ClientPinger *pinger = nullptr;
     QThread pingerThread;
+    const Settings *const settings = nullptr;
     state_t state = state_t::UNINITIALIZED;
     //! QTimer used to trigger pings by pinger's ClientPinger instance
     QTimer *pingTimer = nullptr;

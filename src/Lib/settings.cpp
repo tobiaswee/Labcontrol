@@ -134,12 +134,12 @@ lc::Settings::Settings(const QSettings &argSettings, QObject *argParent) :
     installedZTreeVersions{DetectInstalledzTreeVersions()},
     clientHelpNotificationServerPort{GetClientHelpNotificationServerPort(argSettings)},
     chosenzTreePort{GetInitialPort(argSettings)},
-    clients{CreateClients(argSettings, pingCmd)},
     localzLeafName{ReadSettingsItem("local_zLeaf_name",
                                     "The local zLeaf default name will default to 'local'.",
-                                    argSettings, false)},
-    clIPsToClMap{CreateClIPsToClMap(clients)}
+                                    argSettings, false)}
 {
+    clients = CreateClients(argSettings, pingCmd);
+    clIPsToClMap = CreateClIPsToClMap(clients);
     // Let the local zLeaf name default to 'local' if none was given in the settings
     if (localzLeafName.isEmpty()) {
         qDebug() << "'local_zLeaf_name' was not set, defaulting to 'local'";
@@ -241,9 +241,11 @@ QVector<lc::Client *> lc::Settings::CreateClients(const QSettings &argSettings,
     qDebug() << "clientYPositions:" << clientYPositions.join(" / ");
 
     for (int i = 0; i < clientQuantity; i++) {
-        tempClientVec.append(new Client{clientIPs[i], clientMACs[i], clientNames[i],
+        tempClientVec.append(new Client{clientIPs[i], clientMACs[i],
+                                        clientNames[i], this,
                                         clientXPositions[i].toUShort(),
-                                        clientYPositions[i].toUShort(), argPingCmd});
+                                        clientYPositions[i].toUShort(),
+                                        argPingCmd});
     }
 
     return tempClientVec;

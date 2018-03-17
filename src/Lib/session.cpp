@@ -22,8 +22,6 @@
 
 #include <QDir>
 
-#include <memory>
-
 lc::Session::Session(QVector<Client *> &&argAssocClients,
                      const QString &argZTreeDataTargetPath, const quint16 argZTreePort,
                      const QString &argZTreeVersionPath, bool argPrintReceiptsForLocalClients,

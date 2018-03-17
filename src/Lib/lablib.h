@@ -21,7 +21,6 @@
 #define LABLIB_H
 
 #include <list>
-#include <memory>
 
 #include <QDir>
 #include <QItemSelectionModel>
@@ -130,7 +129,7 @@ private:
     QThread netstatThread;
     //! A timer for regular execution of the NetstatAgent instance's request mechanism
     QTimer *netstatTimer = nullptr;
-    QVector< quint16 > occupiedPorts;
+    QVector<quint16> occupiedPorts;
     //! A derivation from QAbstractTableModel used to store the single Session instances
     SessionsModel *sessionsModel = nullptr;
     Settings *const settings = nullptr;

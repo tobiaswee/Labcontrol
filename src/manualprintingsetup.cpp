@@ -24,8 +24,6 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
-#include <memory>
-
 lc::ManualPrintingSetup::ManualPrintingSetup(const Settings *const argSettings,
                                              QWidget *argParent) :
     QWidget{argParent},

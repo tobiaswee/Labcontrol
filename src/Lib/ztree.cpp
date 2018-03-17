@@ -23,8 +23,6 @@
 #include <QDebug>
 #include <QDir>
 
-#include <memory>
-
 lc::ZTree::ZTree(const Settings *const argSettings,
                  const QString &argZTreeDataTargetPath, const int argZTreePort,
                  const QString &argZTreeVersionPath, QObject *argParent) :

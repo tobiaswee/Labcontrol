@@ -17,8 +17,6 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <memory>
-
 #include <QDebug>
 
 #include "receipts_handler.h"

@@ -26,8 +26,6 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 
-#include <memory>
-
 lc::ClientHelpNotificationServer::ClientHelpNotificationServer(const Settings *const argSettings,
                                                                QObject *argParent) :
     QObject{argParent},

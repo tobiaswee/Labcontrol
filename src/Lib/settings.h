@@ -103,8 +103,8 @@ private:
     static bool CheckPathAndComplain(const QString &argPath,
                                      const QString &argVariableName,
                                      const QString &argMessage);
-    static QVector<Client *> CreateClients(const QSettings &argSettings,
-                                           const QString &argPingCmd);
+    QVector<Client *> CreateClients(const QSettings &argSettings,
+                                    const QString &argPingCmd);
     static QMap<QString, Client *> CreateClIPsToClMap(const QVector<Client *> &argClients);
     QStringList DetectInstalledLaTeXHeaders() const;
     QStringList DetectInstalledzTreeVersions() const;
@@ -119,11 +119,11 @@ private:
                                     bool argItemIsFile);
 
     int chosenzTreePort = 0;
-    QVector< Client * > clients;
+    QVector<Client *> clients;
     QString localzLeafName;
 
 public:
-    const QMap<QString, Client *> clIPsToClMap;
+    QMap<QString, Client *> clIPsToClMap;
 };
 
 } // namespace lc
