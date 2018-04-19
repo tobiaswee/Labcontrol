@@ -50,9 +50,6 @@ lc::Settings::Settings(const QSettings &argSettings, QObject *argParent) :
                                "Datapath not set. Labcontrol will missbehave with high propability.",
                                argSettings, true)},
     localUserName{GetLocalUserName()},
-    localzLeafSize{ReadSettingsItem("local_zLeaf_size",
-                                    "Resolution of local zLeaf window",
-                                    argSettings, false)},
     lprCmd{ReadSettingsItem("lpr_command",
                             "Receipts printing will not work.",
                             argSettings, true)},
@@ -136,6 +133,9 @@ lc::Settings::Settings(const QSettings &argSettings, QObject *argParent) :
     chosenzTreePort{GetInitialPort(argSettings)},
     localzLeafName{ReadSettingsItem("local_zLeaf_name",
                                     "The local zLeaf default name will default to 'local'.",
+                                    argSettings, false)},
+    localzLeafSize{ReadSettingsItem("local_zLeaf_size",
+                                    "Resolution of local zLeaf window",
                                     argSettings, false)}
 {
     clients = CreateClients(argSettings, pingCmd);
@@ -394,14 +394,4 @@ QString lc::Settings::ReadSettingsItem(const QString &argVariableName,
         return tempString;
     }
     return QString{};
-}
-
-void lc::Settings::SetLocalzLeafSize(QString arg)
-{
-    localzLeafSize = arg;
-}
-
-void lc::Settings::SetChosenZTreePort(const int argPort)
-{
-    chosenzTreePort = argPort;
 }

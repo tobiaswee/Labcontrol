@@ -24,9 +24,9 @@
 #include <QObject>
 #include <QSettings>
 
-#include "client.h"
-
 namespace lc {
+
+class Client;
 
 class Settings : public QObject
 {
@@ -39,35 +39,26 @@ public:
     Settings &operator=(const Settings &argSettings) = delete;
     Settings(Settings &&argSettings ) = delete;
     Settings &operator=(Settings &&argSettings) = delete;
-    ~Settings();
+    ~Settings() override;
 
-    int GetChosenZTreePort() const
-    {
-        return chosenzTreePort;
-    }
-    const QVector<Client *> &GetClients() const
-    {
-        return clients;
-    }
+    int GetChosenZTreePort() const noexcept;
+    const QVector<Client *> &GetClients() const;
     QString GetLocalzLeafName() const;
-    void SetChosenZTreePort(const int argPort);
+    QString GetLocalzLeafSize() const;
+    void SetChosenZTreePort(const int argPort) noexcept;
     void SetLocalzLeafName(const QString &argLocalzLeafName);
+    void SetLocalzLeafSize(const QString &argSize);
 
     const int defaultReceiptIndex = 0;
     const QString browserCmd;
     const QString clientBrowserCmd;
+    QMap<QString, Client *> clIPsToClMap;
     const QString dvipsCmd;
     const QString fileMngr;
     const QString killallCmd;
     const QString latexCmd;
     const QString lcDataDir;
     const QString localUserName;
-    QString localzLeafSize;
-    void SetLocalzLeafSize(QString arg);
-    QString GetLocalzLeafSize() const
-    {
-        return localzLeafSize;
-    }
     const QString lprCmd;
     const QString netstatCmd;
     const QString netwBrdAddr;
@@ -121,21 +112,44 @@ private:
     int chosenzTreePort = 0;
     QVector<Client *> clients;
     QString localzLeafName;
-
-public:
-    QMap<QString, Client *> clIPsToClMap;
+    QString localzLeafSize;
 };
 
 } // namespace lc
+
+inline int lc::Settings::GetChosenZTreePort() const noexcept
+{
+    return chosenzTreePort;
+}
+
+inline const QVector<lc::Client *> &lc::Settings::GetClients() const
+{
+    return clients;
+}
 
 inline QString lc::Settings::GetLocalzLeafName() const
 {
     return localzLeafName;
 }
 
+inline QString lc::Settings::GetLocalzLeafSize() const
+{
+    return localzLeafSize;
+}
+
+inline void lc::Settings::SetChosenZTreePort(const int argPort) noexcept
+{
+    chosenzTreePort = argPort;
+}
+
 inline void lc::Settings::SetLocalzLeafName(const QString &argLocalzLeafName)
 {
     localzLeafName = argLocalzLeafName;
+}
+
+inline void lc::Settings::SetLocalzLeafSize(const QString &argSize)
+{
+    localzLeafSize = argSize;
 }
 
 #endif // SETTINGS_H

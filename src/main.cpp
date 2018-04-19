@@ -18,12 +18,15 @@
  */
 
 #include "mainwindow.h"
+#include "Lib/client.h"
 #include "Lib/settings.h"
 
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
+    qRegisterMetaType<state_t>();
+
     QApplication a{argc, argv};
     lc::Settings settings{QSettings{"Labcontrol", "Labcontrol"}};
     lc::MainWindow w{&settings};

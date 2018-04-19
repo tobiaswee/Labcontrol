@@ -17,6 +17,7 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "client.h"
 #include "clientpinger.h"
 #include "settings.h"
 
@@ -36,8 +37,6 @@ lc::Client::Client(const QString &argIP, const QString &argMAC, const QString &a
     protectedCycles{0},
     settings{argSettings}
 {
-    qRegisterMetaType<state_t>("state_t");
-
     if (!argPingCmd.isEmpty()) {
         pinger = new ClientPinger{ip, argPingCmd};
         pinger->moveToThread(&pingerThread);
@@ -79,8 +78,8 @@ void lc::Client::BeamFile(const QString &argFileToBeam,
     }
 
     const QStringList arguments{"-2", "-i", *argPublickeyPathUser, "-l",
-        "32768", "-r", argFileToBeam,
-        QString{*argUserNameOnClients + "@" + ip + ":media4ztree"}};
+                                "32768", "-r", argFileToBeam,
+                                QString{*argUserNameOnClients + "@" + ip + ":media4ztree"}};
 
     // Start the process
     QProcess beamFileProcess;
@@ -126,8 +125,8 @@ void lc::Client::GotStatusChanged(state_t argState)
 void lc::Client::KillZLeaf()
 {
     const QStringList arguments{"-i", settings->pkeyPathUser,
-        QString{settings->userNameOnClients + "@" + ip},
-        settings->killallCmd, "-I", "-q", "zleaf.exe"};
+                                QString{settings->userNameOnClients + "@" + ip},
+                                settings->killallCmd, "-I", "-q", "zleaf.exe"};
 
     // Start the process
     QProcess killZLeafProcess;
@@ -237,8 +236,8 @@ void lc::Client::Shutdown()
         return;
     }
     const QStringList arguments{"-i", settings->pkeyPathUser,
-        QString{settings->userNameOnClients  + "@" + ip},
-        "sudo shutdown -P now"};
+                                QString{settings->userNameOnClients  + "@" + ip},
+                                "sudo shutdown -P now"};
 
     // Start the process
     QProcess shutdownProcess;

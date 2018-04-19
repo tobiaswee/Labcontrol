@@ -267,12 +267,12 @@ void lc::MainWindow::LoadIconPixmaps()
     }
 
     const QStringList iconNames{ QStringList{}
-                << "unknown.png"
-                << "off.png"
-                << "down.png"
-                << "boot.png"
-                << "on.png"
-                << "zLeaf.png" };
+                                 << "unknown.png"
+                                 << "off.png"
+                                 << "down.png"
+                                 << "boot.png"
+                                 << "on.png"
+                                 << "zLeaf.png" };
 
     for ( int i = 0; i < ( int )icons_t::ICON_QUANTITY; i++ ) {
         if ( !icons[ i ].load( settings->lcDataDir + "/icons/" + iconNames[ i ] ) ) {
@@ -710,8 +710,8 @@ void lc::MainWindow::StartLocalzLeaf( QString argzLeafName, QString argzLeafVers
               << QString{ settings->zTreeInstDir + "/zTree_" + argzLeafVersion + "/zleaf.exe" }
               << "/server" << "127.0.0.1" << "/channel"
               << QString::number( argzTreePort - 7000 ) << "/name" << argzLeafName;
-    if ( !settings->localzLeafSize.isEmpty() ) {
-        arguments << "/size" << QString{ settings->localzLeafSize };
+    if (!settings->GetLocalzLeafSize().isEmpty()) {
+        arguments << "/size" << settings->GetLocalzLeafSize();
     }
 
     qDebug() << "Start local zLeaf:" << arguments;

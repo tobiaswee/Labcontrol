@@ -17,6 +17,7 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "client.h"
 #include "session.h"
 #include "settings.h"
 
