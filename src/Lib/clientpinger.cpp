@@ -35,18 +35,18 @@ lc::ClientPinger::ClientPinger(const QString &argIP,
 void lc::ClientPinger::doPing()
 {
     // Initialize the new state to be queried
-    state_t newState = state_t::UNINITIALIZED;
+    Client::EState newState = Client::EState::UNINITIALIZED;
 
     // Query the current state of the client
     pingProcess->start(pingCommand, pingArguments);
     if (!pingProcess->waitForFinished(2500)
             || pingProcess->exitStatus() != QProcess::NormalExit)
-        newState = state_t::ERROR;
+        newState = Client::EState::ERROR;
     else {
         if (pingProcess->exitCode() == 0) {
-            newState = state_t::RESPONDING;
+            newState = Client::EState::RESPONDING;
         } else {
-            newState = state_t::NOT_RESPONDING;
+            newState = Client::EState::NOT_RESPONDING;
         }
     }
 
@@ -58,5 +58,5 @@ void lc::ClientPinger::doPing()
 
 void lc::ClientPinger::setStateToZLEAF_RUNNING()
 {
-    state = state_t::ZLEAF_RUNNING;
+    state = Client::EState::ZLEAF_RUNNING;
 }

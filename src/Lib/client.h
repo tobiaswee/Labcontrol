@@ -20,8 +20,7 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include "global.h"
-
+#include <QObject>
 #include <QThread>
 
 class QTimer;
@@ -38,6 +37,26 @@ class Settings;
 class Client : public QObject
 {
     Q_OBJECT
+
+public:
+    enum class EState : unsigned short  {
+        //! The client's state is not yet defined (should only occur directly after client creation)
+        UNINITIALIZED = 1 << 0,
+
+        //! The client is booting but not yet responding
+        BOOTING = 1 << 1,
+        //! An error occurred determining the client's state
+        ERROR = 1 << 2,
+        //! The client is not responding to pings
+        NOT_RESPONDING = 1 << 3,
+        //! The client is shutting down but not yet stopped responding
+        SHUTTING_DOWN = 1 << 4,
+        //! The client is responding to pings
+        RESPONDING = 1 << 5,
+        //! The client is running a zLeaf
+        ZLEAF_RUNNING = 1 << 6,
+    };
+    Q_ENUM(EState)
 
 public slots:
     //! Sets the STATE of the client to 'ZLEAF_RUNNING'
@@ -85,7 +104,7 @@ public:
     /*!
       @return The current state of the client
     */
-    state_t GetClientState() const
+    EState GetClientState() const
     {
         return state;
     }
@@ -151,14 +170,14 @@ private:
     ClientPinger *pinger = nullptr;
     QThread pingerThread;
     const Settings *const settings = nullptr;
-    state_t state = state_t::UNINITIALIZED;
+    EState state = EState::UNINITIALIZED;
     //! QTimer used to trigger pings by pinger's ClientPinger instance
     QTimer *pingTimer = nullptr;
     int sessionPort = 0;
     QString zLeafVersion;
 
 private slots:
-    void GotStatusChanged(const state_t argState);
+    void GotStatusChanged(const EState argState);
     void RequestAPing();
 
 signals:

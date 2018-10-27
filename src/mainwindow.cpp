@@ -17,6 +17,7 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QButtonGroup>
 #include <QtGlobal>
 #include <QDebug>
 #include <QInputDialog>
@@ -471,31 +472,31 @@ void lc::MainWindow::StartReceiptsHandler(QString argzTreeDataTargetPath,
 void lc::MainWindow::UpdateClientsTableView()
 {
     for ( auto s : *valid_items ) {
-        state_t state = static_cast< Client * >( s->data(
+        lc::Client::EState state = static_cast< Client * >( s->data(
                                                      Qt::UserRole ).value<void *>() )->GetClientState();
         switch ( state ) {
-        case state_t::RESPONDING:
+        case Client::EState::RESPONDING:
             s->setBackground( QBrush( QColor( 128, 255, 128, 255 ) ) );
             s->setIcon( icons[ ( int )icons_t::ON ] );
             break;
-        case state_t::NOT_RESPONDING:
+        case lc::Client::EState::NOT_RESPONDING:
             s->setBackground( QBrush( QColor( 255, 255, 128, 255 ) ) );
             s->setIcon( icons[ ( int )icons_t::OFF ] );
             break;
-        case state_t::BOOTING:
+        case Client::EState::BOOTING:
             s->setBackground( QBrush( QColor( 128, 128, 255, 255 ) ) );
             s->setIcon( icons[ ( int )icons_t::BOOT ] );
             break;
-        case state_t::SHUTTING_DOWN:
+        case Client::EState::SHUTTING_DOWN:
             s->setBackground( QBrush( QColor( 128, 128, 255, 255 ) ) );
             s->setIcon( icons[ ( int )icons_t::DOWN ] );
             break;
-        case state_t::ZLEAF_RUNNING:
+        case Client::EState::ZLEAF_RUNNING:
             s->setBackground( QBrush( QColor( 0, 255, 0, 255 ) ) );
             s->setIcon( icons[ ( int )icons_t::ZLEAF ] );
             break;
-        case state_t::UNINITIALIZED:
-        case state_t::ERROR:
+        case Client::EState::UNINITIALIZED:
+        case Client::EState::ERROR:
             s->setBackground( QBrush( QColor( 255, 128, 128, 255 ) ) );
             break;
         }

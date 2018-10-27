@@ -26,7 +26,6 @@ HEADERS  += src/localzleafstarter.h \
     src/Lib/client.h \
     src/Lib/clienthelpnotificationserver.h \
     src/Lib/clientpinger.h \
-    src/Lib/global.h \
     src/Lib/lablib.h \
     src/Lib/netstatagent.h \
     src/Lib/receipts_handler.h \

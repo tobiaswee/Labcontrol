@@ -25,7 +25,7 @@
 
 int main(int argc, char *argv[])
 {
-    qRegisterMetaType<state_t>();
+    qRegisterMetaType<lc::Client::EState>();
 
     QApplication a{argc, argv};
     lc::Settings settings{QSettings{"Labcontrol", "Labcontrol"}};

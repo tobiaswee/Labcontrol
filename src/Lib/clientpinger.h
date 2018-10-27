@@ -20,7 +20,7 @@
 #ifndef CLIENTPINGER_H
 #define CLIENTPINGER_H
 
-#include "global.h"
+#include "client.h"
 
 #include <QObject>
 #include <QProcess>
@@ -63,12 +63,12 @@ private:
     //! The 'ping' process which will be executed on every call of 'do_ping()'
     std::unique_ptr<QProcess> pingProcess;
     //! Stores the current state of the client
-    state_t state = state_t::UNINITIALIZED;
+    Client::EState state = Client::EState::UNINITIALIZED;
 
 signals:
     //! This signal was just implemented for testing purposes
     //! This signal is emitted if the ping finished and the state of the client changed
-    void PingFinished(state_t state);
+    void PingFinished(Client::EState state);
 };
 
 } // namespace lc

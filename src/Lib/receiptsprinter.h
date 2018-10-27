@@ -24,8 +24,6 @@
 #include <QProcess>
 #include <QThread>
 
-#include "global.h"
-
 namespace lc {
 
 class Settings;

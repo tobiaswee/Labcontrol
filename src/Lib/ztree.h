@@ -20,8 +20,6 @@
 #ifndef ZTREE_H
 #define ZTREE_H
 
-#include "global.h"
-
 #include <QProcess>
 
 namespace lc {
