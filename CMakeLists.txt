@@ -6,6 +6,13 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_CXX_STANDARD 14)
 
 find_package(Qt5 COMPONENTS Core Network Widgets REQUIRED)
+
+set(helpmessagesender_srcs
+    src/helpmessagesender/helpmessagewindow.cpp
+    src/helpmessagesender/main.cpp)
+add_executable(lc-helpmessagesender ${helpmessagesender_srcs})
+target_link_libraries(lc-helpmessagesender Qt5::Core Qt5::Network Qt5::Widgets)
+
 set(labcontrol_srcs
     src/localzleafstarter.cpp
     src/main.cpp
