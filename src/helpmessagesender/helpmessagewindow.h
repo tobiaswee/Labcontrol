@@ -9,14 +9,16 @@
 
 namespace Ui {
 class HelpMessageWindow;
-}
+} // namespace Ui
 
 class lcHelpMessageWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit lcHelpMessageWindow( const QString &argServerIP, const unsigned short int &argServerPort, QWidget *argParent = nullptr );
+    explicit lcHelpMessageWindow(const QString &argServerIP,
+                                 const unsigned short int &argServerPort,
+                                 QWidget *argParent = nullptr);
     ~lcHelpMessageWindow();
 
 private:
@@ -30,7 +32,7 @@ private:
 private slots:
     void RequestHelp();
     void ReadHelpReply();
-    void DisplayError( QAbstractSocket::SocketError socketError );
+    void DisplayError(QAbstractSocket::SocketError socketError);
     void OpenedSession();
 };
 
