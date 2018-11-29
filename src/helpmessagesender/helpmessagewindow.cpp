@@ -1,35 +1,63 @@
+/*
+ * Copyright 2018 Markus Prasser
+ *
+ * This file is part of Labcontrol.
+ *
+ *  Labcontrol is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Labcontrol is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "helpmessagewindow.h"
+#include "ui_helpmessagewindow.h"
+
+#include <QNetworkConfigurationManager>
+#include <QNetworkSession>
+#include <QSettings>
+#include <QTcpSocket>
 
 #include <iostream>
 
 lcHelpMessageWindow::lcHelpMessageWindow(const QString &argServerIP,
-                                         const unsigned short int &argServerPort,
-                                         QWidget *argParent) :
+                                         const quint16 argServerPort,
+                                         QWidget *const argParent) :
     QMainWindow{argParent},
-    helpMessageSocket {new QTcpSocket{this}},
-    serverPort{argServerPort},
     serverAddress{argServerIP},
+    serverPort{argServerPort},
     ui{new Ui::HelpMessageWindow}
 {
+    helpMessageSocket = new QTcpSocket{this};
+
     ui->setupUi(this);
     connect(ui->PBAskForHelp, &QPushButton::clicked,
             this, &lcHelpMessageWindow::RequestHelp);
     connect(helpMessageSocket, &QTcpSocket::readyRead,
             this, &lcHelpMessageWindow::ReadHelpReply);
-    connect(helpMessageSocket, SIGNAL(error(QAbstractSocket::SocketError)),
-            this, SLOT(DisplayError(QAbstractSocket::SocketError)));
+    connect(helpMessageSocket,
+            static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>
+            (&QAbstractSocket::error),
+            this, &lcHelpMessageWindow::DisplayError);
 
     QNetworkConfigurationManager manager;
-    if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired) {
+    if (manager.capabilities()
+            & QNetworkConfigurationManager::NetworkSessionRequired) {
         // Get saved network configuration
         QSettings settings{QSettings::UserScope, QLatin1String{"QtProject"}};
         settings.beginGroup(QLatin1String{"QtNetwork"});
-        const QString id
-                = settings.value(QLatin1String{"DefaultNetworkConfiguration"}).toString();
+        const auto id{settings.value("DefaultNetworkConfiguration").toString()};
         settings.endGroup();
 
         // If the saved network configuration is not currently discovered use the system default
-        QNetworkConfiguration config = manager.configurationFromIdentifier( id );
+        QNetworkConfiguration config = manager.configurationFromIdentifier(id);
         if ((config.state() & QNetworkConfiguration::Discovered)
                 != QNetworkConfiguration::Discovered) {
             config = manager.defaultConfiguration();
@@ -47,9 +75,9 @@ lcHelpMessageWindow::~lcHelpMessageWindow() {
     delete ui;
 }
 
-void lcHelpMessageWindow::DisplayError(QAbstractSocket::SocketError socketError) {
+void lcHelpMessageWindow::DisplayError(QAbstractSocket::SocketError argSocketError) {
     QString errorMessage;
-    switch (socketError) {
+    switch (argSocketError) {
     case QAbstractSocket::RemoteHostClosedError:
         return;
     case QAbstractSocket::HostNotFoundError:
@@ -70,9 +98,9 @@ void lcHelpMessageWindow::DisplayError(QAbstractSocket::SocketError socketError)
 
 void lcHelpMessageWindow::OpenedSession() {
     // Save the used configuration
-    QNetworkConfiguration config = networkSession->configuration();
     QString id;
-    if (config.type() == QNetworkConfiguration::UserChoice) {
+    if (const auto config{networkSession->configuration()};
+            config.type() == QNetworkConfiguration::UserChoice) {
         id = networkSession->sessionProperty(
                     QLatin1String{"UserChoiceConfiguration"}).toString();
     } else {
@@ -86,11 +114,12 @@ void lcHelpMessageWindow::OpenedSession() {
 }
 
 void lcHelpMessageWindow::ReadHelpReply() {
-    QDataStream in(helpMessageSocket);
+    QDataStream in{helpMessageSocket};
     in.setVersion(QDataStream::Qt_5_2);
 
     if (blockSize == 0) {
-        if (helpMessageSocket->bytesAvailable() < (int)sizeof(quint16)) {
+        if (helpMessageSocket->bytesAvailable()
+                < static_cast<int>(sizeof(quint16))) {
             return;
         }
 
