@@ -22,7 +22,7 @@
 #include <QtGlobal>
 #include <QDebug>
 #include <QInputDialog>
-
+#include <QButtonGroup>
 #include "localzleafstarter.h"
 #include "mainwindow.h"
 #include "manualprintingsetup.h"
@@ -425,7 +425,7 @@ void lc::MainWindow::SetupWidgets() {
     //DisableDisfunctionalWidgets();
 
     // Set the info text in LInfo on the TInfo tab
-    ui->LInfo->setText( "This is Labcontrol version 2.1.5\n\n\n\n\n\n"
+    ui->LInfo->setText( "This is Labcontrol version 2.1.6\n\n\n\n\n\n"
                         "Developers\n\n"
                         "0day-2016 Henning Prömpers\n"
                         "2014-2016 Markus Prasser\n"
@@ -585,11 +585,12 @@ void lc::MainWindow::on_PBstartBrowser_clicked()
 {
     QString argURL = ui->LEURL->text();
     bool argFullscreen = ui->CBFullscreen->checkState();
+    QString argBrowser = ui->CB_BrowserSelection->currentText();
     QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
     for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
             Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            client->StartClientBrowser( &argURL, &argFullscreen );
+            client->StartClientBrowser( &argURL, &argFullscreen, &argBrowser );
         }
     }
 }
@@ -882,6 +883,42 @@ void lc::MainWindow::on_PBOpenTerminal_clicked() {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
             Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
             client->OpenTerminal( QString{}, ui->RBUseUserRoot->isChecked() );
+        }
+    }
+}
+
+// Enable RMB
+void lc::MainWindow::on_PBEnableRMB_clicked()
+{
+    // Confirmation dialog
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Confirm", "Really enable the right mouse button on selected clients?", QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::Yes) {
+        qDebug() << "Enabling RMB on chosen clients.";
+        QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
+        for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
+            if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
+                Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
+                client->ControlRMB(true);
+            }
+        }
+    }
+}
+
+// Disable RMB
+void lc::MainWindow::on_PBDisableRMB_clicked()
+{
+    // Confirmation dialog
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Confirm", "Really disable the right mouse button on selected clients?", QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::Yes) {
+        qDebug() << "Disabling RMB on chosen clients.";
+        QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
+        for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
+            if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
+                Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
+                client->ControlRMB(false);
+            }
         }
     }
 }

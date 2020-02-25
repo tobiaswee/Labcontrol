@@ -21,9 +21,13 @@
 
 #include <QDebug>
 
+// To substitute client name in argURL browser call
+#include <QRegularExpression>
+
 #include "client.h"
 #include "settings.h"
 #include "lablib.h"
+
 
 extern std::unique_ptr< lc::Settings > settings;
 extern std::unique_ptr< lc::Lablib > lablib;
@@ -296,20 +300,41 @@ void lc::Client::StartZLeaf( const QString * argFakeName, QString cmd ) {
     }
 }
 
-void lc::Client::StartClientBrowser( const QString * const argURL, const bool * const argFullscreen ) {
+void lc::Client::StartClientBrowser( const QString * const argURL, const bool * const argFullscreen, const QString * const argBrowser ) {
     //Declarations
     QStringList arguments;
 
-    // Build arguments list for SSH command
-    arguments << "-i" << settings->pkeyPathUser
-              << QString{ settings->userNameOnClients + "@" + ip }
-              << "DISPLAY=:0.0"
-              << settings->clientBrowserCmd
-              << *argURL;
+    QString processedArgUrl(*argURL);
+    QRegularExpression clientRegEx(QStringLiteral("%CLIENT%"));
+    processedArgUrl.replace(clientRegEx,this->name);
+    //qDebug() << processedArgUrl;
 
-    // Add fullscreen toggle if checked
-    if (*argFullscreen == true){
-        arguments << "& sleep 3 && DISPLAY=:0.0 xdotool key --clearmodifiers F11";
+    if(argBrowser==QString("firefox")){
+        // Build arguments list for SSH command
+        arguments << "-i" << settings->pkeyPathUser
+                  << QString{ settings->userNameOnClients + "@" + ip }
+                  << "DISPLAY=:0.0"
+                  << settings->clientBrowserCmd
+                  << processedArgUrl;
+
+        // Add fullscreen toggle if checked
+        if (*argFullscreen == true){
+            arguments << "& sleep 3 && DISPLAY=:0.0 xdotool key --clearmodifiers F11";
+        }
+    } else if (argBrowser==QString("chromium")) {
+        // Build arguments list for SSH command
+        arguments << "-i" << settings->pkeyPathUser
+                  << QString{ settings->userNameOnClients + "@" + ip }
+                  << "DISPLAY=:0.0"
+                  << settings->clientChromiumCmd
+                  << "--noerrdialogs --kiosk"
+                  << "--app='" + processedArgUrl + "'"
+                  << "> /dev/null 2>&1 &disown";
+
+        // Add fullscreen toggle if checked
+        //if (*argFullscreen == true){
+        //   arguments << "&& sleep 3 && DISPLAY=:0.0 xdotool key --clearmodifiers F11";
+        //}
     }
 
     // Start the process
@@ -331,7 +356,34 @@ void lc::Client::StopClientBrowser() {
               << QString{ settings->userNameOnClients + "@" + ip }
               << "killall"
               << settings->clientBrowserCmd
-              << "& sleep 1 && rm -R /home/ewfuser/.mozilla/firefox/*";
+              << "& sleep 1 && rm -R /home/ewfuser/.mozilla/firefox/*"
+              << "& killall"
+              << settings->clientChromiumCmd;
+
+    // Start the process
+    QProcess startClientBrowserProcess;
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    startClientBrowserProcess.setProcessEnvironment( env );
+    startClientBrowserProcess.startDetached( settings->sshCmd, arguments );
+
+    // Output message via the debug messages tab
+    qDebug() << settings->sshCmd << arguments.join( " " );
+}
+
+void lc::Client::ControlRMB(bool enable) {
+    //Declarations
+    QStringList arguments;
+
+    //Build arguments list
+    if(enable){
+        arguments << "-i" << settings->pkeyPathUser
+                  << QString{ settings->userNameOnClients + "@" + ip }
+                  << "DISPLAY=:0 xinput set-button-map 'Microsoft Basic Optical Mouse' 1 2 3 4 5 6 7 8 9 10 11 12 > /dev/null 2>&1 &disown;";
+    } else {
+        arguments << "-i" << settings->pkeyPathUser
+                  << QString{ settings->userNameOnClients + "@" + ip }
+                  << "DISPLAY=:0 xinput set-button-map 'Microsoft Basic Optical Mouse' 1 2 0 4 5 6 7 8 9 10 11 12 > /dev/null 2>&1 &disown;";
+    }
 
     // Start the process
     QProcess startClientBrowserProcess;

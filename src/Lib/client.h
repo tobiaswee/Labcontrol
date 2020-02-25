@@ -120,12 +120,17 @@ public:
     * \brief Opens a browser window on the client
     * @param argURL                     URL to open in clients browser
     */
-    void StartClientBrowser( const QString *argURL = nullptr, const bool *argFullscreen = nullptr );
+    void StartClientBrowser( const QString *argURL = nullptr, const bool *argFullscreen = nullptr, const QString *argBrowser = nullptr );
 
     /*!
     * \brief Closes all browser instances
     */
     void StopClientBrowser();
+
+    /*!
+    * \brief Enable/Disable right mouse button
+    */
+    void ControlRMB(bool enable = true);
 
 private:
     const QString &GetzLeafVersion() const { return zLeafVersion; }

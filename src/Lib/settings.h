@@ -49,6 +49,7 @@ public:
     const int defaultReceiptIndex = 0;
     const QString browserCmd;
     const QString clientBrowserCmd;
+    const QString clientChromiumCmd;
     const QString dvipsCmd;
     const QString fileMngr;
     const QString killallCmd;
