@@ -22,7 +22,7 @@
 #include <QtGlobal>
 #include <QDebug>
 #include <QInputDialog>
-
+#include <QButtonGroup>
 #include "localzleafstarter.h"
 #include "mainwindow.h"
 #include "manualprintingsetup.h"
