@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>730</width>
-    <height>903</height>
+    <height>900</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -252,6 +252,10 @@
                <property name="toolTip">
                 <string>Shows the desktop of the selected clients.</string>
                </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="L_VNC">
                <property name="text">
                 <string>View desktop (view only)</string>
                </property>

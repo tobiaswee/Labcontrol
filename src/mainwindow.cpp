@@ -585,12 +585,11 @@ void lc::MainWindow::on_PBstartBrowser_clicked()
 {
     QString argURL = ui->LEURL->text();
     bool argFullscreen = ui->CBFullscreen->checkState();
-    QString argBrowser = ui->CB_BrowserSelection->currentText();
     QModelIndexList activated_items = ui->TVClients->selectionModel()->selectedIndexes();
     for ( QModelIndexList::ConstIterator it = activated_items.cbegin(); it != activated_items.cend(); ++it ) {
         if ( ( *it ).data( Qt::DisplayRole ).type() != 0 ) {
             Client *client = static_cast< Client* >( ( *it ).data( Qt::UserRole ).value< void * >() );
-            client->StartClientBrowser( &argURL, &argFullscreen, &argBrowser );
+            client->StartClientBrowser( &argURL, &argFullscreen );
         }
     }
 }

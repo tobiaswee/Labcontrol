@@ -28,7 +28,6 @@
 #include "settings.h"
 #include "lablib.h"
 
-
 extern std::unique_ptr< lc::Settings > settings;
 extern std::unique_ptr< lc::Lablib > lablib;
 
@@ -330,11 +329,6 @@ void lc::Client::StartClientBrowser( const QString * const argURL, const bool * 
                   << "--noerrdialogs --kiosk"
                   << "--app='" + processedArgUrl + "'"
                   << "> /dev/null 2>&1 &disown";
-
-        // Add fullscreen toggle if checked
-        //if (*argFullscreen == true){
-        //   arguments << "&& sleep 3 && DISPLAY=:0.0 xdotool key --clearmodifiers F11";
-        //}
     }
 
     // Start the process
