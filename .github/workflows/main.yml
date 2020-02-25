@@ -1,0 +1,30 @@
+name: Test Installing Qt
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v1
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '10.x'
+
+      - name: Install Qt
+        uses: ./
+        with:
+          aqtversion: "==0.7.1"
+          modules: qtcharts qtwebengine
+          
+      - name: Configure test project on unix
+        if: (!startsWith(matrix.os, 'windows'))
+        run: |
+          cd tests/TestWithModules
+          ls $Qt5_Dir/lib/cmake
+          qmake
+        shell: bash
