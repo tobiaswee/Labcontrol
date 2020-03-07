@@ -241,13 +241,6 @@
               </widget>
              </item>
              <item>
-              <widget class="Line" name="line_zLeafActions">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-              </widget>
-             </item>
-             <item>
               <widget class="QLabel" name="L_VNC">
                <property name="text">
                 <string>Remote control the selected clients</string>
@@ -259,6 +252,10 @@
                <property name="toolTip">
                 <string>Shows the desktop of the selected clients.</string>
                </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="L_VNC">
                <property name="text">
                 <string>View desktop (view only)</string>
                </property>
@@ -270,6 +267,31 @@
                 <string>Control desktop (mouse and keyboard)</string>
                </property>
               </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Control right mouse botton (RMB)</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="HLDisableRightClick">
+               <item>
+                <widget class="QPushButton" name="PBEnableRMB">
+                 <property name="text">
+                  <string>Enable RMB</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="PBDisableRMB">
+                 <property name="text">
+                  <string>Disable RMB</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
              <item>
               <widget class="Line" name="line_viewDesktop">
@@ -336,6 +358,13 @@
               </widget>
              </item>
              <item>
+              <widget class="QLabel" name="L_ClientPlaceholder">
+               <property name="text">
+                <string>%CLIENT% is a placeholder for hostname in URL</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <layout class="QHBoxLayout" name="HLURL">
                <item>
                 <widget class="QLabel" name="L_URL">
@@ -347,16 +376,37 @@
                <item>
                 <widget class="QLineEdit" name="LEURL">
                  <property name="text">
-                  <string>http://</string>
+                  <string>http://localhost:8000/%CLIENT%</string>
                  </property>
                 </widget>
                </item>
               </layout>
              </item>
              <item>
+              <widget class="QLabel" name="L_BrowserSelection">
+               <property name="text">
+                <string>Use the following browser</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="CB_BrowserSelection">
+               <item>
+                <property name="text">
+                 <string>chromium</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>firefox</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item>
               <widget class="QCheckBox" name="CBFullscreen">
                <property name="text">
-                <string>Fullscreen</string>
+                <string>Fullscreen (only FF)</string>
                </property>
                <property name="checked">
                 <bool>true</bool>
