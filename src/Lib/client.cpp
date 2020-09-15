@@ -25,6 +25,7 @@
 #include <QRegularExpression>
 
 #include "client.h"
+#include "clientpinger.h"
 #include "lablib.h"
 #include "settings.h"
 
@@ -68,7 +69,7 @@ lc::Client::~Client() {
 void lc::Client::BeamFile(const QString &argFileToBeam,
                           const QString *const argPublickeyPathUser,
                           const QString *const argUserNameOnClients) {
-  if (state < state_t::RESPONDING) {
+  if (state < State::RESPONDING) {
     return;
   }
 
@@ -103,16 +104,16 @@ void lc::Client::Boot() {
   pingTimer->start(3000);
 
   protectedCycles = 7;
-  GotStatusChanged(state_t::BOOTING);
+  GotStatusChanged(State::BOOTING);
 }
 
-void lc::Client::GotStatusChanged(state_t argState) {
-  if ((protectedCycles > 0) && (state == state_t::BOOTING) &&
-      (argState != state_t::RESPONDING)) {
+void lc::Client::GotStatusChanged(State argState) {
+  if ((protectedCycles > 0) && (state == State::BOOTING) &&
+      (argState != State::RESPONDING)) {
     return;
   }
-  if ((protectedCycles > 0) && (state == state_t::SHUTTING_DOWN) &&
-      argState != state_t::NOT_RESPONDING) {
+  if ((protectedCycles > 0) && (state == State::SHUTTING_DOWN) &&
+      argState != State::NOT_RESPONDING) {
     return;
   }
   state = argState;
@@ -142,7 +143,7 @@ void lc::Client::KillZLeaf() {
 }
 
 void lc::Client::OpenFilesystem(const QString *const argUserToBeUsed) {
-  if (state < state_t::RESPONDING) {
+  if (state < State::RESPONDING) {
     return;
   }
   QStringList arguments = QStringList{}
@@ -158,7 +159,7 @@ void lc::Client::OpenFilesystem(const QString *const argUserToBeUsed) {
 void lc::Client::OpenTerminal(const QString &argCommand,
                               const bool &argOpenAsRoot) {
   if (!settings->termEmulCmd.isEmpty()) {
-    if (state < state_t::RESPONDING) {
+    if (state < State::RESPONDING) {
       return;
     }
 
@@ -198,11 +199,11 @@ void lc::Client::SetStateToZLEAF_RUNNING(QString argClientIP) {
   if (argClientIP != ip) {
     return;
   }
-  if (state != state_t::ZLEAF_RUNNING) {
+  if (state != State::ZLEAF_RUNNING) {
     pingTimer->stop();
     // Inform the ClientPinger instance, that zLeaf is now running
     pinger->setStateToZLEAF_RUNNING();
-    this->GotStatusChanged(state_t::ZLEAF_RUNNING);
+    this->GotStatusChanged(State::ZLEAF_RUNNING);
     qDebug() << "Client" << name << "got 'ZLEAF_RUNNING' signal.";
   }
 }
@@ -234,8 +235,8 @@ void lc::Client::ShowDesktopFullControl() {
 }
 
 void lc::Client::Shutdown() {
-  if (state == state_t::NOT_RESPONDING || state == state_t::BOOTING ||
-      state == state_t::SHUTTING_DOWN) {
+  if (state == State::NOT_RESPONDING || state == State::BOOTING ||
+      state == State::SHUTTING_DOWN) {
     return;
   }
   QStringList arguments;
@@ -257,11 +258,11 @@ void lc::Client::Shutdown() {
   pingTimer->start(3000);
 
   protectedCycles = 3;
-  GotStatusChanged(state_t::SHUTTING_DOWN);
+  GotStatusChanged(State::SHUTTING_DOWN);
 }
 
 void lc::Client::StartZLeaf(const QString *argFakeName, QString cmd) {
-  if (state < state_t::RESPONDING || zLeafVersion.isEmpty() ||
+  if (state < State::RESPONDING || zLeafVersion.isEmpty() ||
       GetSessionPort() < 7000) {
     return;
   }
@@ -269,7 +270,7 @@ void lc::Client::StartZLeaf(const QString *argFakeName, QString cmd) {
   // Create a QMessageBox for user interaction if there is already a zLeaf
   // running
   std::unique_ptr<QMessageBox> messageBoxRunningZLeafFound;
-  if (state == state_t::ZLEAF_RUNNING) {
+  if (state == State::ZLEAF_RUNNING) {
     messageBoxRunningZLeafFound.reset(new QMessageBox{
         QMessageBox::Warning, "Running zLeaf found",
         QString{"There is already a zLeaf running on " + name + "."},
@@ -283,7 +284,7 @@ void lc::Client::StartZLeaf(const QString *argFakeName, QString cmd) {
   if ((messageBoxRunningZLeafFound.get() != nullptr &&
        messageBoxRunningZLeafFound->clickedButton() ==
            messageBoxRunningZLeafFound->button(QMessageBox::Yes)) ||
-      state != state_t::ZLEAF_RUNNING) {
+      state != State::ZLEAF_RUNNING) {
     QStringList arguments;
     if (argFakeName == nullptr) {
       arguments << "-i" << settings->pkeyPathUser

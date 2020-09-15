@@ -29,7 +29,9 @@ std::unique_ptr<lc::Settings> settings;
 int main(int argc, char *argv[]) {
   QApplication a{argc, argv};
 
-  qRegisterMetaType<state_t>();
+  qRegisterMetaType<lc::Client::State>();
+  qRegisterMetaType<lc::Client::State>("Client::State");
+  qRegisterMetaType<lc::Client::State>("lc::Client::State");
 
   settings.reset(new lc::Settings{QSettings{"Labcontrol", "Labcontrol"}});
   lc::MainWindow w;

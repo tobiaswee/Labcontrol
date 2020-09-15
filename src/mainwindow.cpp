@@ -492,31 +492,32 @@ void lc::MainWindow::StartReceiptsHandler(
 
 void lc::MainWindow::UpdateClientsTableView() {
   for (auto s : *valid_items) {
-    state_t state = static_cast<Client *>(s->data(Qt::UserRole).value<void *>())
-                        ->GetClientState();
+    Client::State state =
+        static_cast<Client *>(s->data(Qt::UserRole).value<void *>())
+            ->GetClientState();
     switch (state) {
-    case state_t::RESPONDING:
+    case Client::State::RESPONDING:
       s->setBackground(QBrush(QColor(128, 255, 128, 255)));
       s->setIcon(icons[(int)icons_t::ON]);
       break;
-    case state_t::NOT_RESPONDING:
+    case Client::State::NOT_RESPONDING:
       s->setBackground(QBrush(QColor(255, 255, 128, 255)));
       s->setIcon(icons[(int)icons_t::OFF]);
       break;
-    case state_t::BOOTING:
+    case Client::State::BOOTING:
       s->setBackground(QBrush(QColor(128, 128, 255, 255)));
       s->setIcon(icons[(int)icons_t::BOOT]);
       break;
-    case state_t::SHUTTING_DOWN:
+    case Client::State::SHUTTING_DOWN:
       s->setBackground(QBrush(QColor(128, 128, 255, 255)));
       s->setIcon(icons[(int)icons_t::DOWN]);
       break;
-    case state_t::ZLEAF_RUNNING:
+    case Client::State::ZLEAF_RUNNING:
       s->setBackground(QBrush(QColor(0, 255, 0, 255)));
       s->setIcon(icons[(int)icons_t::ZLEAF]);
       break;
-    case state_t::UNINITIALIZED:
-    case state_t::ERROR:
+    case Client::State::UNINITIALIZED:
+    case Client::State::ERROR:
       s->setBackground(QBrush(QColor(255, 128, 128, 255)));
       break;
     }

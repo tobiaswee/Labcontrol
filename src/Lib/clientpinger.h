@@ -24,7 +24,7 @@
 #include <QProcess>
 #include <QThread>
 
-#include "global.h"
+#include "client.h"
 
 namespace lc {
 
@@ -63,13 +63,13 @@ private:
   const QString pingCommand;       //! The 'ping' command itself
   QProcess *pingProcess; //! The 'ping' process which will be executed on every
                          //! call of 'do_ping()'
-  state_t state;         //! Stores the current state of the client
+  Client::State state;   //! Stores the current state of the client
 
 signals:
   //! This signal was just implemented for testing purposes
   //! This signal is emitted if the ping finished and the state of the client
   //! changed
-  void PingFinished(state_t state);
+  void PingFinished(Client::State state);
 };
 
 } // namespace lc

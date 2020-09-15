@@ -31,7 +31,7 @@ lc::ClientPinger::ClientPinger(const QString &argIP,
                                   << "1"
                                   << "-q" << argIP},
       pingCommand{argPingCommand},
-      pingProcess{new QProcess{this}}, state{state_t::UNINITIALIZED} {
+      pingProcess{new QProcess{this}}, state{Client::State::UNINITIALIZED} {
   QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
   pingProcess->setProcessEnvironment(env);
   // emit ping_string(new QString(*ping_command + " " + ping_arguments->join("
@@ -42,17 +42,17 @@ lc::ClientPinger::~ClientPinger() { delete pingProcess; }
 
 void lc::ClientPinger::doPing() {
   // Initialize the new state to be queried
-  state_t newState = state_t::UNINITIALIZED;
+  Client::State newState = Client::State::UNINITIALIZED;
 
   // Query the current state of the client
   pingProcess->start(pingCommand, pingArguments);
   if (!pingProcess->waitForFinished(2500))
-    newState = state_t::ERROR;
+    newState = Client::State::ERROR;
   else {
     if (pingProcess->exitCode() == 0)
-      newState = state_t::RESPONDING;
+      newState = Client::State::RESPONDING;
     else
-      newState = state_t::NOT_RESPONDING;
+      newState = Client::State::NOT_RESPONDING;
   }
 
   if (newState != state) {
@@ -62,5 +62,5 @@ void lc::ClientPinger::doPing() {
 }
 
 void lc::ClientPinger::setStateToZLEAF_RUNNING() {
-  state = state_t::ZLEAF_RUNNING;
+  state = Client::State::ZLEAF_RUNNING;
 }

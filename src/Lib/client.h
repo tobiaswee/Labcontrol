@@ -28,10 +28,9 @@
 #include <QThread>
 #include <QTimer>
 
-#include "clientpinger.h"
-#include "global.h"
-
 namespace lc {
+
+class ClientPinger;
 
 //! Class which represents the clients in the lab
 /*!
@@ -46,6 +45,25 @@ public slots:
   void SetStateToZLEAF_RUNNING(QString argClientIP);
 
 public:
+  //! Opens a terminal for the client
+  enum class State : unsigned short int {
+    //! The client is booting but not yet responding
+    BOOTING,
+    //! An error occurred determining the client's state
+    ERROR,
+    //! The client is not responding to pings
+    NOT_RESPONDING,
+    //! The client is shutting down but not yet stopped responding
+    SHUTTING_DOWN,
+    //! The client's state is not yet defined (should only occur directly after
+    //! client creation)
+    UNINITIALIZED,
+    //! The client is responding to pings
+    RESPONDING,
+    //! The client is running a zLeaf
+    ZLEAF_RUNNING
+  };
+
   const QString ip;
   const QString mac;
   const QString name;
@@ -89,7 +107,7 @@ public:
   /*!
     @return The current state of the client
   */
-  state_t GetClientState() const { return state; }
+  State GetClientState() const { return state; }
   int GetSessionPort() const { return sessionPort; }
   /*!
    * \brief Kills all processes 'zleaf.exe' on the client
@@ -148,14 +166,14 @@ private:
   unsigned short int protectedCycles;
   ClientPinger *pinger = nullptr;
   QThread pingerThread;
-  state_t state = state_t::UNINITIALIZED;
+  State state = State::UNINITIALIZED;
   QTimer *pingTimer = nullptr; //! QTimer used to trigger pings by pinger's
                                //! ClientPinger instance
   int sessionPort = 0;
   QString zLeafVersion;
 
 private slots:
-  void GotStatusChanged(state_t argState);
+  void GotStatusChanged(State argState);
   void RequestAPing();
 
 signals:
@@ -163,5 +181,6 @@ signals:
 };
 
 } // namespace lc
+Q_DECLARE_METATYPE(lc::Client::State)
 
 #endif // CLIENT_H
