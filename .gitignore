@@ -33,4 +33,5 @@
 
 # Qt Creator User Project Files
 /*.pro.user*
+/src/helpmessagesender/HelpMessageSender.pro.user*
 *.eccba64

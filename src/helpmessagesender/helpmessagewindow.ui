@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>HelpMessageWindow</class>
  <widget class="QMainWindow" name="HelpMessageWindow">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>512</width>
-    <height>192</height>
-   </rect>
-  </property>
   <property name="minimumSize">
    <size>
     <width>512</width>
@@ -58,15 +50,15 @@
    <sender>PBQuit</sender>
    <signal>clicked()</signal>
    <receiver>HelpMessageWindow</receiver>
-   <slot>deleteLater()</slot>
+   <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>191</x>
      <y>105</y>
     </hint>
     <hint type="destinationlabel">
-     <x>191</x>
-     <y>63</y>
+     <x>255</x>
+     <y>95</y>
     </hint>
    </hints>
   </connection>
