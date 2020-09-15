@@ -29,22 +29,23 @@ class LocalzLeafStarter;
 }
 
 class LocalzLeafStarter : public QWidget {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    explicit LocalzLeafStarter( QWidget *argParent = nullptr );
-    ~LocalzLeafStarter();
+  explicit LocalzLeafStarter(QWidget *argParent = nullptr);
+  ~LocalzLeafStarter();
 
 signals:
-    void LocalzLeafRequested( QString argzLeafName, QString argzLeafVersion, int argzTreePort );
+  void LocalzLeafRequested(QString argzLeafName, QString argzLeafVersion,
+                           int argzTreePort);
 
 private:
-    Ui::LocalzLeafStarter *ui = nullptr;
+  Ui::LocalzLeafStarter *ui = nullptr;
 
 private slots:
-    void on_PBStartLocalzLeaf_clicked();
+  void on_PBStartLocalzLeaf_clicked();
 };
 
-}
+} // namespace lc
 
 #endif // LOCALZLEAFSTARTER_H

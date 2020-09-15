@@ -21,66 +21,64 @@
 
 #include "sessionsmodel.h"
 
-lc::SessionsModel::SessionsModel( QObject *argParent ) :
-    QAbstractTableModel{ argParent }
-{
-}
+lc::SessionsModel::SessionsModel(QObject *argParent)
+    : QAbstractTableModel{argParent} {}
 
-lc::Session *lc::SessionsModel::back() const {
-    return sessionsList.back();
-}
+lc::Session *lc::SessionsModel::back() const { return sessionsList.back(); }
 
 int lc::SessionsModel::columnCount(const QModelIndex &parent) const {
-    Q_UNUSED(parent);
-    return 2;
+  Q_UNUSED(parent);
+  return 2;
 }
 
 QVariant lc::SessionsModel::data(const QModelIndex &index, int role) const {
-    if (!index.isValid())
-        return QVariant{};
-
-    if (index.row() >= sessionsList.size() || index.row() < 0)
-        return QVariant{};
-
-    if (role == Qt::DisplayRole)
-        return sessionsList.at( index.row() )->GetDataItem( index.column() );
-
+  if (!index.isValid())
     return QVariant{};
-}
 
-QVariant lc::SessionsModel::headerData(int section, Qt::Orientation orientation, int role) const {
-    if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
-        switch(section) {
-        case 0:
-            return tr("zTree Version");
-        case 1:
-            return tr("Port");
-        case 2:
-            return tr("LaTeX Header");
-        case 3:
-            return tr("Anonymous Receipts Placeholder");
-        default:
-            return QVariant{};
-        }
-    }
+  if (index.row() >= sessionsList.size() || index.row() < 0)
     return QVariant{};
+
+  if (role == Qt::DisplayRole)
+    return sessionsList.at(index.row())->GetDataItem(index.column());
+
+  return QVariant{};
 }
 
-void lc::SessionsModel::push_back( Session *argSession ) {
-    connect( argSession, &Session::SessionFinished,
-             this, &SessionsModel::RemoveSession );
-    argSession->setParent( this );
-    sessionsList.push_back( argSession );
-}
-
-void lc::SessionsModel::RemoveSession( Session *argSession ) {
-    if ( sessionsList.removeAll( argSession ) ) {
-        qDebug() << "Successfully removed" << argSession << "from lc::SessionsModel";
-        argSession->deleteLater();
+QVariant lc::SessionsModel::headerData(int section, Qt::Orientation orientation,
+                                       int role) const {
+  if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
+    switch (section) {
+    case 0:
+      return tr("zTree Version");
+    case 1:
+      return tr("Port");
+    case 2:
+      return tr("LaTeX Header");
+    case 3:
+      return tr("Anonymous Receipts Placeholder");
+    default:
+      return QVariant{};
     }
+  }
+  return QVariant{};
+}
+
+void lc::SessionsModel::push_back(Session *argSession) {
+  connect(argSession, &Session::SessionFinished, this,
+          &SessionsModel::RemoveSession);
+  argSession->setParent(this);
+  sessionsList.push_back(argSession);
+}
+
+void lc::SessionsModel::RemoveSession(Session *argSession) {
+  if (sessionsList.removeAll(argSession)) {
+    qDebug() << "Successfully removed" << argSession
+             << "from lc::SessionsModel";
+    argSession->deleteLater();
+  }
 }
 
 int lc::SessionsModel::rowCount(const QModelIndex &parent) const {
-    Q_UNUSED(parent);
-    return sessionsList.length();
+  Q_UNUSED(parent);
+  return sessionsList.length();
 }

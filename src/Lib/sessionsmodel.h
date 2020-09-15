@@ -27,28 +27,28 @@
 namespace lc {
 
 class SessionsModel : public QAbstractTableModel {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    explicit SessionsModel(QObject *parent = 0);
-    SessionsModel(const SessionsModel&) = delete;
-    Session *back() const;
-    int columnCount(const QModelIndex &parent) const;
-    QVariant data(const QModelIndex &index, int role) const;
-    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
-    void push_back( Session *argSession );
-    int rowCount(const QModelIndex &parent) const;
+  explicit SessionsModel(QObject *parent = 0);
+  SessionsModel(const SessionsModel &) = delete;
+  Session *back() const;
+  int columnCount(const QModelIndex &parent) const;
+  QVariant data(const QModelIndex &index, int role) const;
+  QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+  void push_back(Session *argSession);
+  int rowCount(const QModelIndex &parent) const;
 
 signals:
 
 public slots:
 
 private:
-    QList< Session* > sessionsList;
+  QList<Session *> sessionsList;
 
 private slots:
-    void RemoveSession( Session *argSession );
+  void RemoveSession(Session *argSession);
 };
 
-}
+} // namespace lc
 
 #endif // SESSIONSMODEL_H

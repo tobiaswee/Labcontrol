@@ -29,31 +29,31 @@ class ManualPrintingSetup;
 }
 
 class ManualPrintingSetup : public QWidget {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    explicit ManualPrintingSetup( QWidget *argParent = nullptr );
-    ~ManualPrintingSetup();
+  explicit ManualPrintingSetup(QWidget *argParent = nullptr);
+  ~ManualPrintingSetup();
 
 signals:
-    void RequestReceiptsHandler( QString argzTreeDataTargetPath,
-                                 bool argReceiptsForLocalClients,
-                                 QString argAnonymousReceiptsPlaceholder,
-                                 QString argLatexHeaderName,
-                                 QString argDateString );
+  void RequestReceiptsHandler(QString argzTreeDataTargetPath,
+                              bool argReceiptsForLocalClients,
+                              QString argAnonymousReceiptsPlaceholder,
+                              QString argLatexHeaderName,
+                              QString argDateString);
 
 private:
-    QString dateString;
-    Ui::ManualPrintingSetup *ui = nullptr;
-    QString workPath;
+  QString dateString;
+  Ui::ManualPrintingSetup *ui = nullptr;
+  QString workPath;
 
 private slots:
-    void on_CBReceiptsHeader_activated( int argIndex );
-    void on_ChBPrintAnonymousReceipts_clicked( bool argChecked );
-    void on_PBPrint_clicked();
-    void on_PBSelectFile_clicked();
+  void on_CBReceiptsHeader_activated(int argIndex);
+  void on_ChBPrintAnonymousReceipts_clicked(bool argChecked);
+  void on_PBPrint_clicked();
+  void on_PBSelectFile_clicked();
 };
 
-}
+} // namespace lc
 
 #endif // MANUALPRINTINGSETUP_H

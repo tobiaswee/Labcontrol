@@ -22,97 +22,106 @@
 #include "session.h"
 #include "settings.h"
 
-extern std::unique_ptr< lc::Settings > settings;
+extern std::unique_ptr<lc::Settings> settings;
 
-lc::Session::Session( QVector< Client* > &&argAssocClients,
-                      const QString &argZTreeDataTargetPath, const quint16 argZTreePort,
-                      const QString &argZTreeVersionPath, bool argPrintReceiptsForLocalClients,
-                      const QString &argAnonymousReceiptsPlaceholder,
-                      const QString &argLatexHeaderName, QObject *argParent ):
-    QObject{ argParent },
-    zTreePort{ argZTreePort },
-    anonymousReceiptsPlaceholder{ argAnonymousReceiptsPlaceholder },
-    assocClients{ std::move( argAssocClients ) },
-    latexHeaderName{ argLatexHeaderName },
-    printReceiptsForLocalClients{ argPrintReceiptsForLocalClients },
-    zTreeDataTargetPath{ argZTreeDataTargetPath },
-    zTreeVersionPath{ argZTreeVersionPath }
-{
-    // This part ensures, that both class instances are created in the same minute, so that the payment file name can be guessed correctly
-    QDateTime current_time;
-    current_time  = QDateTime::currentDateTime();
+lc::Session::Session(QVector<Client *> &&argAssocClients,
+                     const QString &argZTreeDataTargetPath,
+                     const quint16 argZTreePort,
+                     const QString &argZTreeVersionPath,
+                     bool argPrintReceiptsForLocalClients,
+                     const QString &argAnonymousReceiptsPlaceholder,
+                     const QString &argLatexHeaderName, QObject *argParent)
+    : QObject{argParent}, zTreePort{argZTreePort},
+      anonymousReceiptsPlaceholder{argAnonymousReceiptsPlaceholder},
+      assocClients{std::move(argAssocClients)},
+      latexHeaderName{argLatexHeaderName},
+      printReceiptsForLocalClients{argPrintReceiptsForLocalClients},
+      zTreeDataTargetPath{argZTreeDataTargetPath}, zTreeVersionPath{
+                                                       argZTreeVersionPath} {
+  // This part ensures, that both class instances are created in the same
+  // minute, so that the payment file name can be guessed correctly
+  QDateTime current_time;
+  current_time = QDateTime::currentDateTime();
 
-    // If in the last three seconds of a minute, wait for the next one to start
-    if ( QTime::currentTime().second() > 56 ) {
-        QTimer::singleShot( 5000, this, SLOT( InitializeClasses() ) );
-    } else {
-        InitializeClasses();
-    }
+  // If in the last three seconds of a minute, wait for the next one to start
+  if (QTime::currentTime().second() > 56) {
+    QTimer::singleShot(5000, this, SLOT(InitializeClasses()));
+  } else {
+    InitializeClasses();
+  }
 
-    if ( !settings->wmctrlCmd.isEmpty() ) {
-        QTimer::singleShot( 5000, this, SLOT( RenameWindow() ) );
-    }
+  if (!settings->wmctrlCmd.isEmpty()) {
+    QTimer::singleShot(5000, this, SLOT(RenameWindow()));
+  }
 }
 
 lc::Session::~Session() {
-    for ( auto &client : assocClients ) {
-        client->SetSessionPort( 0 );
-        client->SetzLeafVersion( "" );
-    }
+  for (auto &client : assocClients) {
+    client->SetSessionPort(0);
+    client->SetzLeafVersion("");
+  }
 }
 
-QVariant lc::Session::GetDataItem( int argIndex ) {
-    switch ( argIndex ) {
-    case 0:
-        return QVariant{ zTreeVersionPath.split( '_', QString::KeepEmptyParts, Qt::CaseInsensitive )[ 1 ] };
-    case 1:
-        return QVariant{ zTreePort };
-    default:
-        return QVariant{};
-    }
+QVariant lc::Session::GetDataItem(int argIndex) {
+  switch (argIndex) {
+  case 0:
+    return QVariant{zTreeVersionPath.split('_', QString::KeepEmptyParts,
+                                           Qt::CaseInsensitive)[1]};
+  case 1:
+    return QVariant{zTreePort};
+  default:
+    return QVariant{};
+  }
 }
 
 void lc::Session::InitializeClasses() {
-    // Create the new data directory
-    QDir dir{ zTreeDataTargetPath };
-    QString date_string( QDateTime::currentDateTime().toString( "yyMMdd_hhmm" ) );
-    if ( !dir.mkdir( zTreeDataTargetPath + "/" + date_string + "-" + QString::number( zTreePort ) ) ) {
-        throw lcDataTargetPathCreationFailed{};
-    }
-    zTreeDataTargetPath.append( "/" + date_string + "-" + QString::number( zTreePort ) );
-    qDebug() << "New session's chosen_zTree_data_target_path:" << zTreeDataTargetPath;
+  // Create the new data directory
+  QDir dir{zTreeDataTargetPath};
+  QString date_string(QDateTime::currentDateTime().toString("yyMMdd_hhmm"));
+  if (!dir.mkdir(zTreeDataTargetPath + "/" + date_string + "-" +
+                 QString::number(zTreePort))) {
+    throw lcDataTargetPathCreationFailed{};
+  }
+  zTreeDataTargetPath.append("/" + date_string + "-" +
+                             QString::number(zTreePort));
+  qDebug() << "New session's chosen_zTree_data_target_path:"
+           << zTreeDataTargetPath;
 
-    zTreeInstance = new ZTree{ zTreeDataTargetPath, zTreePort, zTreeVersionPath, this };
-    connect( zTreeInstance, &ZTree::ZTreeClosed,
-             this, &Session::OnzTreeClosed );
-    // Only create a 'Receipts_Handler' instance, if all neccessary variables were set
-    if ( latexHeaderName != "None found" && !settings->dvipsCmd.isEmpty()
-         && !settings->latexCmd.isEmpty() ) {
-        new ReceiptsHandler{ zTreeDataTargetPath, printReceiptsForLocalClients,
-                             anonymousReceiptsPlaceholder, latexHeaderName, this };
-    } else {
-        qDebug() << "No 'ReceiptsHandler' instance was created.";
-    }
+  zTreeInstance =
+      new ZTree{zTreeDataTargetPath, zTreePort, zTreeVersionPath, this};
+  connect(zTreeInstance, &ZTree::ZTreeClosed, this, &Session::OnzTreeClosed);
+  // Only create a 'Receipts_Handler' instance, if all neccessary variables were
+  // set
+  if (latexHeaderName != "None found" && !settings->dvipsCmd.isEmpty() &&
+      !settings->latexCmd.isEmpty()) {
+    new ReceiptsHandler{zTreeDataTargetPath, printReceiptsForLocalClients,
+                        anonymousReceiptsPlaceholder, latexHeaderName, this};
+  } else {
+    qDebug() << "No 'ReceiptsHandler' instance was created.";
+  }
 }
 
-void lc::Session::OnzTreeClosed( int argExitCode ) {
-    qDebug() << "z-Tree running on port" << zTreePort << "closed with exit code" << argExitCode;
-    emit SessionFinished( this );
+void lc::Session::OnzTreeClosed(int argExitCode) {
+  qDebug() << "z-Tree running on port" << zTreePort << "closed with exit code"
+           << argExitCode;
+  emit SessionFinished(this);
 }
 
 void lc::Session::RenameWindow() {
-    // Example: wmctrl -r <window name> -T <new name>
+  // Example: wmctrl -r <window name> -T <new name>
 
-    QStringList arguments;
-    arguments << "-r" << "zTree - Untitled Treatment 1" << "-T" << QString{ "zTree on port " + QString::number( zTreePort ) };
+  QStringList arguments;
+  arguments << "-r"
+            << "zTree - Untitled Treatment 1"
+            << "-T" << QString{"zTree on port " + QString::number(zTreePort)};
 
-    // Start the process
-    QProcess renameZTreeWindowProcess;
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    renameZTreeWindowProcess.setProcessEnvironment( env );
-    renameZTreeWindowProcess.startDetached( settings->wmctrlCmd, arguments );
+  // Start the process
+  QProcess renameZTreeWindowProcess;
+  QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+  renameZTreeWindowProcess.setProcessEnvironment(env);
+  renameZTreeWindowProcess.startDetached(settings->wmctrlCmd, arguments);
 
-    qDebug() << "Renamed window";
+  qDebug() << "Renamed window";
 
-    // emit session_started();
+  // emit session_started();
 }

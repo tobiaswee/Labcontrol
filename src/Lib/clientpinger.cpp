@@ -19,45 +19,48 @@
 
 #include "clientpinger.h"
 
-lc::ClientPinger::ClientPinger( const QString &argIP,
-                                const QString &argPingCommand, QObject *argParent ) :
-    QObject{ argParent },
-    // Arguments: -c 1 (send 1 ECHO_REQUEST packet) -w 1 (timeout after 1 second) -q (quiet output)
-    pingArguments{ QStringList{} << "-c" << "1" << "-w" << "1" << "-q" << argIP },
-    pingCommand{ argPingCommand },
-    pingProcess{ new QProcess{ this } },
-    state{ state_t::UNINITIALIZED }
-{
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    pingProcess->setProcessEnvironment(env);
-    // emit ping_string(new QString(*ping_command + " " + ping_arguments->join(" ")));
+lc::ClientPinger::ClientPinger(const QString &argIP,
+                               const QString &argPingCommand,
+                               QObject *argParent)
+    : QObject{argParent},
+      // Arguments: -c 1 (send 1 ECHO_REQUEST packet) -w 1 (timeout after 1
+      // second) -q (quiet output)
+      pingArguments{QStringList{} << "-c"
+                                  << "1"
+                                  << "-w"
+                                  << "1"
+                                  << "-q" << argIP},
+      pingCommand{argPingCommand},
+      pingProcess{new QProcess{this}}, state{state_t::UNINITIALIZED} {
+  QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+  pingProcess->setProcessEnvironment(env);
+  // emit ping_string(new QString(*ping_command + " " + ping_arguments->join("
+  // ")));
 }
 
-lc::ClientPinger::~ClientPinger() {
-    delete pingProcess;
-}
+lc::ClientPinger::~ClientPinger() { delete pingProcess; }
 
 void lc::ClientPinger::doPing() {
-    // Initialize the new state to be queried
-    state_t newState = state_t::UNINITIALIZED;
+  // Initialize the new state to be queried
+  state_t newState = state_t::UNINITIALIZED;
 
-    // Query the current state of the client
-    pingProcess->start( pingCommand, pingArguments );
-    if ( !pingProcess->waitForFinished( 2500 ) )
-        newState = state_t::ERROR;
-    else {
-        if ( pingProcess->exitCode() == 0 )
-            newState = state_t::RESPONDING;
-        else
-            newState = state_t::NOT_RESPONDING;
-    }
+  // Query the current state of the client
+  pingProcess->start(pingCommand, pingArguments);
+  if (!pingProcess->waitForFinished(2500))
+    newState = state_t::ERROR;
+  else {
+    if (pingProcess->exitCode() == 0)
+      newState = state_t::RESPONDING;
+    else
+      newState = state_t::NOT_RESPONDING;
+  }
 
-    if ( newState != state ) {
-        state = newState;
-        emit PingFinished( newState );
-    }
+  if (newState != state) {
+    state = newState;
+    emit PingFinished(newState);
+  }
 }
 
 void lc::ClientPinger::setStateToZLEAF_RUNNING() {
-    state = state_t::ZLEAF_RUNNING;
+  state = state_t::ZLEAF_RUNNING;
 }

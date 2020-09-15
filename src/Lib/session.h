@@ -32,52 +32,63 @@ class Client;
 
 //! A class containing an entire session.
 /*!
-  This class represents an entire session with its zTree instance and the corresponding lcReceiptsHandler instance.
+  This class represents an entire session with its zTree instance and the
+  corresponding lcReceiptsHandler instance.
 */
 class Session : public QObject {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    const int zTreePort = 7000;                             //! The port this session's zTree instance is running on
+  const int zTreePort =
+      7000; //! The port this session's zTree instance is running on
 
-    Session( QVector< Client* > &&argAssocClients, const QString &argZTreeDataTargetPath,
-             const quint16 argZTreePort, const QString &argZTreeVersionPath,
-             bool argPrintReceiptsForLocalClients,
-             const QString &argAnonymousReceiptsPlaceholder,
-             const QString &argLatexHeaderName, QObject *argParent = nullptr );
-    ~Session();
+  Session(QVector<Client *> &&argAssocClients,
+          const QString &argZTreeDataTargetPath, const quint16 argZTreePort,
+          const QString &argZTreeVersionPath,
+          bool argPrintReceiptsForLocalClients,
+          const QString &argAnonymousReceiptsPlaceholder,
+          const QString &argLatexHeaderName, QObject *argParent = nullptr);
+  ~Session();
 
-    /*! Returns the data item with the given index
-     *
-     * @param argIndex      The index of the desired item
-     */
-    QVariant GetDataItem( int argIndex );
+  /*! Returns the data item with the given index
+   *
+   * @param argIndex      The index of the desired item
+   */
+  QVariant GetDataItem(int argIndex);
 
-    //! This gets thrown as an exception if the chosen data target path could not be created.
-    class lcDataTargetPathCreationFailed {};
+  //! This gets thrown as an exception if the chosen data target path could not
+  //! be created.
+  class lcDataTargetPathCreationFailed {};
 
 signals:
-    void SessionFinished( Session *argSession );
+  void SessionFinished(Session *argSession);
 
 private slots:
-    /*! Starts the session by creating instances of the relevant classes
-     */
-    void InitializeClasses();
-    void OnzTreeClosed( int argExitCode );
-    /*! Changes zTree's window title to contain its port number to make zTree windows distinguishable
-     */
-    void RenameWindow();
+  /*! Starts the session by creating instances of the relevant classes
+   */
+  void InitializeClasses();
+  void OnzTreeClosed(int argExitCode);
+  /*! Changes zTree's window title to contain its port number to make zTree
+   * windows distinguishable
+   */
+  void RenameWindow();
 
 private:
-    const QString anonymousReceiptsPlaceholder;                 //! Placeholder which shall be inserted for participant names if anonymous printing is desired (QString != "")
-    const QVector< Client* > assocClients;
-    const QString latexHeaderName;                              //! The name of the chosen LaTeX header
-    const bool printReceiptsForLocalClients = true;             //! True if receipts shall be printed for local clients
-    QString zTreeDataTargetPath;                                //! The path were the data of this zTree instance's session will be saved
-    ZTree *zTreeInstance= nullptr;                              //! The session's zTree instance
-    const QString zTreeVersionPath;                             //! The path to the version of zTree used by this session's instance
+  const QString
+      anonymousReceiptsPlaceholder; //! Placeholder which shall be inserted for
+                                    //! participant names if anonymous printing
+                                    //! is desired (QString != "")
+  const QVector<Client *> assocClients;
+  const QString latexHeaderName; //! The name of the chosen LaTeX header
+  const bool printReceiptsForLocalClients =
+      true; //! True if receipts shall be printed for local clients
+  QString zTreeDataTargetPath;    //! The path were the data of this zTree
+                                  //! instance's session will be saved
+  ZTree *zTreeInstance = nullptr; //! The session's zTree instance
+  const QString zTreeVersionPath; //! The path to the version of zTree used by
+                                  //! this session's instance
 };
 
-}
+} // namespace lc
 
 #endif // SESSION_H

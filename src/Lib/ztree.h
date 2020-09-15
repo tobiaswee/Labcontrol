@@ -30,23 +30,23 @@ namespace lc {
 
 //! A class to contain running zTree instances.
 /*!
-  This class is element of every session and is used to handle all zTree related data.
+  This class is element of every session and is used to handle all zTree related
+  data.
 */
-class ZTree: public QObject {
-    Q_OBJECT
+class ZTree : public QObject {
+  Q_OBJECT
 
 public:
-    ZTree( const QString &argZTreeDataTargetPath,
-           const int &argZTreePort, const QString &argZTreeVersionPath,
-           QObject *argParent = nullptr );
+  ZTree(const QString &argZTreeDataTargetPath, const int &argZTreePort,
+        const QString &argZTreeVersionPath, QObject *argParent = nullptr);
 
 signals:
-    void ZTreeClosed( int argExitCode );
+  void ZTreeClosed(int argExitCode);
 
 private:
-    QProcess zTreeInstance;
+  QProcess zTreeInstance;
 };
 
-}
+} // namespace lc
 
 #endif // ZTREE_H

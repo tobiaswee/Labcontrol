@@ -21,16 +21,16 @@
 
 #include <QApplication>
 
-#include "mainwindow.h"
 #include "Lib/settings.h"
+#include "mainwindow.h"
 
-std::unique_ptr< lc::Settings > settings;
+std::unique_ptr<lc::Settings> settings;
 
-int main( int argc, char *argv[] ) {
-    QApplication a{ argc, argv };
-    settings.reset( new lc::Settings{ QSettings{ "Labcontrol", "Labcontrol" } } );
-    lc::MainWindow w;
-    w.show();
-    
-    return a.exec();
+int main(int argc, char *argv[]) {
+  QApplication a{argc, argv};
+  settings.reset(new lc::Settings{QSettings{"Labcontrol", "Labcontrol"}});
+  lc::MainWindow w;
+  w.show();
+
+  return a.exec();
 }

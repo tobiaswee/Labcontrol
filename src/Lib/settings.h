@@ -29,101 +29,104 @@
 namespace lc {
 
 class Settings : public QObject {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    Settings() = delete;
-    explicit Settings( const QSettings &argSettings, QObject *argParent = nullptr );
-    Settings( const Settings &argSettings ) = delete;
-    Settings& operator=( const Settings &argSettings ) = delete;
-    Settings( Settings &&argSettings ) = delete;
-    Settings& operator=( Settings &&argSettings ) = delete;
-    ~Settings();
+  Settings() = delete;
+  explicit Settings(const QSettings &argSettings, QObject *argParent = nullptr);
+  Settings(const Settings &argSettings) = delete;
+  Settings &operator=(const Settings &argSettings) = delete;
+  Settings(Settings &&argSettings) = delete;
+  Settings &operator=(Settings &&argSettings) = delete;
+  ~Settings();
 
-    int GetChosenZTreePort() const { return chosenzTreePort; }
-    QVector< Client* > &GetClients() { return clients; }
-    QString GetLocalzLeafName() const;
-    void SetChosenZTreePort( const int argPort );
-    void SetLocalzLeafName( const QString &argLocalzLeafName );
+  int GetChosenZTreePort() const { return chosenzTreePort; }
+  QVector<Client *> &GetClients() { return clients; }
+  QString GetLocalzLeafName() const;
+  void SetChosenZTreePort(const int argPort);
+  void SetLocalzLeafName(const QString &argLocalzLeafName);
 
-    const int defaultReceiptIndex = 0;
-    const QString browserCmd;
-    const QString clientBrowserCmd;
-    const QString clientChromiumCmd;
-    const QString dvipsCmd;
-    const QString fileMngr;
-    const QString killallCmd;
-    const QString latexCmd;
-    const QString lcDataDir;
-    const QString localUserName;
-    QString localzLeafSize;
-    void SetLocalzLeafSize( QString arg);
-    QString GetLocalzLeafSize() const { return localzLeafSize; }
-    const QString lprCmd;
-    const QString netstatCmd;
-    const QString netwBrdAddr;
-    const QString orseeUrl;
-    const QString pingCmd;
-    const QString postscriptViewer;
-    const QString ps2pdfCmd;
-    const QString pkeyPathRoot;
-    const QString pkeyPathUser;
-    const QString rmCmd;
-    const QString scpCmd;
-    const QString serverIP;
-    const QString sshCmd;
-    const QString tasksetCmd;
-    const QString termEmulCmd;
-    const QString userNameOnClients;
-    const QString vncViewer;
-    const QString wakeonlanCmd;
-    const QString webcamDisplayCmd;
-    const QStringList webcams;
-    const QStringList webcams_names;
-    const QString wineCmd;
-    const QString wmctrlCmd;
-    const QString xsetCmd;
-    const QString zTreeInstDir;
-    const QString restartCrashedSessionScript;
-    const QStringList adminUsers;
-    const QStringList installedLaTeXHeaders;
-    const QStringList installedZTreeVersions;
-    const quint16 clientHelpNotificationServerPort = 0;
+  const int defaultReceiptIndex = 0;
+  const QString browserCmd;
+  const QString clientBrowserCmd;
+  const QString clientChromiumCmd;
+  const QString dvipsCmd;
+  const QString fileMngr;
+  const QString killallCmd;
+  const QString latexCmd;
+  const QString lcDataDir;
+  const QString localUserName;
+  QString localzLeafSize;
+  void SetLocalzLeafSize(QString arg);
+  QString GetLocalzLeafSize() const { return localzLeafSize; }
+  const QString lprCmd;
+  const QString netstatCmd;
+  const QString netwBrdAddr;
+  const QString orseeUrl;
+  const QString pingCmd;
+  const QString postscriptViewer;
+  const QString ps2pdfCmd;
+  const QString pkeyPathRoot;
+  const QString pkeyPathUser;
+  const QString rmCmd;
+  const QString scpCmd;
+  const QString serverIP;
+  const QString sshCmd;
+  const QString tasksetCmd;
+  const QString termEmulCmd;
+  const QString userNameOnClients;
+  const QString vncViewer;
+  const QString wakeonlanCmd;
+  const QString webcamDisplayCmd;
+  const QStringList webcams;
+  const QStringList webcams_names;
+  const QString wineCmd;
+  const QString wmctrlCmd;
+  const QString xsetCmd;
+  const QString zTreeInstDir;
+  const QString restartCrashedSessionScript;
+  const QStringList adminUsers;
+  const QStringList installedLaTeXHeaders;
+  const QStringList installedZTreeVersions;
+  const quint16 clientHelpNotificationServerPort = 0;
 
 private:
-    static bool CheckPathAndComplain( const QString &argPath, const QString &argVariableName,
-                                      const QString &argMessage );
-    static QVector< Client* > CreateClients( const QSettings &argSettings,
-                                             const QString &argPingCmd );
-    static QMap< QString, Client* > CreateClIPsToClMap( const QVector< Client* > &argClients );
-    QStringList DetectInstalledLaTeXHeaders() const;
-    QStringList DetectInstalledzTreeVersions() const;
-    static QStringList GetAdminUsers( const QSettings &argSettings );
-    static quint16 GetClientHelpNotificationServerPort( const QSettings &argSettings );
-    static int GetDefaultReceiptIndex( const QSettings &argSettings );
-    static int GetInitialPort( const QSettings &argSettings );
-    static QString GetLocalUserName();
-    static QString ReadSettingsItem( const QString &argVariableName,
-                                     const QString &argMessage,
-                                     const QSettings &argSettings,
-                                     bool argItemIsFile );
+  static bool CheckPathAndComplain(const QString &argPath,
+                                   const QString &argVariableName,
+                                   const QString &argMessage);
+  static QVector<Client *> CreateClients(const QSettings &argSettings,
+                                         const QString &argPingCmd);
+  static QMap<QString, Client *>
+  CreateClIPsToClMap(const QVector<Client *> &argClients);
+  QStringList DetectInstalledLaTeXHeaders() const;
+  QStringList DetectInstalledzTreeVersions() const;
+  static QStringList GetAdminUsers(const QSettings &argSettings);
+  static quint16
+  GetClientHelpNotificationServerPort(const QSettings &argSettings);
+  static int GetDefaultReceiptIndex(const QSettings &argSettings);
+  static int GetInitialPort(const QSettings &argSettings);
+  static QString GetLocalUserName();
+  static QString ReadSettingsItem(const QString &argVariableName,
+                                  const QString &argMessage,
+                                  const QSettings &argSettings,
+                                  bool argItemIsFile);
 
-    int chosenzTreePort = 0;
-    QVector< Client* > clients;
-    QString localzLeafName;
+  int chosenzTreePort = 0;
+  QVector<Client *> clients;
+  QString localzLeafName;
 
 public:
-    const QMap< QString, Client* > clIPsToClMap;
+  const QMap<QString, Client *> clIPsToClMap;
 };
 
-}
+} // namespace lc
 
 inline QString lc::Settings::GetLocalzLeafName() const {
-    return localzLeafName;
+  return localzLeafName;
 }
 
-inline void lc::Settings::SetLocalzLeafName( const QString &argLocalzLeafName ) {
-    localzLeafName = argLocalzLeafName;
+inline void lc::Settings::SetLocalzLeafName(const QString &argLocalzLeafName) {
+  localzLeafName = argLocalzLeafName;
 }
 
 #endif // SETTINGS_H

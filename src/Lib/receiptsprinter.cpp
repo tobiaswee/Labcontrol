@@ -22,20 +22,13 @@
 #include "receiptsprinter.h"
 #include "settings.h"
 
-extern std::unique_ptr< lc::Settings > settings;
+extern std::unique_ptr<lc::Settings> settings;
 
-lc::ReceiptsPrinter::ReceiptsPrinter( const QString &argDateString,
-                                      const QString &argWorkpath,
-                                      QObject *argParent ) :
-    QThread{ argParent },
-    dateString{ argDateString },
-    dvipsCmd{ settings->dvipsCmd },
-    latexCmd{ settings->latexCmd },
-    lprCmd{ settings->lprCmd },
-    postscriptViewer{ settings->postscriptViewer },
-    ps2pdfCmd{ settings->ps2pdfCmd },
-    rmCmd{ settings->rmCmd },
-    vncViewer{ settings->vncViewer },
-    workpath{ argWorkpath }
-{
-}
+lc::ReceiptsPrinter::ReceiptsPrinter(const QString &argDateString,
+                                     const QString &argWorkpath,
+                                     QObject *argParent)
+    : QThread{argParent}, dateString{argDateString},
+      dvipsCmd{settings->dvipsCmd}, latexCmd{settings->latexCmd},
+      lprCmd{settings->lprCmd}, postscriptViewer{settings->postscriptViewer},
+      ps2pdfCmd{settings->ps2pdfCmd}, rmCmd{settings->rmCmd},
+      vncViewer{settings->vncViewer}, workpath{argWorkpath} {}

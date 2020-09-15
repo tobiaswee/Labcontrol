@@ -23,21 +23,23 @@
 #include <QMetaType>
 
 //! Opens a terminal for the client
-enum class state_t : unsigned short int  {
-    //! The client is booting but not yet responding
-    BOOTING,
-    //! An error occurred determining the client's state
-    ERROR,
-    //! The client is not responding to pings
-    NOT_RESPONDING,
-    //! The client is shutting down but not yet stopped responding
-    SHUTTING_DOWN,
-    //! The client's state is not yet defined (should only occur directly after client creation)
-    UNINITIALIZED,
-    //! The client is responding to pings
-    RESPONDING,
-    //! The client is running a zLeaf
-    ZLEAF_RUNNING};
-Q_DECLARE_METATYPE( state_t )
+enum class state_t : unsigned short int {
+  //! The client is booting but not yet responding
+  BOOTING,
+  //! An error occurred determining the client's state
+  ERROR,
+  //! The client is not responding to pings
+  NOT_RESPONDING,
+  //! The client is shutting down but not yet stopped responding
+  SHUTTING_DOWN,
+  //! The client's state is not yet defined (should only occur directly after
+  //! client creation)
+  UNINITIALIZED,
+  //! The client is responding to pings
+  RESPONDING,
+  //! The client is running a zLeaf
+  ZLEAF_RUNNING
+};
+Q_DECLARE_METATYPE(state_t)
 
 #endif // GLOBAL_H

@@ -19,36 +19,40 @@
 
 #include "netstatagent.h"
 
-lc::NetstatAgent::NetstatAgent( const QString &argNetstatCommand, QObject *argParent ) :
-    QObject{ argParent },
-    extractionRegexp{ "\\d+\\.\\d+\\.\\d+\\.\\d+" },
-    netstatArguments{ QStringList{} << "-anp" << "--tcp" },
-    netstatCommand{ argNetstatCommand },
-    netstatQueryProcess{ this },
-    searchRegexp{ "\\W(ESTABLISHED|VERBUNDEN)( +)(\\d+)(/ztree.exe)\\W", QRegularExpression::CaseInsensitiveOption }
-{
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    netstatQueryProcess.setProcessEnvironment( env );
+lc::NetstatAgent::NetstatAgent(const QString &argNetstatCommand,
+                               QObject *argParent)
+    : QObject{argParent}, extractionRegexp{"\\d+\\.\\d+\\.\\d+\\.\\d+"},
+      netstatArguments{QStringList{} << "-anp"
+                                     << "--tcp"},
+      netstatCommand{argNetstatCommand}, netstatQueryProcess{this},
+      searchRegexp{"\\W(ESTABLISHED|VERBUNDEN)( +)(\\d+)(/ztree.exe)\\W",
+                   QRegularExpression::CaseInsensitiveOption} {
+  QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+  netstatQueryProcess.setProcessEnvironment(env);
 }
 
 void lc::NetstatAgent::QueryClientConnections() {
-    netstatQueryProcess.start( netstatCommand, netstatArguments );
-    if ( !netstatQueryProcess.waitForFinished( 400 ) ) {
-        emit QueryFinished( nullptr );
-    } else {
-        // Get all 'netstat_query_process' standard output and store it temporarily in 'temp_strings'
-        QByteArray netstatQueryProcessOutputByteArray = netstatQueryProcess.readAllStandardOutput();
-        QString netstatQueryProcessOutputString( netstatQueryProcessOutputByteArray );
-        QStringList tempStrings = netstatQueryProcessOutputString.split( '\n', QString::SkipEmptyParts );
+  netstatQueryProcess.start(netstatCommand, netstatArguments);
+  if (!netstatQueryProcess.waitForFinished(400)) {
+    emit QueryFinished(nullptr);
+  } else {
+    // Get all 'netstat_query_process' standard output and store it temporarily
+    // in 'temp_strings'
+    QByteArray netstatQueryProcessOutputByteArray =
+        netstatQueryProcess.readAllStandardOutput();
+    QString netstatQueryProcessOutputString(netstatQueryProcessOutputByteArray);
+    QStringList tempStrings =
+        netstatQueryProcessOutputString.split('\n', QString::SkipEmptyParts);
 
-        QStringList *netstatQueryProcessOutput = new QStringList;
-        for ( auto s: tempStrings ) {
-            if ( s.contains( searchRegexp ) ) {
-                QRegularExpressionMatch match = extractionRegexp.match( s, s.indexOf( ':', 0, Qt::CaseInsensitive ) );
-                netstatQueryProcessOutput->append( match.captured() );
-            }
-        }
-
-        emit QueryFinished(netstatQueryProcessOutput);
+    QStringList *netstatQueryProcessOutput = new QStringList;
+    for (auto s : tempStrings) {
+      if (s.contains(searchRegexp)) {
+        QRegularExpressionMatch match =
+            extractionRegexp.match(s, s.indexOf(':', 0, Qt::CaseInsensitive));
+        netstatQueryProcessOutput->append(match.captured());
+      }
     }
+
+    emit QueryFinished(netstatQueryProcessOutput);
+  }
 }

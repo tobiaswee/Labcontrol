@@ -22,32 +22,32 @@
 
 #include "src/Lib/client.h"
 
-#include <QObject>
 #include <QHostAddress>
 #include <QMessageBox>
+#include <QObject>
 #include <QtNetwork>
 
 namespace lc {
 
 class ClientHelpNotificationServer : public QObject {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    explicit ClientHelpNotificationServer( QObject *argParent = nullptr );
+  explicit ClientHelpNotificationServer(QObject *argParent = nullptr);
 
 signals:
 
 public slots:
 
 private:
-    QTcpServer *helpMessageServer = nullptr;
-    const QHostAddress hostAddress;
-    QNetworkSession *networkSession = nullptr;
+  QTcpServer *helpMessageServer = nullptr;
+  const QHostAddress hostAddress;
+  QNetworkSession *networkSession = nullptr;
 
 private slots:
-    void OpenSession();
-    void SendReply();
+  void OpenSession();
+  void SendReply();
 };
 
-}
+} // namespace lc
 
 #endif // CLIENTHELPNOTIFICATIONSERVER_H
