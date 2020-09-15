@@ -22,6 +22,8 @@
 #include "session.h"
 #include "settings.h"
 
+#include <QDir>
+
 extern std::unique_ptr<lc::Settings> settings;
 
 lc::Session::Session(QVector<Client *> &&argAssocClients,

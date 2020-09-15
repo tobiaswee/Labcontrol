@@ -20,29 +20,31 @@
 #ifndef ZTREE_H
 #define ZTREE_H
 
-#include <QDir>
-#include <QPlainTextEdit>
-#include <QProcess>
+#include <QObject>
+
+class QProcess;
 
 namespace lc {
 
-//! A class to contain running zTree instances.
 /*!
-  This class is element of every session and is used to handle all zTree related
-  data.
-*/
+ * A class to contain running z-Tree instances.
+ *
+ * This class is element of every Session instance and is used to handle all
+ * z-Tree related data as well as the execution of z-Tree itself.
+ */
 class ZTree : public QObject {
   Q_OBJECT
 
 public:
   ZTree(const QString &argZTreeDataTargetPath, const int &argZTreePort,
-        const QString &argZTreeVersionPath, QObject *argParent = nullptr);
+        const QString &argZTreeVersion, QObject *argParent = nullptr);
+  ~ZTree() override;
 
 signals:
   void ZTreeClosed(int argExitCode);
 
 private:
-  QProcess zTreeInstance;
+  QProcess *const zTreeInstance = nullptr;
 };
 
 } // namespace lc
