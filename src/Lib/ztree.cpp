@@ -27,7 +27,7 @@
 extern std::unique_ptr<lc::Settings> settings;
 
 /*!
- * Setup and start a new z-Tree instance with the given parameters
+ * \brief Setup and start a new z-Tree instance with the given parameters
  *
  * \param[in] argZTreeDataTargetPath The path where the new z-Tree instance
  * shall write its output to

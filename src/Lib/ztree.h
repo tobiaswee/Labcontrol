@@ -27,7 +27,7 @@ class QProcess;
 namespace lc {
 
 /*!
- * A class to contain running z-Tree instances.
+ * \brief A class to contain running z-Tree instances.
  *
  * This class is element of every Session instance and is used to handle all
  * z-Tree related data as well as the execution of z-Tree itself.
@@ -41,6 +41,11 @@ public:
   ~ZTree() override;
 
 signals:
+  /*!
+   * \brief This is emitted if the represented z-Tree instance got closed
+   *
+   * \param argExitCode The exit code with which the z-Tree instance closed
+   */
   void ZTreeClosed(int argExitCode);
 
 private:
