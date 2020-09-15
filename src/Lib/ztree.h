@@ -24,8 +24,6 @@
 #include <QPlainTextEdit>
 #include <QProcess>
 
-#include "global.h"
-
 namespace lc {
 
 //! A class to contain running zTree instances.

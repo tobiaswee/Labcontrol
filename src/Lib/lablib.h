@@ -39,7 +39,6 @@
 
 #include "client.h"
 #include "clienthelpnotificationserver.h"
-#include "global.h"
 #include "netstatagent.h"
 #include "session.h"
 #include "sessionsmodel.h"
