@@ -19,36 +19,39 @@
 
 #include "clientpinger.h"
 
+/*!
+ * \brief Construct a new ClientPinger instance
+ *
+ * \param[in] argIP The IP address of the client to be pinged
+ * \param[in] argPingCommand The path to the ping command which shall be used
+ * \param[in] argParent The instance's parent QObject
+ */
 lc::ClientPinger::ClientPinger(const QString &argIP,
                                const QString &argPingCommand,
-                               QObject *argParent)
+                               QObject *const argParent)
     : QObject{argParent},
       // Arguments: -c 1 (send 1 ECHO_REQUEST packet) -w 1 (timeout after 1
       // second) -q (quiet output)
-      pingArguments{QStringList{} << "-c"
-                                  << "1"
-                                  << "-w"
-                                  << "1"
-                                  << "-q" << argIP},
-      pingCommand{argPingCommand},
-      pingProcess{new QProcess{this}}, state{Client::State::UNINITIALIZED} {
+      pingArguments{"-c", "1", "-w", "1", "-q", argIP},
+      pingCommand{argPingCommand}, pingProcess{new QProcess{this}} {
   QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
   pingProcess->setProcessEnvironment(env);
-  // emit ping_string(new QString(*ping_command + " " + ping_arguments->join("
-  // ")));
 }
 
-lc::ClientPinger::~ClientPinger() { delete pingProcess; }
+//! Destroy the ClientPinger instance
+lc::ClientPinger::~ClientPinger() { pingProcess->deleteLater(); }
 
+/*!
+ * \brief Execute a ping and emit ClientStateChanged if the recognized state
+ * changes
+ */
 void lc::ClientPinger::doPing() {
-  // Initialize the new state to be queried
-  Client::State newState = Client::State::UNINITIALIZED;
+  // Default-initialize the new state to be queried
+  Client::State newState = Client::State::ERROR;
 
   // Query the current state of the client
   pingProcess->start(pingCommand, pingArguments);
-  if (!pingProcess->waitForFinished(2500))
-    newState = Client::State::ERROR;
-  else {
+  if (pingProcess->waitForFinished(2500)) {
     if (pingProcess->exitCode() == 0)
       newState = Client::State::RESPONDING;
     else
@@ -57,10 +60,15 @@ void lc::ClientPinger::doPing() {
 
   if (newState != state) {
     state = newState;
-    emit PingFinished(newState);
+    emit ClientStateChanged(newState);
   }
 }
 
-void lc::ClientPinger::setStateToZLEAF_RUNNING() {
+/*!
+ * \brief Retrieve the information that a z-Leaf is running
+ *
+ * This is needed since otherwise restarting will not result in status updates.
+ */
+void lc::ClientPinger::setStateToZLEAF_RUNNING() noexcept {
   state = Client::State::ZLEAF_RUNNING;
 }

@@ -20,56 +20,48 @@
 #ifndef CLIENTPINGER_H
 #define CLIENTPINGER_H
 
-#include <QObject>
-#include <QProcess>
-#include <QThread>
-
 #include "client.h"
+
+class QProcess;
 
 namespace lc {
 
-//! The ClientPinger class is used to do repetitive pings of the owning Client
-//! instance's client.
 /*!
-  This class is just used for executing repetitive pings.
-*/
+ * \brief Repetitively ping the client represented by the owning Client instance
+ */
 class ClientPinger : public QObject {
   Q_OBJECT
 
 public:
-  //! ClientPinger's constructor
-  /*!
-    @param argIP              A reference to the owning Client instance's IP
-    address
-    @param argPingCommand     The path were the command to be executed for pings
-    resides
-    @param argParent          The ClientPinger's parent owning this instance of
-    it
-  */
   explicit ClientPinger(const QString &argIP, const QString &argPingCommand,
                         QObject *argParent = nullptr);
-  //! ClientPinger's destructor
-  ~ClientPinger();
+  ~ClientPinger() override;
 
 public slots:
-  //! This slot executes a ping when called.
   void doPing();
-  //! Retrieves the information, that zLeaf is running (otherwise restarting
-  //! will not result in status updates)
-  void setStateToZLEAF_RUNNING();
+  void setStateToZLEAF_RUNNING() noexcept;
 
 private:
-  const QStringList pingArguments; //! The arguments for the 'ping' command
-  const QString pingCommand;       //! The 'ping' command itself
-  QProcess *pingProcess; //! The 'ping' process which will be executed on every
-                         //! call of 'do_ping()'
-  Client::State state;   //! Stores the current state of the client
+  //! The arguments passed to the "ping" command
+  const QStringList pingArguments;
+  //! The utilized "ping" command itself
+  const QString pingCommand;
+  //! The "ping" process which will be executed on every call of "doPing()"
+  QProcess *const pingProcess = nullptr;
+  //! Stores the currently assumed state of the client
+  Client::State state = Client::State::UNINITIALIZED;
 
 signals:
-  //! This signal was just implemented for testing purposes
-  //! This signal is emitted if the ping finished and the state of the client
-  //! changed
-  void PingFinished(Client::State state);
+  /*!
+   * \brief Signal which is being emitted if a client's state seems to have
+   * changed
+   *
+   * This is emitted if a ping triggered by "doPing()" finished and the detected
+   * change of the represented client seems to have changed.
+   *
+   * \param state The new state the client seems to have
+   */
+  void ClientStateChanged(Client::State state);
 };
 
 } // namespace lc

@@ -42,7 +42,7 @@ lc::Client::Client(const QString &argIP, const QString &argMAC,
     pinger->moveToThread(&pingerThread);
     connect(&pingerThread, &QThread::finished, pinger, &QObject::deleteLater);
     connect(this, &Client::PingWanted, pinger, &ClientPinger::doPing);
-    connect(pinger, &ClientPinger::PingFinished, this,
+    connect(pinger, &ClientPinger::ClientStateChanged, this,
             &Client::GotStatusChanged);
     pingerThread.start();
 
