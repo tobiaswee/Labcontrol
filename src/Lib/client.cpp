@@ -36,8 +36,6 @@ lc::Client::Client(const QString &argIP, const QString &argMAC,
                    unsigned short int argYPosition, const QString &argPingCmd)
     : ip{argIP}, mac{argMAC}, name{argName}, xPosition{argXPosition},
       yPosition{argYPosition}, protectedCycles{0} {
-  qRegisterMetaType<state_t>("STATE");
-
   if (!argPingCmd.isEmpty()) {
     pinger = new ClientPinger{ip, argPingCmd};
     pinger->moveToThread(&pingerThread);
