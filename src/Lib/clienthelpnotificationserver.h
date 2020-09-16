@@ -20,27 +20,26 @@
 #ifndef CLIENTHELPNOTIFICATIONSERVER_H
 #define CLIENTHELPNOTIFICATIONSERVER_H
 
-#include "src/Lib/client.h"
-
-#include <QHostAddress>
-#include <QMessageBox>
 #include <QObject>
-#include <QtNetwork>
+
+class QNetworkSession;
+class QTcpServer;
 
 namespace lc {
 
+/*!
+ * \brief A server listing for connections from clients which will be
+ * interpreted as help requests
+ */
 class ClientHelpNotificationServer : public QObject {
   Q_OBJECT
+
 public:
   explicit ClientHelpNotificationServer(QObject *argParent = nullptr);
 
-signals:
-
-public slots:
-
 private:
   QTcpServer *helpMessageServer = nullptr;
-  const QHostAddress hostAddress;
+  const QString hostAddress;
   QNetworkSession *networkSession = nullptr;
 
 private slots:

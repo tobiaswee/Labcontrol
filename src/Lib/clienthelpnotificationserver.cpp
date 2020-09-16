@@ -17,13 +17,21 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <memory>
-
 #include "clienthelpnotificationserver.h"
 #include "settings.h"
 
+#include <QNetworkConfigurationManager>
+#include <QNetworkSession>
+#include <QTcpServer>
+#include <QTcpSocket>
+
 extern std::unique_ptr<lc::Settings> settings;
 
+/*!
+ * \brief Create a new instance and start listening as soon as possible
+ *
+ * \param argParent The instance's parent QObject
+ */
 lc::ClientHelpNotificationServer::ClientHelpNotificationServer(
     QObject *argParent)
     : QObject{argParent}, hostAddress{settings->serverIP} {
@@ -31,11 +39,12 @@ lc::ClientHelpNotificationServer::ClientHelpNotificationServer(
   if (manager.capabilities() &
       QNetworkConfigurationManager::NetworkSessionRequired) {
     // Get saved network configuration
-    QSettings settings{QSettings::UserScope, QLatin1String{"QtProject"}};
-    settings.beginGroup(QLatin1String{"QtNetwork"});
+    QSettings qSettings{QSettings::UserScope, QLatin1String{"QtProject"}};
+    qSettings.beginGroup(QLatin1String{"QtNetwork"});
     const QString id =
-        settings.value(QLatin1String{"DefaultNetworkConfiguration"}).toString();
-    settings.endGroup();
+        qSettings.value(QLatin1String{"DefaultNetworkConfiguration"})
+            .toString();
+    qSettings.endGroup();
 
     // If the saved network configuration is not currently discovered use the
     // system default
@@ -56,6 +65,10 @@ lc::ClientHelpNotificationServer::ClientHelpNotificationServer(
           &ClientHelpNotificationServer::SendReply);
 }
 
+/*!
+ * \brief Open a new network session and start listening for incoming
+ * connections
+ */
 void lc::ClientHelpNotificationServer::OpenSession() {
   // Save the used configuration
   if (networkSession) {
@@ -69,14 +82,14 @@ void lc::ClientHelpNotificationServer::OpenSession() {
       id = config.identifier();
     }
 
-    QSettings settings(QSettings::UserScope, QLatin1String{"QtProject"});
-    settings.beginGroup(QLatin1String{"QtNetwork"});
-    settings.setValue(QLatin1String{"DefaultNetworkConfiguration"}, id);
-    settings.endGroup();
+    QSettings qSettings(QSettings::UserScope, QLatin1String{"QtProject"});
+    qSettings.beginGroup(QLatin1String{"QtNetwork"});
+    qSettings.setValue(QLatin1String{"DefaultNetworkConfiguration"}, id);
+    qSettings.endGroup();
   }
 
   helpMessageServer = new QTcpServer{this};
-  if (!helpMessageServer->listen(hostAddress,
+  if (!helpMessageServer->listen(QHostAddress{hostAddress},
                                  settings->clientHelpNotificationServerPort)) {
     QMessageBox messageBox{
         QMessageBox::Critical,
@@ -94,19 +107,17 @@ void lc::ClientHelpNotificationServer::SendReply() {
   QByteArray block;
   QDataStream out{&block, QIODevice::WriteOnly};
   out.setVersion(QDataStream::Qt_5_2);
-  out << (quint16)0;
+  out << static_cast<quint16>(0);
   out << QString{"Help demand retrieved."};
   out.device()->seek(0);
-  out << (quint16)(block.size() - sizeof(quint16));
+  out << static_cast<quint16>(static_cast<unsigned int>(block.size()) -
+                              sizeof(quint16));
 
-  QTcpSocket *clientConnection = helpMessageServer->nextPendingConnection();
-  QString peerAddress = clientConnection->peerAddress().toString();
+  const auto clientConnection = helpMessageServer->nextPendingConnection();
+  const auto peerAddress = clientConnection->peerAddress().toString();
   QString peerName;
-  bool unknownClient = false;
   if (settings->clIPsToClMap.contains(peerAddress)) {
     peerName = settings->clIPsToClMap[peerAddress]->name;
-  } else {
-    unknownClient = true;
   }
 
   connect(clientConnection, &QTcpSocket::disconnected, clientConnection,
@@ -114,7 +125,7 @@ void lc::ClientHelpNotificationServer::SendReply() {
   clientConnection->write(block);
   clientConnection->disconnectFromHost();
 
-  if (unknownClient) {
+  if (peerName.isEmpty()) {
     QMessageBox requestReceivedBox{
         QMessageBox::Information, tr("Unknown client asked for help."),
         tr("An unknown client with IP '%1' asked for help.").arg(peerAddress),
