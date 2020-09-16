@@ -131,7 +131,7 @@ void lc::HelpMessageWindow::OpenedSession() {
  */
 void lc::HelpMessageWindow::ReadHelpReply() {
   QDataStream in{helpMessageSocket};
-  in.setVersion(QDataStream::Qt_5_2);
+  in.setVersion(QDataStream::Qt_5_7);
 
   if (blockSize == 0) {
     if (helpMessageSocket->bytesAvailable() <

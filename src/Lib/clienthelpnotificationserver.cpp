@@ -106,7 +106,7 @@ void lc::ClientHelpNotificationServer::OpenSession() {
 void lc::ClientHelpNotificationServer::SendReply() {
   QByteArray block;
   QDataStream out{&block, QIODevice::WriteOnly};
-  out.setVersion(QDataStream::Qt_5_2);
+  out.setVersion(QDataStream::Qt_5_7);
   out << static_cast<quint16>(0);
   out << QString{"Help demand retrieved."};
   out.device()->seek(0);
