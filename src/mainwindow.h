@@ -83,8 +83,8 @@ private slots:
   void on_PBViewDesktopViewOnly_clicked();
   void on_PBViewDesktopFullControl_clicked();
   void on_RBUseLocalUser_toggled(bool checked);
-  void StartLocalzLeaf(QString argzLeafName, QString argzLeafVersion,
-                       int argzTreePort);
+  void StartLocalzLeaf(const QString &argzLeafName,
+                       const QString &argzLeafVersion, quint16 argzTreePort);
   //! Updates the icons of the QTableView displaying the clients' states
   /*!
    * This function iterates over all valid items of the 'TVClients' and sets

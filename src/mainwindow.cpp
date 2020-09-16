@@ -719,13 +719,13 @@ void lc::MainWindow::on_PBStartLocalzLeaf_clicked() {
   localzLeafStarter->show();
   connect(localzLeafStarter, &LocalzLeafStarter::LocalzLeafRequested, this,
           &MainWindow::StartLocalzLeaf);
-  connect(localzLeafStarter, SIGNAL(LocalzLeafRequested(QString, QString, int)),
-          localzLeafStarter, SLOT(deleteLater()));
+  connect(localzLeafStarter, &LocalzLeafStarter::LocalzLeafRequested,
+          localzLeafStarter, &LocalzLeafStarter::deleteLater);
 }
 
-void lc::MainWindow::StartLocalzLeaf(QString argzLeafName,
-                                     QString argzLeafVersion,
-                                     int argzTreePort) {
+void lc::MainWindow::StartLocalzLeaf(const QString &argzLeafName,
+                                     const QString &argzLeafVersion,
+                                     const quint16 argzTreePort) {
   if (settings->tasksetCmd.isEmpty() || settings->wineCmd.isEmpty() ||
       settings->zTreeInstDir.isEmpty()) {
     return;

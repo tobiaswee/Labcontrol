@@ -17,17 +17,18 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <memory>
-
-#include <QMessageBox>
-
-#include "Lib/settings.h"
 #include "localzleafstarter.h"
+#include "Lib/settings.h"
 #include "ui_localzleafstarter.h"
 
 extern std::unique_ptr<lc::Settings> settings;
 
-lc::LocalzLeafStarter::LocalzLeafStarter(QWidget *argParent)
+/*!
+ * \brief Create a new LocalzLeafStarter instance
+ *
+ * \param argParent The instance's parent QObject
+ */
+lc::LocalzLeafStarter::LocalzLeafStarter(QWidget *const argParent)
     : QWidget{argParent}, ui{new Ui::LocalzLeafStarter} {
   ui->setupUi(this);
 
@@ -45,8 +46,15 @@ lc::LocalzLeafStarter::LocalzLeafStarter(QWidget *argParent)
   }
 }
 
+/*!
+ * \brief Destroy the LocalzLeafStarter instance
+ */
 lc::LocalzLeafStarter::~LocalzLeafStarter() { delete ui; }
 
+/*!
+ * \brief Reacts on a button click and emits the signal carrying the parameters
+ * for a requested local z-Leaf
+ */
 void lc::LocalzLeafStarter::on_PBStartLocalzLeaf_clicked() {
   if (ui->CBzLeafVersion->currentIndex() == 0) {
     QMessageBox::information(
@@ -63,5 +71,5 @@ void lc::LocalzLeafStarter::on_PBStartLocalzLeaf_clicked() {
   // Emit start local z-Leaf request to main window
   emit LocalzLeafRequested(ui->LEzLeafName->text(),
                            ui->CBzLeafVersion->currentText(),
-                           ui->SBzLeafPort->value());
+                           static_cast<quint16>(ui->SBzLeafPort->value()));
 }
