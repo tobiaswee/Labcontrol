@@ -1,0 +1,51 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[german]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{marvosym,pst-all}
+\usepackage{datetime}
+\usepackage{colortbl}
+\catcode`\_=\active \global\let_=\_
+\sloppy
+\begin{document}
+\pagestyle{empty}
+\def\BB{\clearpage
+\rput(0,-10.5mm){
+\psset{linewidth=.3mm}
+\rput(77mm,0){
+\psline(-20mm,0)(81.5mm,0)
+\rput(0,-1mm){\psline[linewidth=2mm](0,0)(81.5mm,0)}
+\rput[t](40.05mm,6mm){\renewcommand{\rmdefault}{ppl}\rmfamily\normalsize
+\begin{tabular}[t]{l}\Large The name of your organization\\[1ex]The name of your division\\
+Experimental lab\end{tabular}}}}}
+\newcommand{\COMPREHENSION}[2]{
+%Zusammenfassungstabelle
+\BB\\[3cm]\today \space --- \currenttime\\[2ex]
+\begin{tabular}{lllr}
+Experiment & Rechner & Name & Auszahlung \\ \hline
+#1
+\hline &&& #2 \EUR\end{tabular}
+}
+\newcommand{\GAINRECEIPT}[4]{
+\BB
+\vspace*{3cm}
+\paragraph*{Quittung: Teilnahme an einem Laborexperiment}\mbox{}
+\[\begin{tabular}{l|l|l|r}
+Experiment & Rechner & Name & Auszahlung \\ \hline
+#1 & #2 & #3 & #4 \EUR\end{tabular}\]Hiermit best\"{a}tige ich, dass ich den o.g. Betrag in bar ausgezahlt bekommen habe. Der Betrag wird brutto ausbezahlt. Eventuelle Steuern und sonstige Abgaben sind vom Empf\"{a}nger des Geldbetrages (Experimentteilnehmer) selbst zu entrichten.
+
+\vspace{1cm}\begin{tabbing}\hspace{0.5\textwidth} \= \kill
+Jena, \today \> \rule{0.5\textwidth}{1pt}\\ \> #3 \end{tabbing}
+}
+\newcommand{\LOSSRECEIPT}[4]{
+\BB
+\vspace*{3cm}
+\paragraph*{Quittung: Teilnahme an einem Laborexperiment}\mbox{}
+\[\begin{tabular}{l|l|l|r}
+Experiment & Rechner & Name & Einzahlung \\ \hline
+#1 & #2 & #3 & #4 \EUR\end{tabular}\]Hiermit wird best\"{a}tigt, dass die Versuchsperson im Experiment einen Verlust gemacht hat und den o.g. Betrag in bar eingezahlt hat.
+
+\vspace{1cm}\begin{tabbing}\hspace{0.5\textwidth} \= \kill
+Jena, \today \> \rule{0.5\textwidth}{1pt}\\ \> Experimentleiter \end{tabbing}
+}
+

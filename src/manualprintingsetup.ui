@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>lc::ManualPrintingSetup</class>
+ <widget class="QWidget" name="lc::ManualPrintingSetup">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>256</width>
+    <height>256</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Manual Printing Settings</string>
+  </property>
+  <layout class="QVBoxLayout" name="VLManualPrintingSetup">
+   <item>
+    <widget class="QPushButton" name="PBSelectFile">
+     <property name="styleSheet">
+      <string notr="true">background: cyan;</string>
+     </property>
+     <property name="text">
+      <string>Select file to be printed</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="LReceiptsHeader">
+     <property name="toolTip">
+      <string>Choose the LaTeX template which shall be used for receipts creation.</string>
+     </property>
+     <property name="text">
+      <string>Template for receipts:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="CBReceiptsHeader">
+     <property name="toolTip">
+      <string>Choose the LaTeX template which shall be used for receipts creation.</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background: cyan;</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="ChBPrintAnonymousReceipts">
+     <property name="toolTip">
+      <string>Check this if you want the created receipts to be anonymous.</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background: cyan;</string>
+     </property>
+     <property name="text">
+      <string>Print anonymous receipts</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="LReplaceParticipantNames">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="toolTip">
+      <string>Choose a string which shall replace the participant name on the anonymous receipts.</string>
+     </property>
+     <property name="text">
+      <string>Substitute praticipants' names with:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="CBReplaceParticipantNames">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="toolTip">
+      <string>Choose a string which shall replace the participant name on the anonymous receipts.</string>
+     </property>
+     <property name="editable">
+      <bool>true</bool>
+     </property>
+     <item>
+      <property name="text">
+       <string>\hspace{5cm}</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>anonym</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>anonymous</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>nicht ausfüllen</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="ChBReceiptsForLocalClients">
+     <property name="toolTip">
+      <string>This decides if receipts shall be printed for any z-Leaf instance running locally on the server.
+
+Warning: If this is disabled no receipts will be printed for ANY participant whose name contains the character string &quot;local&quot;!</string>
+     </property>
+     <property name="text">
+      <string>Print receipts for local clients</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="PBPrint">
+     <property name="toolTip">
+      <string>Starts a ReceiptsHandler instance to print the chosen file.</string>
+     </property>
+     <property name="text">
+      <string>Print</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="PBCancel">
+     <property name="toolTip">
+      <string>Cancel the process without printing anything.</string>
+     </property>
+     <property name="text">
+      <string>Cancel</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>PBCancel</sender>
+   <signal>clicked()</signal>
+   <receiver>lc::ManualPrintingSetup</receiver>
+   <slot>deleteLater()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>127</x>
+     <y>239</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>127</x>
+     <y>127</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

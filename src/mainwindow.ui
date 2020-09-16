@@ -1,0 +1,1136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>lc::MainWindow</class>
+ <widget class="QMainWindow" name="lc::MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>730</width>
+    <height>853</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Labcontrol</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../../../../../usr/local/share/labcontrol/icons/icon.png</normaloff>../../../../../../usr/local/share/labcontrol/icons/icon.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_8">
+    <item>
+     <widget class="QTabWidget" name="TWExperimenterTab">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>640</width>
+        <height>650</height>
+       </size>
+      </property>
+      <property name="baseSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <underline>false</underline>
+        <kerning>true</kerning>
+       </font>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <property name="usesScrollButtons">
+       <bool>true</bool>
+      </property>
+      <property name="tabBarAutoHide">
+       <bool>false</bool>
+      </property>
+      <widget class="QWidget" name="TExperimenterActions">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <attribute name="title">
+        <string>Experiment prepatation</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="HLExperimenterTab" stretch="1,1">
+        <item>
+         <layout class="QVBoxLayout" name="VLzTreeClientActions">
+          <item>
+           <widget class="QGroupBox" name="GBLocalActions">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="title">
+             <string>Experiment preparation / server actions</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <item>
+              <widget class="QLabel" name="L_PlanSession">
+               <property name="text">
+                <string>Plan a session or print attendee list</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="PBShowORSEE">
+               <property name="text">
+                <string>Show ORSEE</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="Line" name="line_ORSEE">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="L_PrintLocalFiles">
+               <property name="text">
+                <string>Print local files</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="PBShowPreprints">
+               <property name="text">
+                <string>Show preprints</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="PBPrintPaymentFileManually">
+               <property name="toolTip">
+                <string>Choose a payment file manually, which will then be printed.</string>
+               </property>
+               <property name="text">
+                <string>Print payment file manually</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="Line" name="line_otherNameZLeaf">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="L_WebcamChooser">
+               <property name="text">
+                <string>Show webcams</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="CBWebcamChooser">
+               <item>
+                <property name="text">
+                 <string>Choose webcam</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_ServerActions">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="VLFurtherSpecialActions">
+          <property name="spacing">
+           <number>6</number>
+          </property>
+          <item>
+           <widget class="QGroupBox" name="GBClientActions">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="title">
+             <string>Client actions</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <item>
+              <widget class="QLabel" name="L_ClientBootShutdown">
+               <property name="text">
+                <string>Switch the selected clients on or off</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="HLBootShutdown">
+               <item>
+                <widget class="QPushButton" name="PBShutdown">
+                 <property name="toolTip">
+                  <string>Turn off the selected clients.</string>
+                 </property>
+                 <property name="text">
+                  <string>Shutdown</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="PBBoot">
+                 <property name="toolTip">
+                  <string>Boot the selected clients.</string>
+                 </property>
+                 <property name="text">
+                  <string>Boot</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="Line" name="line_bootActions">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="L_VNC">
+               <property name="text">
+                <string>Remote Control selected clients</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_2">
+               <item>
+                <widget class="QPushButton" name="PBViewDesktopFullControl">
+                 <property name="toolTip">
+                  <string>Control mouse and keyboard</string>
+                 </property>
+                 <property name="text">
+                  <string>Control desktop</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="PBViewDesktopViewOnly">
+                 <property name="toolTip">
+                  <string>View only</string>
+                 </property>
+                 <property name="text">
+                  <string>Show desktop</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Control right mouse botton (RMB)</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="HLDisableRightClick">
+               <item>
+                <widget class="QPushButton" name="PBEnableRMB">
+                 <property name="text">
+                  <string>Enable RMB</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="PBDisableRMB">
+                 <property name="text">
+                  <string>Disable RMB</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="Line" name="line_viewDesktop">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="HLFileChooser">
+               <item>
+                <layout class="QVBoxLayout" name="VLUploadFolder">
+                 <item>
+                  <widget class="QLabel" name="LUploadFolder">
+                   <property name="text">
+                    <string>Upload folder to the selected clients</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="HLUploadFolder">
+                   <item>
+                    <widget class="QPushButton" name="PBChooseFile">
+                     <property name="text">
+                      <string>Choose folder</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="LEFilePath">
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="PBBeamFile">
+                   <property name="text">
+                    <string>Start to upload folder</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="Line" name="line_uploadFolder">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="L_BrowserActions">
+               <property name="text">
+                <string>Start browser on the selected clients</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="HLURL">
+               <item>
+                <widget class="QLabel" name="L_URL">
+                 <property name="text">
+                  <string>URL:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="LEURL">
+                 <property name="toolTip">
+                  <string>%CLIENT% is a placeholder for the hostname in the URL</string>
+                 </property>
+                 <property name="toolTipDuration">
+                  <number>-1</number>
+                 </property>
+                 <property name="text">
+                  <string>http://localhost:8000/%CLIENT%</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout">
+               <item>
+                <widget class="QLabel" name="L_BrowserSelection">
+                 <property name="text">
+                  <string>Use browser:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="CB_BrowserSelection">
+                 <property name="minimumSize">
+                  <size>
+                   <width>240</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>chromium</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>firefox</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="CBFullscreen">
+               <property name="text">
+                <string>Fullscreen (only FF)</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="HLbrowserActions">
+               <item>
+                <widget class="QPushButton" name="PBstartBrowser">
+                 <property name="text">
+                  <string>Start browser</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="PBstopBrowser">
+                 <property name="text">
+                  <string>Stop browser</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_ClientActions">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="TSessionStart">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>439</height>
+        </size>
+       </property>
+       <attribute name="title">
+        <string>Session actions</string>
+       </attribute>
+       <widget class="QWidget" name="verticalLayoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>691</width>
+          <height>71</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="VLcleanupRecoverLastSession">
+         <item>
+          <widget class="QLabel" name="L_cleanupRecoverLastSession">
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Cleanup / recover last session</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="HLcleanupRecoverLastSession">
+           <item>
+            <widget class="QPushButton" name="PBStopZtree">
+             <property name="text">
+              <string>Stop z-Tree</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="PBKillzLeaf">
+             <property name="toolTip">
+              <string>Stops zLeaf on all selected clients</string>
+             </property>
+             <property name="text">
+              <string>Stop z-Leaf on selected clients</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="Line" name="line">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="PBRecoverCrashedSession">
+             <property name="text">
+              <string>Recover crashed session</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="Line" name="line_cleanupRecoverLastSession">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="verticalLayoutWidget_3">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>88</y>
+          <width>691</width>
+          <height>539</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="VLNewSession">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetDefaultConstraint</enum>
+         </property>
+         <item>
+          <widget class="QLabel" name="LNewSession">
+           <property name="text">
+            <string>New Session</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="HLNewSession">
+           <item>
+            <layout class="QVBoxLayout" name="VLZtree">
+             <property name="leftMargin">
+              <number>9</number>
+             </property>
+             <property name="topMargin">
+              <number>9</number>
+             </property>
+             <property name="rightMargin">
+              <number>9</number>
+             </property>
+             <property name="bottomMargin">
+              <number>9</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="LZTreeVersion">
+               <property name="text">
+                <string>z-Tree version</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="CBzTreeVersion"/>
+             </item>
+             <item>
+              <widget class="QLabel" name="LDataTargetPath">
+               <property name="text">
+                <string>Data target path (No whitespaces allowed)</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="CBDataTargetPath"/>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="VLZtreeOptions">
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <layout class="QHBoxLayout" name="HLPortSelect">
+                 <item>
+                  <widget class="QLabel" name="LPort">
+                   <property name="text">
+                    <string>Port:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="SBPort">
+                   <property name="minimum">
+                    <number>7000</number>
+                   </property>
+                   <property name="maximum">
+                    <number>10000</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="Line" name="line_Ztree">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="LTemplateForReceipts">
+               <property name="text">
+                <string>Template for receipts</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="CBReceiptsHeader"/>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="ChBPrintAnonymousReceipts">
+               <property name="text">
+                <string>Print anonymous receipts</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="LReplaceParticipantNames">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>Replace participant names with:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="CBReplaceParticipantNames">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="editable">
+                <bool>true</bool>
+               </property>
+               <item>
+                <property name="text">
+                 <string>\hspace{5cm}</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>anonym</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>anonymous</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>nicht ausfüllen</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="ChBReceiptsForLocalClients">
+               <property name="text">
+                <string>Print receipt for local client</string>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="Line" name="line_Receipts">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="ChBRamDisk">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="text">
+                <string>Use ramdisk for gamesafe file</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="ChBSessionWithoutAttachedClients">
+               <property name="text">
+                <string>Allow session without attached clients</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="ChBautoStartClientZleaf">
+               <property name="text">
+                <string>Start z-Leaf on clients with default parameters</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="PBStartSession">
+               <property name="text">
+                <string>Start session</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="VSpacerZtree">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="VLZleave">
+             <item>
+              <widget class="QLabel" name="L_Zleaves">
+               <property name="text">
+                <string>z-Leaves</string>
+               </property>
+               <property name="margin">
+                <number>4</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="LzLeafCommandline">
+               <property name="text">
+                <string>command line to be executed</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="LEzLeafCommandline">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="PBStartzLeaf">
+               <property name="toolTip">
+                <string>Starts zLeaf on the selected clients with the port given in the 'zTree' groupbox.</string>
+               </property>
+               <property name="text">
+                <string>Start z-Leaf on selected clients</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="Line" name="line_StartZleaves">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="L_FakeName">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Run zLeaf with another name&lt;br/&gt;(select a single client):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="textFormat">
+                <enum>Qt::RichText</enum>
+               </property>
+               <property name="scaledContents">
+                <bool>false</bool>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="CBClientNames">
+               <property name="editable">
+                <bool>true</bool>
+               </property>
+               <property name="currentText">
+                <string>Choose the name z-Leaf shall have</string>
+               </property>
+               <item>
+                <property name="text">
+                 <string>Choose the name z-Leaf shall have</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="PBRunzLeaf">
+               <property name="text">
+                <string>Run z-Leaf with chosen name</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="Line" name="line_RunWithOtherName">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="L_LocalZleaf">
+               <property name="text">
+                <string>Local zLeaf</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="HLLocalzLeaf">
+               <item>
+                <widget class="QPushButton" name="PBStartLocalzLeaf">
+                 <property name="text">
+                  <string>Start local z-Leaf</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="PBKillLocalzLeaf">
+                 <property name="text">
+                  <string>Stop local z-Leaf</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <spacer name="VSpacerTemplates">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="TAdminActions">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <attribute name="title">
+        <string>Admin actions</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_6">
+        <item>
+         <widget class="QGroupBox" name="GBInformation">
+          <property name="title">
+           <string>Information</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <item>
+            <widget class="QLabel" name="L_UserName">
+             <property name="text">
+              <string>TextLabel</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="L_AdministrativeRights">
+             <property name="text">
+              <string>TextLabel</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="GBOptionsForAdminActions">
+          <property name="title">
+           <string>Options for admin actions</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_10">
+           <item>
+            <layout class="QVBoxLayout" name="VLUseUser">
+             <item>
+              <widget class="QLabel" name="L_UseUser">
+               <property name="text">
+                <string>User to be used for remote terminal session:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="HLUserRBs">
+               <item>
+                <widget class="QRadioButton" name="RBUseUserRoot">
+                 <property name="text">
+                  <string>roo&amp;t</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="RBUseLocalUser">
+                 <property name="text">
+                  <string>Client's user</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="GBActionsWithSelectedClients">
+          <property name="title">
+           <string>Actions with selected clients</string>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="QPushButton" name="PBOpenTerminal">
+             <property name="text">
+              <string>Open terminal</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="PBOpenFilesystem">
+             <property name="text">
+              <string>Open filesystem</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="GBExecuteOnEveryClient">
+          <property name="title">
+           <string>Execute command on selected clients</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_11">
+           <item>
+            <widget class="QComboBox" name="CBCommandToExecute">
+             <property name="editable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="PBExecute">
+             <property name="text">
+              <string>Execute</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="TInfo">
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <attribute name="title">
+        <string>Info</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="VLInfo">
+        <item>
+         <widget class="QLabel" name="LInfo">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTableView" name="TVClients">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>200</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>200</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="sizeAdjustPolicy">
+       <enum>QAbstractScrollArea::AdjustToContents</enum>
+      </property>
+      <property name="autoScroll">
+       <bool>false</bool>
+      </property>
+      <property name="showGrid">
+       <bool>true</bool>
+      </property>
+      <property name="cornerButtonEnabled">
+       <bool>false</bool>
+      </property>
+      <attribute name="horizontalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="horizontalHeaderCascadingSectionResizes">
+       <bool>true</bool>
+      </attribute>
+      <attribute name="horizontalHeaderDefaultSectionSize">
+       <number>115</number>
+      </attribute>
+      <attribute name="horizontalHeaderMinimumSectionSize">
+       <number>30</number>
+      </attribute>
+      <attribute name="horizontalHeaderStretchLastSection">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="verticalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="verticalHeaderDefaultSectionSize">
+       <number>35</number>
+      </attribute>
+      <attribute name="verticalHeaderMinimumSectionSize">
+       <number>25</number>
+      </attribute>
+      <attribute name="verticalHeaderStretchLastSection">
+       <bool>false</bool>
+      </attribute>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

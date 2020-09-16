@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>lc::LocalzLeafStarter</class>
+ <widget class="QWidget" name="lc::LocalzLeafStarter">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>371</width>
+    <height>352</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Local z-Leaf Starter</string>
+  </property>
+  <layout class="QVBoxLayout" name="VLLocalzLeafStarter">
+   <item>
+    <widget class="QLabel" name="LzLeafName">
+     <property name="toolTip">
+      <string>This sets the name with which this local z-Leaf will connect to z-Tree.</string>
+     </property>
+     <property name="text">
+      <string>Set the name of the to be started z-Leaf</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="LEzLeafName">
+     <property name="toolTip">
+      <string>This sets the name with which this local z-Leaf will connect to z-Tree.</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string>local</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="LzLeafVersion">
+     <property name="toolTip">
+      <string>Choose of which version the started z-Leaf shall be.</string>
+     </property>
+     <property name="text">
+      <string>Choose the version of the to be started z-Leaf</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="CBzLeafVersion">
+     <property name="toolTip">
+      <string>Choose of which version the started z-Leaf shall be.</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="maxVisibleItems">
+      <number>32</number>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="LzLeafPort">
+     <property name="toolTip">
+      <string>Set the port on which the z-Tree which shall be connected to listens.</string>
+     </property>
+     <property name="text">
+      <string>Choose the port the to be started z-Leaf shall listen on</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSpinBox" name="SBzLeafPort">
+     <property name="cursor">
+      <cursorShape>ArrowCursor</cursorShape>
+     </property>
+     <property name="toolTip">
+      <string>Set the port on which the z-Tree which shall be connected to listens.</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="minimum">
+      <number>7000</number>
+     </property>
+     <property name="maximum">
+      <number>65535</number>
+     </property>
+     <property name="value">
+      <number>7000</number>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="LLocalzLeafSize">
+     <property name="text">
+      <string>Choose the size the local z-Leaf shall have</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="LELocalzLeafSize"/>
+   </item>
+   <item>
+    <widget class="Line" name="line_Start">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="PBStartLocalzLeaf">
+     <property name="toolTip">
+      <string>Start a local z-Leaf with the set parameters.</string>
+     </property>
+     <property name="text">
+      <string>Start local z-Leaf</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="PBCancel">
+     <property name="toolTip">
+      <string>Cancel the start of a new local z-Leaf.</string>
+     </property>
+     <property name="text">
+      <string>Cancel</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>PBCancel</sender>
+   <signal>clicked()</signal>
+   <receiver>lc::LocalzLeafStarter</receiver>
+   <slot>deleteLater()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>175</x>
+     <y>328</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>175</x>
+     <y>175</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
