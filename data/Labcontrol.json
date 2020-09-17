@@ -49,7 +49,7 @@
         "lpr_command": "/usr/bin/lpr",
         "netstat_command": "/bin/netstat",
         "killall_command": "/usr/bin/killall",
-        "labcontrol_data_directory": "/usr/local/share/labcontrol",
+        "labcontrol_data_directory": ".",
         "latex_command": "/usr/bin/latex",
         "dvips_command": "/usr/bin/dvips",
         "file_manager": "/usr/bin/dolphin",
