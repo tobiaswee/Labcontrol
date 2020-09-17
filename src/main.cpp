@@ -38,7 +38,7 @@ int main( int argc, char *argv[] ) {
     if (f.good()) {
         pt::read_json(f, root);
     }
-    settings.reset( root );
+    settings.reset( new lc::Settings{root} );
     lc::MainWindow w;
     w.show();
     

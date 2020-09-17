@@ -56,6 +56,7 @@ public:
     const pt::ptree binary_paths;
     const pt::ptree client;
     const pt::ptree server;
+    const pt::ptree webcams_root;
 
     const int defaultReceiptIndex = 0;
     const QString browserCmd;
@@ -104,20 +105,22 @@ public:
 private:
     static bool CheckPathAndComplain( const QString &argPath, const QString &argVariableName,
                                       const QString &argMessage );
-    static QVector< Client* > CreateClients( const QSettings &argSettings,
+    static QVector< Client* > CreateClients( const pt::ptree &clients,
                                              const QString &argPingCmd );
     static QMap< QString, Client* > CreateClIPsToClMap( const QVector< Client* > &argClients );
     QStringList DetectInstalledLaTeXHeaders() const;
     QStringList DetectInstalledzTreeVersions() const;
-    static QStringList GetAdminUsers( const QSettings &argSettings );
-    static quint16 GetClientHelpNotificationServerPort( const QSettings &argSettings );
+    static QStringList GetAdminUsers( const pt::ptree server );
+    static quint16 GetClientHelpNotificationServerPort( const pt::ptree server );
     static int GetDefaultReceiptIndex( const QSettings &argSettings );
     static int GetInitialPort( const QSettings &argSettings );
     static QString GetLocalUserName();
-    static QString ReadSettingsItem( const QString &argVariableName,
+    /*static QString ReadSettingsItem( const QString &argVariableName,
                                      const QString &argMessage,
                                      const QSettings &argSettings,
-                                     bool argItemIsFile );
+                                     bool argItemIsFile );*/
+    static QStringList GetWebcams(const pt::ptree server);
+    static QStringList GetWebcamsNames(const pt::ptree server);
 
     int chosenzTreePort = 0;
     QVector< Client* > clients;

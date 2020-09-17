@@ -234,7 +234,7 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
 
     // Deactivate the webcam choosing interface if no webcams are available or the viewer is missing
     if ( settings->webcamDisplayCmd.isEmpty()
-         || settings->webcams.isEmpty() ) {
+         || settings->webcams.empty() ) {
         ui->CBWebcamChooser->setEnabled( false );
         ui->L_WebcamChooser->setEnabled( false );
     }
@@ -384,7 +384,7 @@ void lc::MainWindow::SetupWidgets() {
     }
 
     // Fill the 'CBWebcamChooser' with all available network webcams
-    if ( !settings->webcams.isEmpty() ) {
+    if ( !settings->webcams.empty() ) {
         for ( const auto &s : settings->webcams_names )
             ui->CBWebcamChooser->addItem( s );
     }
