@@ -52,3 +52,5 @@ OTHER_FILES += \
     data/scripts/kill_zLeaf_labcontrol2.sh \
     data/scripts/start_zLeaf_labcontrol2.sh \
     doc/manual.tex
+
+INCLUDEPATH += /usr/local/include/
