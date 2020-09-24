@@ -17,7 +17,6 @@
         "webcams": { "Webcam right": "http://user:pass@webcam_right", "Webcam left": "http://user:pass@webcam_left"}
     },
     "client": {
-        "client_quantity": 24,
         "clients": { "client01": {"ip": "192.168.53.1", "mac": "4c:72:b9:21:ea:7e", "xpos": "3", "ypos": "4"},
             "client02": {"ip": "192.168.53.2", "mac": "4c:72:b9:24:86:60", "xpos": "4", "ypos": "4"},
             "client03": {"ip": "192.168.53.3", "mac": "00:1e:8c:f2:5b:7a", "xpos": "5", "ypos": "4"},
@@ -41,8 +40,9 @@
             "backupclient04": {"ip": "192.168.53.22", "mac": "00:17:31:5f:84:c6", "xpos": "4", "ypos": "7"},
             "backupclient05": {"ip": "192.168.53.23", "mac": "00:17:31:5f:84:c6", "xpos": "5", "ypos": "7"},
             "backupclient06": {"ip": "192.168.53.24", "mac": "00:17:31:5c:68:89", "xpos": "6", "ypos": "7"}, 
-            "server": {"ip": "192.168.53.100", "mac": "4c:72:b9:21:bb:0c", "xpos": "1", "ypos": "5"}},
-        "user_name_on_clients": "user"
+            "server": {"ip": "192.168.53.100", "mac": "4c:72:b9:21:bb:0c", "xpos": "1", "ypos": "5"},
+            "testclient": {"ip": "192.168.53.48", "mac": "00:27:0e:34:3f:5d", "xpos": "3", "ypos": "2"}},
+        "user_name_on_clients": "ewfuser"
     },
     "binary_paths": {
         "lpr_command": "lpr",
@@ -51,7 +51,7 @@
         "labcontrol_data_directory": ".",
         "latex_command": "latex",
         "dvips_command": "dvips",
-        "file_manager": "dolphin",
+        "file_manager": "thunar",
         "ping_command": "ping",
         "postscript_viewer": "okular",
         "ps2pdf_command": "ps2pdf",
