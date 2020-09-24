@@ -19,11 +19,20 @@
 
 #include "clientpinger.h"
 
+#include <QDebug>
+
+// for FreeBSD version detection
+#include <sys/param.h>
+
 lc::ClientPinger::ClientPinger( const QString &argIP,
                                 const QString &argPingCommand, QObject *argParent ) :
     QObject{ argParent },
     // Arguments: -c 1 (send 1 ECHO_REQUEST packet) -w 1 (timeout after 1 second) -q (quiet output)
+#if __FreeBSD__ >= 9
+    pingArguments{ QStringList{} << "-c" << "1" << "-W" << "1" << "-q" << argIP },
+#else
     pingArguments{ QStringList{} << "-c" << "1" << "-w" << "1" << "-q" << argIP },
+#endif
     pingCommand{ argPingCommand },
     pingProcess{ new QProcess{ this } },
     state{ state_t::UNINITIALIZED }
@@ -43,6 +52,7 @@ void lc::ClientPinger::doPing() {
 
     // Query the current state of the client
     pingProcess->start( pingCommand, pingArguments );
+    //qDebug() << pingCommand << pingArguments;
     if ( !pingProcess->waitForFinished( 2500 ) )
         newState = state_t::ERROR;
     else {

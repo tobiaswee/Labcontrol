@@ -28,6 +28,9 @@
 #include "manualprintingsetup.h"
 #include "Lib/settings.h"
 
+// for FreeBSD version detection
+#include <sys/param.h>
+
 extern std::unique_ptr< lc::Settings > settings;
 
 lc::MainWindow::MainWindow( QWidget *argParent ) :
@@ -234,7 +237,7 @@ void lc::MainWindow::DisableDisfunctionalWidgets() {
 
     // Deactivate the webcam choosing interface if no webcams are available or the viewer is missing
     if ( settings->webcamDisplayCmd.isEmpty()
-         || settings->webcams.empty() ) {
+         || settings->webcams.isEmpty() ) {
         ui->CBWebcamChooser->setEnabled( false );
         ui->L_WebcamChooser->setEnabled( false );
     }
@@ -384,7 +387,7 @@ void lc::MainWindow::SetupWidgets() {
     }
 
     // Fill the 'CBWebcamChooser' with all available network webcams
-    if ( !settings->webcams.empty() ) {
+    if ( !settings->webcams.isEmpty() ) {
         for ( const auto &s : settings->webcams_names )
             ui->CBWebcamChooser->addItem( s );
     }
@@ -668,6 +671,17 @@ void lc::MainWindow::StartLocalzLeaf( QString argzLeafName, QString argzLeafVers
     QProcess startProc;
     startProc.setProcessEnvironment( QProcessEnvironment::systemEnvironment() );
     QStringList arguments;
+#if __FreeBSD__ >= 9
+    arguments << QString{ settings->zTreeInstDir + "/zTree_" + argzLeafVersion + "/zleaf.exe" }
+              << "/server" << "127.0.0.1" << "/channel"
+              << QString::number( argzTreePort - 7000 ) << "/name" << argzLeafName;
+    if ( !settings->localzLeafSize.isEmpty() ) {
+      arguments << "/size" << QString{ settings->localzLeafSize };
+    }
+
+    qDebug() << "Start local zLeaf:" << arguments;
+    startProc.startDetached( settings->wineCmd, arguments );
+#else
     arguments << "0x00000001" << settings->wineCmd
               << QString{ settings->zTreeInstDir + "/zTree_" + argzLeafVersion + "/zleaf.exe" }
               << "/server" << "127.0.0.1" << "/channel"
@@ -678,6 +692,7 @@ void lc::MainWindow::StartLocalzLeaf( QString argzLeafName, QString argzLeafVers
 
     qDebug() << "Start local zLeaf:" << arguments;
     startProc.startDetached( settings->tasksetCmd, arguments );
+#endif
 }
 
 void lc::MainWindow::on_PBStopZtree_clicked()
@@ -915,6 +930,7 @@ void lc::MainWindow::on_PBDisableRMB_clicked()
     }
 }
 
+// Anonymous receipients header check box
 void lc::MainWindow::on_ChBPrintAnonymousReceipts_clicked()
 {
     ui->LReplaceParticipantNames->setEnabled(true);

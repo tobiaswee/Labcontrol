@@ -58,7 +58,7 @@ lc::Settings::Settings( pt::ptree root ) :
                                            "Receipts printing will not work."))),
     netstatCmd(QString::fromStdString(binary_paths.get<std::string>("netstat_command",
                                                "Detection of active zLeaf connections will not work."))),
-    netwBrdAddr(QString::fromStdString(client.get<std::string>( "network_broadcast_address",
+    netwBrdAddr(QString::fromStdString(server.get<std::string>( "network_broadcast_address",
                                             "Booting the clients will not work."))),
     orseeUrl(QString::fromStdString(server.get<std::string>("orsee_url",
                                        "Opening ORSEE in a browser will not work."))),
@@ -146,21 +146,10 @@ QVector< lc::Client* > lc::Settings::CreateClients( const pt::ptree &clients,
 
     // Get the client quantity to check the value lists for clients creation for correct length
     int clientQuantity = 0;
-    if ( !clients.get<int>("client_quantity") ) {
-        qWarning() << "'client_quantity' was not set. The client quantity will be guessed"
-                      " by the amount of client IPs set in 'client_ips'.";
-        BOOST_FOREACH(const pt::ptree::value_type &v, clients.get_child("clients")) {
-            clientQuantity++;
-        }
-        qDebug() << "'clientQuantity':" << clientQuantity;
-    } else {
-        // bool ok = true; // unsure if possible to keep this extra safety query or if its even necessary
-        clientQuantity = clients.get<int>( "client_quantity" );
-        /*if ( !ok ) {
-            qWarning() << "The variable 'client_quantity' was not convertible to int";
-        }*/
-        qDebug() << "'clientQuantity':" << clientQuantity;
+    BOOST_FOREACH(const pt::ptree::value_type &v, clients.get_child("clients")) {
+        clientQuantity++;
     }
+    qDebug() << "'clientQuantity':" << clientQuantity;
 
     QStringList clientIPs;
     QStringList clientMACs;
@@ -172,17 +161,12 @@ QVector< lc::Client* > lc::Settings::CreateClients( const pt::ptree &clients,
 
     BOOST_FOREACH(const pt::ptree::value_type &v, clients_dict) {
         clientNames += QString::fromStdString(v.first);
-        clientIPs += QString::fromStdString(("ip"));
+        clientIPs += QString::fromStdString(clients_dict.get_child(v.first).get<std::string>("ip"));
         clientMACs += QString::fromStdString(clients_dict.get_child(v.first).get<std::string>("mac"));
         clientXPositions += QString::fromStdString(clients_dict.get_child(v.first).get<std::string>("xpos"));
         clientYPositions += QString::fromStdString(clients_dict.get_child(v.first).get<std::string>("ypos"));
     }
 
-    if ( clientIPs.length() != clientQuantity ) {
-        qWarning() << "The quantity of client ips does not match the client quantity. Client"
-                      " creation will fail. No clients will be available for interaction.";
-        return tempClientVec;
-    }
     qDebug() << "Client IPs:" << clientIPs.join( " / " );
 
     if ( clientMACs.length() != clientQuantity ) {

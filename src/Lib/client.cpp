@@ -28,6 +28,9 @@
 #include "settings.h"
 #include "lablib.h"
 
+// for FreeBSD version detection
+#include <sys/param.h>
+
 extern std::unique_ptr< lc::Settings > settings;
 extern std::unique_ptr< lc::Lablib > lablib;
 
@@ -58,6 +61,11 @@ lc::Client::Client( const QString &argIP, const QString &argMAC, const QString &
         connect( pingTimer, &QTimer::timeout,
                  this, &Client::RequestAPing ) ;
         pingTimer->start( 3000 );
+
+    } else {
+        qDebug() << "ClientPingerArg not found: " << argPingCmd;
+        exit(127);
+
     }
 
     qDebug() << "Created client" << name << "with MAC" << mac << "and IP" << ip
@@ -104,6 +112,7 @@ void lc::Client::Boot() {
     // Output message via the debug messages tab
     qDebug() << settings->wakeonlanCmd << arguments.join( " " );
 
+    // seg fault!
     pingTimer->start( 3000 );
 
     protectedCycles = 7;
@@ -237,7 +246,11 @@ void lc::Client::Shutdown() {
     }
     QStringList arguments;
     arguments << "-i" << settings->pkeyPathUser
+ #if __FreeBSD__ >= 9
+              << QString{ settings->userNameOnClients  + "@" + ip } << "sudo shutdown -p now";
+ #else
               << QString{ settings->userNameOnClients  + "@" + ip } << "sudo shutdown -P now";
+ #endif
 
     // Start the process
     QProcess shutdownProcess;
@@ -249,6 +262,7 @@ void lc::Client::Shutdown() {
     qDebug() << settings->sshCmd << arguments.join( " " );
 
     // This additional 'ping_timer' start is needed for the case that the clients are shut down without prior closing of zLeaves
+    // seg fault!
     pingTimer->start( 3000 );
 
     protectedCycles = 3;

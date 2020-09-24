@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>730</width>
-    <height>891</height>
+    <height>896</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -64,7 +64,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <property name="usesScrollButtons">
        <bool>true</bool>
@@ -1103,11 +1103,11 @@
       <attribute name="horizontalHeaderCascadingSectionResizes">
        <bool>true</bool>
       </attribute>
-      <attribute name="horizontalHeaderDefaultSectionSize">
-       <number>115</number>
-      </attribute>
       <attribute name="horizontalHeaderMinimumSectionSize">
        <number>30</number>
+      </attribute>
+      <attribute name="horizontalHeaderDefaultSectionSize">
+       <number>115</number>
       </attribute>
       <attribute name="horizontalHeaderStretchLastSection">
        <bool>false</bool>
@@ -1115,11 +1115,11 @@
       <attribute name="verticalHeaderVisible">
        <bool>false</bool>
       </attribute>
-      <attribute name="verticalHeaderDefaultSectionSize">
-       <number>35</number>
-      </attribute>
       <attribute name="verticalHeaderMinimumSectionSize">
        <number>25</number>
+      </attribute>
+      <attribute name="verticalHeaderDefaultSectionSize">
+       <number>35</number>
       </attribute>
       <attribute name="verticalHeaderStretchLastSection">
        <bool>false</bool>

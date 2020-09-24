@@ -24,12 +24,31 @@
 #include "settings.h"
 #include "ztree.h"
 
+// for FreeBSD version detection
+#include <sys/param.h>
+
 extern std::unique_ptr< lc::Settings > settings;
 
 lc::ZTree::ZTree( const QString &argZTreeDataTargetPath, const int &argZTreePort,
                   const QString &argZTreeVersionPath, QObject *argParent ) :
     QObject{ argParent }
 {
+
+#if __FreeBSD__ >= 9
+    QStringList arguments{ QStringList{} << QString{ settings->zTreeInstDir + "/zTree_"
+                                            + argZTreeVersionPath + "/ztree.exe" }
+                                         << "/datadir" << QString{ "Z:/" + argZTreeDataTargetPath }
+                                         << "/privdir" << QString{ "Z:/" + argZTreeDataTargetPath }
+                                         << "/gsfdir" << QString{ "Z:/" + argZTreeDataTargetPath }
+                                         << "/tempdir" << QString{ "Z:/" + argZTreeDataTargetPath }
+                                         << "/leafdir" << QString{ "Z:/" + argZTreeDataTargetPath }
+                                         << "/channel" << QString::number( argZTreePort - 7000 ) };
+
+   QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+   zTreeInstance.setProcessEnvironment( env );
+   zTreeInstance.setWorkingDirectory( QDir::homePath() );
+   zTreeInstance.start( settings->wineCmd, arguments, QIODevice::NotOpen );
+#else
     QStringList arguments{ QStringList{} << "-c" << "0" << settings->wineCmd
                                          << QString{ settings->zTreeInstDir + "/zTree_"
                                             + argZTreeVersionPath + "/ztree.exe" }
@@ -39,11 +58,12 @@ lc::ZTree::ZTree( const QString &argZTreeDataTargetPath, const int &argZTreePort
                                          << "/tempdir" << QString{ "Z:/" + argZTreeDataTargetPath }
                                          << "/leafdir" << QString{ "Z:/" + argZTreeDataTargetPath }
                                          << "/channel" << QString::number( argZTreePort - 7000 ) };
+   QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+   zTreeInstance.setProcessEnvironment( env );
+   zTreeInstance.setWorkingDirectory( QDir::homePath() );
+   zTreeInstance.start( settings->tasksetCmd, arguments, QIODevice::NotOpen );
+#endif
 
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    zTreeInstance.setProcessEnvironment( env );
-    zTreeInstance.setWorkingDirectory( QDir::homePath() );
-    zTreeInstance.start( settings->tasksetCmd, arguments, QIODevice::NotOpen );
     connect( &zTreeInstance, SIGNAL( finished( int ) ),
              this, SIGNAL( ZTreeClosed( int ) ) );
 
