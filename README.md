@@ -7,7 +7,3 @@ The easiest way to build and install _Labcontrol_ is to open the `labcontrol.pro
 To work properly _Labcontrol_ requires a file named `labcontrol.json` to be copied from the data directory into the directory of the binary. This also applies to the "icons" directory which can be also found in the data directory. All _z-Tree_ executables should reside in sub-directories of `/opt/z-Leaves` following the naming scheme `zTree_X.Y.ZZ`.
 
 Receipt creation requires at least one receipt template in `/usr/local/share/labcontrol`. The name of the header file should match the pattern `NAMETHEHEADERSHALLHAVE_header.tex` to be recognized.
-
-## Contact
-
-If you have any questions or suggestions you can gladly contact me via my Github account _markuspg_.
