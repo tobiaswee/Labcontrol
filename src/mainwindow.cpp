@@ -741,13 +741,6 @@ void lc::MainWindow::on_CBReceiptsHeader_activated(int argIndex)
     ui->CBReceiptsHeader->setStyleSheet( "" );
 }
 
-// Anonymous receipients header check box
-void lc::MainWindow::on_ChBPrintanonymousreceipts_clicked()
-{
-    ui->LReplaceParticipantNames->setEnabled(true);
-    ui->CBReplaceParticipantNames->setEnabled(true);
-}
-
 // Start session button actions
 void lc::MainWindow::on_PBStartSession_clicked() {
 
@@ -920,4 +913,10 @@ void lc::MainWindow::on_PBDisableRMB_clicked()
             }
         }
     }
+}
+
+void lc::MainWindow::on_ChBPrintAnonymousReceipts_clicked()
+{
+    ui->LReplaceParticipantNames->setEnabled(true);
+    ui->CBReplaceParticipantNames->setEnabled(true);
 }

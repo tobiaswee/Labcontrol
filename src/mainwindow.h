@@ -127,10 +127,10 @@ private slots:
     void GetNewDataTargetPath();
     void on_CBDataTargetPath_activated( int argIndex );
     void on_CBReceiptsHeader_activated(int argIndex);
-    void on_ChBPrintanonymousreceipts_clicked();
     void on_PBKillzLeaf_clicked();
     void on_PBEnableRMB_clicked();
     void on_PBDisableRMB_clicked();
+    void on_ChBPrintAnonymousReceipts_clicked();
 };
 
 }

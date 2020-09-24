@@ -168,12 +168,14 @@ QVector< lc::Client* > lc::Settings::CreateClients( const pt::ptree &clients,
     QStringList clientXPositions;
     QStringList clientYPositions;
 
-    BOOST_FOREACH(const pt::ptree::value_type &v, clients.get_child("clients")) {
+    pt::ptree clients_dict = clients.get_child("clients");
+
+    BOOST_FOREACH(const pt::ptree::value_type &v, clients_dict) {
         clientNames += QString::fromStdString(v.first);
-        clientIPs += QString::fromStdString(v.second.get_value<std::string>("ip"));
-        clientMACs += QString::fromStdString(v.second.get_value<std::string>("mac"));
-        clientXPositions += QString::fromStdString(v.second.get_value<std::string>("xpos"));
-        clientYPositions += QString::fromStdString(v.second.get_value<std::string>("ypos"));
+        clientIPs += QString::fromStdString(("ip"));
+        clientMACs += QString::fromStdString(clients_dict.get_child(v.first).get<std::string>("mac"));
+        clientXPositions += QString::fromStdString(clients_dict.get_child(v.first).get<std::string>("xpos"));
+        clientYPositions += QString::fromStdString(clients_dict.get_child(v.first).get<std::string>("ypos"));
     }
 
     if ( clientIPs.length() != clientQuantity ) {
