@@ -109,6 +109,8 @@ lc::Settings::Settings( pt::ptree root ) :
     installedZTreeVersions{ DetectInstalledzTreeVersions() },
     //clientHelpNotificationServerPort(server.get<unsigned short>("client_help_server_port")),
     clientHelpNotificationServerPort{ GetClientHelpNotificationServerPort(server) },
+    vncViewOnlyArguments( QString::fromStdString(server.get<std::string>("vnc_view_only_argument",
+                                                                         "vnc view only mode won't work.")) ),
     chosenzTreePort(server.get<int>("initial_port")),
     clients{ CreateClients( client, pingCmd ) },
     localzLeafName(QString::fromStdString(server.get<std::string>("local_zLeaf_def_name",

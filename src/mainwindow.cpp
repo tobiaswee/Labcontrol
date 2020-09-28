@@ -427,7 +427,7 @@ void lc::MainWindow::SetupWidgets() {
     // Disable buttons which are not configured
     //DisableDisfunctionalWidgets();
 
-    // Set the info text in LInfo on the TInfo tab
+    /*// Set the info text in LInfo on the TInfo tab
     ui->LInfo->setText( "This is Labcontrol version 2.1.6\n\n\n\n\n\n"
                         "Developers\n\n"
                         "0day-2016 Henning Prömpers\n"
@@ -443,7 +443,7 @@ void lc::MainWindow::SetupWidgets() {
                         "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
                         "See the GNU General Public License for more details.\n\n"
                         "You should have received a copy of the GNU General Public License\n"
-                        "along with Labcontrol. If not, see <http://www.gnu.org/licenses/>.\n\n\n" );
+                        "along with Labcontrol. If not, see <http://www.gnu.org/licenses/>.\n\n\n" ); */ // TODO - version number into window bar
 }
 
 void lc::MainWindow::StartReceiptsHandler( QString argzTreeDataTargetPath,

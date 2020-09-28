@@ -215,8 +215,11 @@ void lc::Client::SetStateToZLEAF_RUNNING( QString argClientIP ) {
 
 void lc::Client::ShowDesktopViewOnly() {
     QStringList arguments;
+#if __FreeBSD__ >= 9
+    arguments << " " << settings->vncViewOnlyArguments << " " << ip;
+#else
     arguments << ip;
-
+#endif
     QProcess showDesktopProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     showDesktopProcess.setProcessEnvironment( env );
@@ -228,8 +231,11 @@ void lc::Client::ShowDesktopViewOnly() {
 
 void lc::Client::ShowDesktopFullControl() {
     QStringList arguments;
-    arguments << ip + ":5901";
-
+#if __FreeBSD__ >= 9 // remove that one again as soon as you have changed the config
+    arguments << ip;
+#else
+    arguments << ip + ":5901"; // TODO: command arguments (port, etc.) into config
+#endif
     QProcess showDesktopProcess;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     showDesktopProcess.setProcessEnvironment( env );
@@ -386,11 +392,11 @@ void lc::Client::ControlRMB(bool enable) {
     if(enable){
         arguments << "-i" << settings->pkeyPathUser
                   << QString{ settings->userNameOnClients + "@" + ip }
-                  << "DISPLAY=:0 xinput set-button-map 'Microsoft Basic Optical Mouse' 1 2 3 4 5 6 7 8 9 10 11 12 > /dev/null 2>&1 &disown;";
+                  << "DISPLAY=:0 xinput set-button-map 'Microsoft Basic Optical Mouse' 1 2 3 4 5 6 7 8 9 10 11 12 > /dev/null 2>&1;"; // &disown
     } else {
         arguments << "-i" << settings->pkeyPathUser
                   << QString{ settings->userNameOnClients + "@" + ip }
-                  << "DISPLAY=:0 xinput set-button-map 'Microsoft Basic Optical Mouse' 1 2 0 4 5 6 7 8 9 10 11 12 > /dev/null 2>&1 &disown;";
+                  << "DISPLAY=:0 xinput set-button-map 'Microsoft Basic Optical Mouse' 1 2 0 4 5 6 7 8 9 10 11 12 > /dev/null 2>&1;"; // &disown
     }
 
     // Start the process
