@@ -18,12 +18,7 @@
  */
 
 #include <memory>
-#include <string.h>
 #include <QApplication>
-
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-
 
 #include "mainwindow.h"
 #include "Lib/settings.h"
@@ -39,6 +34,7 @@ int main( int argc, char *argv[] ) {
         pt::read_json(f, root);
     }
     settings.reset( new lc::Settings{root} );
+    // clients?
     lc::MainWindow w;
     w.show();
     

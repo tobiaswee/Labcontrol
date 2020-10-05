@@ -22,9 +22,6 @@
 #include <QFile>
 #include <QProcessEnvironment>
 #include <string>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-#include <boost/foreach.hpp>
 
 #include "client.h"
 #include "settings.h"
@@ -111,6 +108,11 @@ lc::Settings::Settings( pt::ptree root ) :
     clientHelpNotificationServerPort{ GetClientHelpNotificationServerPort(server) },
     vncViewOnlyArguments( QString::fromStdString(server.get<std::string>("vnc_view_only_argument",
                                                                          "vnc view only mode won't work.")) ),
+#if __FreeBSD__ >= 9
+    isBSD(true),
+#else
+    isBSD(false),
+#endif
     chosenzTreePort(server.get<int>("initial_port")),
     clients{ CreateClients( client, pingCmd ) },
     localzLeafName(QString::fromStdString(server.get<std::string>("local_zLeaf_def_name",
@@ -280,7 +282,6 @@ QStringList lc::Settings::GetAdminUsers( const pt::ptree server ) {
         qDebug() << "'adminUsers':" << adminUsers.join( " / " );
         return adminUsers;
     }
-    //return QStringList{};
 }
 
 quint16 lc::Settings::GetClientHelpNotificationServerPort( const pt::ptree server ) {
@@ -295,29 +296,6 @@ quint16 lc::Settings::GetClientHelpNotificationServerPort( const pt::ptree serve
         qDebug() << "'clientHelpNotificationServerPort':" << clientHelpNotificationServerPort;
         return clientHelpNotificationServerPort;
     }
-    //return 0;
-}
-
-int lc::Settings::GetDefaultReceiptIndex( const QSettings &argSettings ) {
-    // Read the default receipt index for the 'CBReceipts' combobox
-    if ( !argSettings.contains( "default_receipt_index" ) ) {
-        qDebug() << "'default_receipt_index' was not set. It will default to '0'.";
-        return 0;
-    }
-    int tempIndex = argSettings.value( "default_receipt_index", 0 ).toInt();
-    qDebug() << "'defaultReceiptIndex':" << tempIndex;
-    return tempIndex;
-}
-
-int lc::Settings::GetInitialPort( const QSettings &argSettings ) {
-    // Read the initial port number
-    if ( !argSettings.contains( "initial_port" ) ) {
-        qDebug() << "The 'initial_port' variable was not set."
-                    " Labcontrol will default to port 7000 for new zTree instances.";
-    }
-    int initialPort = argSettings.value( "initial_port", 7000 ).toInt();
-    qDebug() << "'initial_port':" << initialPort;
-    return initialPort;
 }
 
 QString lc::Settings::GetLocalUserName() {
@@ -335,24 +313,6 @@ QString lc::Settings::GetLocalUserName() {
     }
     return userName;
 }
-
-/*QString lc::Settings::ReadSettingsItem( const QString &argVariableName,
-                                        const QString &argMessage,
-                                        const QSettings &argSettings,
-                                        bool argItemIsFile) {
-    if ( !argSettings.contains( argVariableName ) ) {
-        qDebug() << argVariableName << "was not set." << argMessage;
-        return QString{};
-    } else {
-        QString tempString{ argSettings.value( argVariableName ).toString() };
-        if ( argItemIsFile
-             && !CheckPathAndComplain( tempString, argVariableName, argMessage ) ) {
-            tempString.clear();
-        }
-        return tempString;
-    }
-    //return QString{};
-}*/
 
 void lc::Settings::SetLocalzLeafSize( QString arg) {
     localzLeafSize = arg;

@@ -22,11 +22,14 @@
 
 #include <QDebug>
 #include <QObject>
-#include <QSettings>
 
 #include <string>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/foreach.hpp>
+
+// for FreeBSD version detection
+#include <sys/param.h>
 
 #include "client.h"
 
@@ -46,18 +49,24 @@ public:
     Settings& operator=( Settings &&argSettings ) = delete;
     ~Settings();
 
-    int GetChosenZTreePort() const { return chosenzTreePort; }
     QVector< Client* > &GetClients() { return clients; }
-    QString GetLocalzLeafName() const;
-    void SetChosenZTreePort( const int argPort );
-    void SetLocalzLeafName( const QString &argLocalzLeafName );
 
+    // get and set functions
+    int GetChosenZTreePort() const { return chosenzTreePort; }
+    void SetChosenZTreePort( const int argPort );
+    QString GetLocalzLeafName() const { return localzLeafName; }
+    void SetLocalzLeafName( const QString &argLocalzLeafName ) { localzLeafName = argLocalzLeafName; }
+    QString GetLocalzLeafSize() const { return localzLeafSize; }
+    void SetLocalzLeafSize( QString arg);
+
+    // ptree childs
     const pt::ptree root;
     const pt::ptree binary_paths;
     const pt::ptree client;
     const pt::ptree server;
     const pt::ptree webcams_root;
 
+    // constants
     const int defaultReceiptIndex = 0;
     const QString browserCmd;
     const QString clientBrowserCmd;
@@ -68,9 +77,6 @@ public:
     const QString latexCmd;
     const QString lcDataDir;
     const QString localUserName;
-    QString localzLeafSize;
-    void SetLocalzLeafSize( QString arg);
-    QString GetLocalzLeafSize() const { return localzLeafSize; }
     const QString lprCmd;
     const QString netstatCmd;
     const QString netwBrdAddr;
@@ -102,43 +108,31 @@ public:
     const QStringList installedZTreeVersions;
     const quint16 clientHelpNotificationServerPort = 0;
     const QString vncViewOnlyArguments;
+    const bool isBSD;
 
 private:
     static bool CheckPathAndComplain( const QString &argPath, const QString &argVariableName,
                                       const QString &argMessage );
     static QVector< Client* > CreateClients( const pt::ptree &clients,
-                                             const QString &argPingCmd );
+                                             const QString &argPingCmd);
     static QMap< QString, Client* > CreateClIPsToClMap( const QVector< Client* > &argClients );
     QStringList DetectInstalledLaTeXHeaders() const;
     QStringList DetectInstalledzTreeVersions() const;
     static QStringList GetAdminUsers( const pt::ptree server );
     static quint16 GetClientHelpNotificationServerPort( const pt::ptree server );
-    static int GetDefaultReceiptIndex( const QSettings &argSettings );
-    static int GetInitialPort( const QSettings &argSettings );
     static QString GetLocalUserName();
-    /*static QString ReadSettingsItem( const QString &argVariableName,
-                                     const QString &argMessage,
-                                     const QSettings &argSettings,
-                                     bool argItemIsFile );*/
     static QStringList GetWebcams(const pt::ptree server);
     static QStringList GetWebcamsNames(const pt::ptree server);
 
     int chosenzTreePort = 0;
     QVector< Client* > clients;
     QString localzLeafName;
+    QString localzLeafSize;
 
 public:
     const QMap< QString, Client* > clIPsToClMap;
 };
 
-}
-
-inline QString lc::Settings::GetLocalzLeafName() const {
-    return localzLeafName;
-}
-
-inline void lc::Settings::SetLocalzLeafName( const QString &argLocalzLeafName ) {
-    localzLeafName = argLocalzLeafName;
 }
 
 #endif // SETTINGS_H

@@ -31,7 +31,6 @@
 #include <QModelIndexList>
 #include <QPlainTextEdit>
 #include <QProcess>
-#include <QSettings>
 #include <QString>
 #include <QTableView>
 #include <QVector>
