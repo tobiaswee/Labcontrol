@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2020 Markus Prasser
  *
  * This file is part of Labcontrol.
  *
@@ -17,53 +17,59 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <memory>
-
-#include <QMessageBox>
-
 #include "localzleafstarter.h"
-#include "ui_localzleafstarter.h"
 #include "Lib/settings.h"
+#include "ui_localzleafstarter.h"
 
-extern std::unique_ptr< lc::Settings > settings;
+extern std::unique_ptr<lc::Settings> settings;
 
-lc::LocalzLeafStarter::LocalzLeafStarter( QWidget *argParent ) :
-    QWidget{ argParent },
-    ui{ new Ui::LocalzLeafStarter }
-{
-    ui->setupUi( this );
+/*!
+ * \brief Create a new LocalzLeafStarter instance
+ *
+ * \param argParent The instance's parent QObject
+ */
+lc::LocalzLeafStarter::LocalzLeafStarter(QWidget *const argParent)
+    : QWidget{argParent}, ui{new Ui::LocalzLeafStarter} {
+  ui->setupUi(this);
 
-    //Choose initial port from settings
-    if ( settings->GetChosenZTreePort() ) {
-        ui->SBzLeafPort->setValue( settings->GetChosenZTreePort() );
-    }
+  // Choose initial port from settings
+  if (settings->GetChosenZTreePort()) {
+    ui->SBzLeafPort->setValue(settings->GetChosenZTreePort());
+  }
 
-    //Choose initial z-Leave size from settings
-    ui->LELocalzLeafSize->setText( settings->GetLocalzLeafSize() );
+  // Choose initial z-Leave size from settings
+  ui->LELocalzLeafSize->setText(settings->GetLocalzLeafSize());
 
-
-    ui->CBzLeafVersion->addItem( tr( "Please choose a version" ) );
-    if ( !settings->installedZTreeVersions.isEmpty() ) {
-        ui->CBzLeafVersion->addItems( settings->installedZTreeVersions );
-    }
+  ui->CBzLeafVersion->addItem(tr("Please choose a version"));
+  if (!settings->installedZTreeVersions.isEmpty()) {
+    ui->CBzLeafVersion->addItems(settings->installedZTreeVersions);
+  }
 }
 
-lc::LocalzLeafStarter::~LocalzLeafStarter() {
-    delete ui;
-}
+/*!
+ * \brief Destroy the LocalzLeafStarter instance
+ */
+lc::LocalzLeafStarter::~LocalzLeafStarter() { delete ui; }
 
+/*!
+ * \brief Reacts on a button click and emits the signal carrying the parameters
+ * for a requested local z-Leaf
+ */
 void lc::LocalzLeafStarter::on_PBStartLocalzLeaf_clicked() {
-    if ( ui->CBzLeafVersion->currentIndex() == 0 ) {
-        QMessageBox::information( this, tr( "No z-Tree version chosen" ),
-                                  tr( "The was not chosen a z-Tree version, yet. This is"
-                                      " mandatory, so please set one" ) , QMessageBox::Ok );
-        return;
-    }
+  if (ui->CBzLeafVersion->currentIndex() == 0) {
+    QMessageBox::information(
+        this, tr("No z-Tree version chosen"),
+        tr("The was not chosen a z-Tree version, yet. This is"
+           " mandatory, so please set one"),
+        QMessageBox::Ok);
+    return;
+  }
 
-    //Set chosen z-Leaf size
-    settings->SetLocalzLeafSize( ui->LELocalzLeafSize->text() );
+  // Set chosen z-Leaf size
+  settings->SetLocalzLeafSize(ui->LELocalzLeafSize->text());
 
-    //Emit start local z-Leaf request to main window
-    emit LocalzLeafRequested( ui->LEzLeafName->text(), ui->CBzLeafVersion->currentText(),
-                              ui->SBzLeafPort->value() );
+  // Emit start local z-Leaf request to main window
+  emit LocalzLeafRequested(ui->LEzLeafName->text(),
+                           ui->CBzLeafVersion->currentText(),
+                           static_cast<quint16>(ui->SBzLeafPort->value()));
 }

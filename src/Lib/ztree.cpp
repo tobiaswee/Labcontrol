@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2020 Markus Prasser
  *
  * This file is part of Labcontrol.
  *
@@ -17,35 +17,59 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "ztree.h"
+#include "settings.h"
+
+#include <QDir>
+
 #include <memory>
 
-#include <QDebug>
+extern std::unique_ptr<lc::Settings> settings;
 
-#include "settings.h"
-#include "ztree.h"
+/*!
+ * \brief Setup and start a new z-Tree instance with the given parameters
+ *
+ * \param[in] argZTreeDataTargetPath The path where the new z-Tree instance
+ * shall write its output to
+ * \param[in] argZTreePort The port on which the new z-Tree instance shall
+ * listen
+ * \param[in] argZTreeVersion The version of z-Tree which shall be
+ * started
+ * \param[in] argParent The instance's parent QObject
+ */
+lc::ZTree::ZTree(const QString &argZTreeDataTargetPath, const int &argZTreePort,
+                 const QString &argZTreeVersion, QObject *const argParent)
+    : QObject{argParent}, zTreeInstance{new QProcess{this}} {
+  const QStringList arguments{"-c",
+                              "0",
+                              settings->wineCmd,
+                              QString{settings->zTreeInstDir + "/zTree_" +
+                                      argZTreeVersion + "/ztree.exe"},
+                              "/datadir",
+                              QString{"Z:/" + argZTreeDataTargetPath},
+                              "/privdir",
+                              QString{"Z:/" + argZTreeDataTargetPath},
+                              "/gsfdir",
+                              QString{"Z:/" + argZTreeDataTargetPath},
+                              "/tempdir",
+                              QString{"Z:/" + argZTreeDataTargetPath},
+                              "/leafdir",
+                              QString{"Z:/" + argZTreeDataTargetPath},
+                              "/channel",
+                              QString::number(argZTreePort - 7000)};
 
-extern std::unique_ptr< lc::Settings > settings;
+  QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+  zTreeInstance->setProcessEnvironment(env);
+  zTreeInstance->setWorkingDirectory(QDir::homePath());
+  zTreeInstance->start(settings->tasksetCmd, arguments, QIODevice::NotOpen);
+  connect(zTreeInstance,
+          static_cast<void (QProcess::*)(int)>(&QProcess::finished), this,
+          &ZTree::ZTreeClosed);
 
-lc::ZTree::ZTree( const QString &argZTreeDataTargetPath, const int &argZTreePort,
-                  const QString &argZTreeVersionPath, QObject *argParent ) :
-    QObject{ argParent }
-{
-    QStringList arguments{ QStringList{} << "-c" << "0" << settings->wineCmd
-                                         << QString{ settings->zTreeInstDir + "/zTree_"
-                                            + argZTreeVersionPath + "/ztree.exe" }
-                                         << "/datadir" << QString{ "Z:/" + argZTreeDataTargetPath }
-                                         << "/privdir" << QString{ "Z:/" + argZTreeDataTargetPath }
-                                         << "/gsfdir" << QString{ "Z:/" + argZTreeDataTargetPath }
-                                         << "/tempdir" << QString{ "Z:/" + argZTreeDataTargetPath }
-                                         << "/leafdir" << QString{ "Z:/" + argZTreeDataTargetPath }
-                                         << "/channel" << QString::number( argZTreePort - 7000 ) };
-
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    zTreeInstance.setProcessEnvironment( env );
-    zTreeInstance.setWorkingDirectory( QDir::homePath() );
-    zTreeInstance.start( settings->tasksetCmd, arguments, QIODevice::NotOpen );
-    connect( &zTreeInstance, SIGNAL( finished( int ) ),
-             this, SIGNAL( ZTreeClosed( int ) ) );
-
-    qDebug() << settings->tasksetCmd << arguments.join( " " );
+  qDebug() << settings->tasksetCmd << arguments.join(" ");
 }
+
+/*!
+ * \brief Destroy the z-Tree instance (closes the running z-Tree instance)
+ */
+lc::ZTree::~ZTree() { zTreeInstance->deleteLater(); }

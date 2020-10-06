@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2020 Markus Prasser
  *
  * This file is part of Labcontrol.
  *
@@ -17,98 +17,124 @@
  *  along with Labcontrol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <memory>
-
 #include "clienthelpnotificationserver.h"
 #include "settings.h"
 
-extern std::unique_ptr< lc::Settings > settings;
+#include <QNetworkConfigurationManager>
+#include <QNetworkSession>
+#include <QTcpServer>
+#include <QTcpSocket>
 
-lc::ClientHelpNotificationServer::ClientHelpNotificationServer( QObject *argParent ) :
-    QObject{ argParent },
-    hostAddress{ settings->serverIP }
-{
-    QNetworkConfigurationManager manager;
-    if ( manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired ) {
-        // Get saved network configuration
-        QSettings settings{ QSettings::UserScope, QLatin1String{ "QtProject" } };
-        settings.beginGroup( QLatin1String{ "QtNetwork" } );
-        const QString id = settings.value( QLatin1String{ "DefaultNetworkConfiguration" } ).toString();
-        settings.endGroup();
+extern std::unique_ptr<lc::Settings> settings;
 
-        // If the saved network configuration is not currently discovered use the system default
-        QNetworkConfiguration config = manager.configurationFromIdentifier( id );
-        if ( ( config.state() & QNetworkConfiguration::Discovered ) != QNetworkConfiguration::Discovered ) {
-            config = manager.defaultConfiguration();
-        }
-        networkSession = new QNetworkSession{ config, this };
-        connect( networkSession, &QNetworkSession::opened,
-                 this, &ClientHelpNotificationServer::OpenSession );
-        networkSession->open();
-    } else {
-        OpenSession();
+/*!
+ * \brief Create a new instance and start listening as soon as possible
+ *
+ * \param argParent The instance's parent QObject
+ */
+lc::ClientHelpNotificationServer::ClientHelpNotificationServer(
+    QObject *argParent)
+    : QObject{argParent}, hostAddress{settings->serverIP} {
+  QNetworkConfigurationManager manager;
+  if (manager.capabilities() &
+      QNetworkConfigurationManager::NetworkSessionRequired) {
+    // Get saved network configuration
+    QSettings qSettings{QSettings::UserScope, QLatin1String{"QtProject"}};
+    qSettings.beginGroup(QLatin1String{"QtNetwork"});
+    const QString id =
+        qSettings.value(QLatin1String{"DefaultNetworkConfiguration"})
+            .toString();
+    qSettings.endGroup();
+
+    // If the saved network configuration is not currently discovered use the
+    // system default
+    QNetworkConfiguration config = manager.configurationFromIdentifier(id);
+    if ((config.state() & QNetworkConfiguration::Discovered) !=
+        QNetworkConfiguration::Discovered) {
+      config = manager.defaultConfiguration();
     }
+    networkSession = new QNetworkSession{config, this};
+    connect(networkSession, &QNetworkSession::opened, this,
+            &ClientHelpNotificationServer::OpenSession);
+    networkSession->open();
+  } else {
+    OpenSession();
+  }
 
-    connect( helpMessageServer, &QTcpServer::newConnection,
-             this, &ClientHelpNotificationServer::SendReply );
+  connect(helpMessageServer, &QTcpServer::newConnection, this,
+          &ClientHelpNotificationServer::SendReply);
 }
 
+/*!
+ * \brief Open a new network session and start listening for incoming
+ * connections
+ */
 void lc::ClientHelpNotificationServer::OpenSession() {
-    // Save the used configuration
-    if ( networkSession ) {
-        QNetworkConfiguration config = networkSession->configuration();
-        QString id;
-        if ( config.type() == QNetworkConfiguration::UserChoice ) {
-            id = networkSession->sessionProperty( QLatin1String{ "UserChoiceConfiguration" } ).toString();
-        } else {
-            id = config.identifier();
-        }
-
-        QSettings settings( QSettings::UserScope, QLatin1String{ "QtProject" } );
-        settings.beginGroup( QLatin1String{ "QtNetwork" } );
-        settings.setValue( QLatin1String{ "DefaultNetworkConfiguration" }, id );
-        settings.endGroup();
+  // Save the used configuration
+  if (networkSession) {
+    QNetworkConfiguration config = networkSession->configuration();
+    QString id;
+    if (config.type() == QNetworkConfiguration::UserChoice) {
+      id = networkSession
+               ->sessionProperty(QLatin1String{"UserChoiceConfiguration"})
+               .toString();
+    } else {
+      id = config.identifier();
     }
 
-    helpMessageServer = new QTcpServer{ this };
-    if ( !helpMessageServer->listen( hostAddress, settings->clientHelpNotificationServerPort ) ) {
-        QMessageBox messageBox{ QMessageBox::Critical, tr( "Unable to start the client help notification server" ),
-                    tr( "Unable to start the client help notification server.\nThe following error occurred:\n\n%1." ).arg( helpMessageServer->errorString() ), QMessageBox::Ok };
-        messageBox.exec();
-        return;
-    }
+    QSettings qSettings(QSettings::UserScope, QLatin1String{"QtProject"});
+    qSettings.beginGroup(QLatin1String{"QtNetwork"});
+    qSettings.setValue(QLatin1String{"DefaultNetworkConfiguration"}, id);
+    qSettings.endGroup();
+  }
+
+  helpMessageServer = new QTcpServer{this};
+  if (!helpMessageServer->listen(QHostAddress{hostAddress},
+                                 settings->clientHelpNotificationServerPort)) {
+    QMessageBox messageBox{
+        QMessageBox::Critical,
+        tr("Unable to start the client help notification server"),
+        tr("Unable to start the client help notification server.\nThe "
+           "following error occurred:\n\n%1.")
+            .arg(helpMessageServer->errorString()),
+        QMessageBox::Ok};
+    messageBox.exec();
+    return;
+  }
 }
 
 void lc::ClientHelpNotificationServer::SendReply() {
-    QByteArray block;
-    QDataStream out{ &block, QIODevice::WriteOnly };
-    out.setVersion( QDataStream::Qt_5_2 );
-    out << ( quint16 )0;
-    out << QString{ "Help demand retrieved." };
-    out.device()->seek( 0 );
-    out << ( quint16 )( block.size() - sizeof( quint16 ) );
+  QByteArray block;
+  QDataStream out{&block, QIODevice::WriteOnly};
+  out.setVersion(QDataStream::Qt_5_7);
+  out << static_cast<quint16>(0);
+  out << QString{"Help demand retrieved."};
+  out.device()->seek(0);
+  out << static_cast<quint16>(static_cast<unsigned int>(block.size()) -
+                              sizeof(quint16));
 
-    QTcpSocket *clientConnection = helpMessageServer->nextPendingConnection();
-    QString peerAddress = clientConnection->peerAddress().toString();
-    QString peerName;
-    bool unknownClient = false;
-    if ( settings->clIPsToClMap.contains( peerAddress ) ) {
-        peerName = settings->clIPsToClMap[ peerAddress ]->name;
-    } else {
-        unknownClient = true;
-    }
+  const auto clientConnection = helpMessageServer->nextPendingConnection();
+  const auto peerAddress = clientConnection->peerAddress().toString();
+  QString peerName;
+  if (settings->clIPsToClMap.contains(peerAddress)) {
+    peerName = settings->clIPsToClMap[peerAddress]->name;
+  }
 
-    connect( clientConnection, &QTcpSocket::disconnected, clientConnection, &QTcpSocket::deleteLater );
-    clientConnection->write( block );
-    clientConnection->disconnectFromHost();
+  connect(clientConnection, &QTcpSocket::disconnected, clientConnection,
+          &QTcpSocket::deleteLater);
+  clientConnection->write(block);
+  clientConnection->disconnectFromHost();
 
-    if ( unknownClient ) {
-        QMessageBox requestReceivedBox{ QMessageBox::Information, tr( "Unknown client asked for help."),
-                    tr( "An unknown client with IP '%1' asked for help.").arg( peerAddress ), QMessageBox::Ok };
-        requestReceivedBox.exec();
-    } else {
-        QMessageBox requestReceivedBox{ QMessageBox::Information, tr( "'%1' asked for help.").arg( peerName ),
-                    tr( "'%1' asked for help.").arg( peerName ), QMessageBox::Ok };
-        requestReceivedBox.exec();
-    }
+  if (peerName.isEmpty()) {
+    QMessageBox requestReceivedBox{
+        QMessageBox::Information, tr("Unknown client asked for help."),
+        tr("An unknown client with IP '%1' asked for help.").arg(peerAddress),
+        QMessageBox::Ok};
+    requestReceivedBox.exec();
+  } else {
+    QMessageBox requestReceivedBox{
+        QMessageBox::Information, tr("'%1' asked for help.").arg(peerName),
+        tr("'%1' asked for help.").arg(peerName), QMessageBox::Ok};
+    requestReceivedBox.exec();
+  }
 }

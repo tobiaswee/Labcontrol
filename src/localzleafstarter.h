@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2020 Markus Prasser
  *
  * This file is part of Labcontrol.
  *
@@ -26,25 +26,32 @@ namespace lc {
 
 namespace Ui {
 class LocalzLeafStarter;
-}
+} // namespace Ui
 
+/*!
+ * \brief A configuration interface for the setup of local z-Leaf instances
+ *
+ * This class has no functionality to start a local z-Leaf but emits a signal
+ * containing the parameters for a to be started z-Leaf.
+ */
 class LocalzLeafStarter : public QWidget {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    explicit LocalzLeafStarter( QWidget *argParent = nullptr );
-    ~LocalzLeafStarter();
+  explicit LocalzLeafStarter(QWidget *argParent = nullptr);
+  ~LocalzLeafStarter() override;
 
 signals:
-    void LocalzLeafRequested( QString argzLeafName, QString argzLeafVersion, int argzTreePort );
+  void LocalzLeafRequested(QString argzLeafName, QString argzLeafVersion,
+                           quint16 argzTreePort);
 
 private:
-    Ui::LocalzLeafStarter *ui = nullptr;
+  Ui::LocalzLeafStarter *const ui = nullptr;
 
 private slots:
-    void on_PBStartLocalzLeaf_clicked();
+  void on_PBStartLocalzLeaf_clicked();
 };
 
-}
+} // namespace lc
 
 #endif // LOCALZLEAFSTARTER_H

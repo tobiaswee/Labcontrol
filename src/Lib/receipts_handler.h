@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2020 Markus Prasser
  *
  * This file is part of Labcontrol.
  *
@@ -34,60 +34,83 @@ namespace lc {
 
 //! A struct representing one payoff entry.
 /*!
-  This class represents a single payoff entry which will be used in the receipts creation process. Multiple instances of this will be used to represent the individual participants' outcomes.
+  This class represents a single payoff entry which will be used in the receipts
+  creation process. Multiple instances of this will be used to represent the
+  individual participants' outcomes.
 */
-struct paymentEntry_t {QString computer; QString name; double payoff;};
+struct paymentEntry_t {
+  QString computer;
+  QString name;
+  double payoff;
+};
 
 //! A class to handle receipts printing.
 /*!
-  This class is element of every session and is used to handle the receipts printing.
+  This class is element of every session and is used to handle the receipts
+  printing.
 */
 class ReceiptsHandler : public QObject {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    explicit ReceiptsHandler( const QString &argZTreeDataTargetPath,
-                              bool argPrintReceiptsForLocalClients,
-                              const QString &argAnonymousReceiptsPlaceholder,
-                              const QString &argLatexHeaderName, QObject *argParent = nullptr );
-    explicit ReceiptsHandler( const QString &argZTreeDataTargetPath,
-                              bool argPrintReceiptsForLocalClients,
-                              const QString &argAnonymousReceiptsPlaceholder,
-                              const QString &argLatexHeaderName,
-                              const QString &argDateString, QObject *argParent = nullptr );
+  explicit ReceiptsHandler(const QString &argZTreeDataTargetPath,
+                           bool argPrintReceiptsForLocalClients,
+                           const QString &argAnonymousReceiptsPlaceholder,
+                           const QString &argLatexHeaderName,
+                           QObject *argParent = nullptr);
+  explicit ReceiptsHandler(const QString &argZTreeDataTargetPath,
+                           bool argPrintReceiptsForLocalClients,
+                           const QString &argAnonymousReceiptsPlaceholder,
+                           const QString &argLatexHeaderName,
+                           const QString &argDateString,
+                           QObject *argParent = nullptr);
 
 signals:
-    void PrintingFinished();
+  void PrintingFinished();
 
 private slots:
-    /*! Deletes the ReceiptsPrinter instance after successful printing
-     */
-    void DeleteReceiptsPrinterInstance();
-    /*! Displays QMessageBox widgets for errors given by the ReceiptsPrinter instance
-     */
-    void DisplayMessageBox(QString *argErrorMessage, QString *argHeading);
-    /*! Prints the receipts
-     */
-    void PrintReceipts();
+  /*! Deletes the ReceiptsPrinter instance after successful printing
+   */
+  void DeleteReceiptsPrinterInstance();
+  /*! Displays QMessageBox widgets for errors given by the ReceiptsPrinter
+   * instance
+   */
+  void DisplayMessageBox(QString *argErrorMessage, QString *argHeading);
+  /*! Prints the receipts
+   */
+  void PrintReceipts();
 
 private:
-    void CreateReceiptsFromPaymentFile();
-    QVector<QString> *GetParticipantsDataFromPaymentFile();
-    QString *LoadLatexHeader();
-    void MakeReceiptsAnonymous( QVector<paymentEntry_t*> *argDataVector, bool argAlsoAnonymizeClients );
+  void CreateReceiptsFromPaymentFile();
+  QVector<QString> *GetParticipantsDataFromPaymentFile();
+  QString *LoadLatexHeader();
+  void MakeReceiptsAnonymous(QVector<paymentEntry_t *> *argDataVector,
+                             bool argAlsoAnonymizeClients);
 
-    const QString anonymousReceiptsPlaceholder;                 //!< Placeholder which shall be inserted for participant names if anonymous printing is desired (QString != "")
-    const QString dateString;                                   //!< The expected date string of the payment file in form 'yyMMdd_hhmm'
-    const QString expectedPaymentFileName;                      //!< The name of the expected payment file
-    const QString expectedPaymentFilePath;                      //!< The path of the expected payment file
-    const QString latexHeaderName;                              //!< The name of the chosen LaTeX header template
-    QFile paymentFile;                                          //!< A pointer to the '*.pay' file being watched for existance and starting the printing process
-    const bool printReceiptsForLocalClients;                    //!< Stores if receipts shall be printed for local clients
-    ReceiptsPrinter *receiptsPrinter = nullptr;                 //!< Creates new thread for receipts printing
-    QTimer *timer = nullptr;                                    //!< Used for regular checking if the payment file was created
-    const QString zTreeDataTargetPath;                          //!< A reference to the data target path stored in the session class instance
+  const QString
+      anonymousReceiptsPlaceholder; //!< Placeholder which shall be inserted for
+                                    //!< participant names if anonymous printing
+                                    //!< is desired (QString != "")
+  const QString dateString; //!< The expected date string of the payment file in
+                            //!< form 'yyMMdd_hhmm'
+  const QString
+      expectedPaymentFileName; //!< The name of the expected payment file
+  const QString
+      expectedPaymentFilePath; //!< The path of the expected payment file
+  const QString
+      latexHeaderName; //!< The name of the chosen LaTeX header template
+  QFile paymentFile;   //!< A pointer to the '*.pay' file being watched for
+                       //!< existance and starting the printing process
+  const bool printReceiptsForLocalClients; //!< Stores if receipts shall be
+                                           //!< printed for local clients
+  ReceiptsPrinter *receiptsPrinter =
+      nullptr; //!< Creates new thread for receipts printing
+  QTimer *timer =
+      nullptr; //!< Used for regular checking if the payment file was created
+  const QString zTreeDataTargetPath; //!< A reference to the data target path
+                                     //!< stored in the session class instance
 };
 
-}
+} // namespace lc
 
 #endif // RECEIPTS_HANDLER_H

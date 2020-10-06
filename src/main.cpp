@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2020 Markus Prasser
  *
  * This file is part of Labcontrol.
  *
@@ -21,16 +21,21 @@
 
 #include <QApplication>
 
-#include "mainwindow.h"
 #include "Lib/settings.h"
+#include "mainwindow.h"
 
-std::unique_ptr< lc::Settings > settings;
+std::unique_ptr<lc::Settings> settings;
 
-int main( int argc, char *argv[] ) {
-    QApplication a{ argc, argv };
-    settings.reset( new lc::Settings{ QSettings{ "Labcontrol", "Labcontrol" } } );
-    lc::MainWindow w;
-    w.show();
-    
-    return a.exec();
+int main(int argc, char *argv[]) {
+  QApplication a{argc, argv};
+
+  qRegisterMetaType<lc::Client::State>();
+  qRegisterMetaType<lc::Client::State>("Client::State");
+  qRegisterMetaType<lc::Client::State>("lc::Client::State");
+
+  settings.reset(new lc::Settings{QSettings{"Labcontrol", "Labcontrol"}});
+  lc::MainWindow w;
+  w.show();
+
+  return a.exec();
 }

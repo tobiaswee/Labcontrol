@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2020 Markus Prasser
  *
  * This file is part of Labcontrol.
  *
@@ -28,129 +28,159 @@
 #include <QThread>
 #include <QTimer>
 
-#include "global.h"
-#include "clientpinger.h"
-
 namespace lc {
+
+class ClientPinger;
 
 //! Class which represents the clients in the lab
 /*!
-  This class contains elements and functions needed to represent all functions of a client.
+  This class contains elements and functions needed to represent all functions
+  of a client.
 */
 class Client : public QObject {
-    Q_OBJECT
+  Q_OBJECT
 
 public slots:
-    //! Sets the STATE of the client to 'ZLEAF_RUNNING'
-    void SetStateToZLEAF_RUNNING( QString argClientIP );
+  //! Sets the STATE of the client to 'ZLEAF_RUNNING'
+  void SetStateToZLEAF_RUNNING(QString argClientIP);
 
 public:
-    const QString ip;
-    const QString mac;
-    const QString name;
-    const unsigned short int xPosition = 1;
-    const unsigned short int yPosition = 1;
+  //! Opens a terminal for the client
+  enum class State : unsigned short int {
+    //! The client is booting but not yet responding
+    BOOTING,
+    //! An error occurred determining the client's state
+    ERROR,
+    //! The client is not responding to pings
+    NOT_RESPONDING,
+    //! The client is shutting down but not yet stopped responding
+    SHUTTING_DOWN,
+    //! The client's state is not yet defined (should only occur directly after
+    //! client creation)
+    UNINITIALIZED,
+    //! The client is responding to pings
+    RESPONDING,
+    //! The client is running a zLeaf
+    ZLEAF_RUNNING
+  };
 
-    /*!
-     * \brief Client's constructor
-     * \param argIP         The IP address the represented client has
-     * \param argMAC        The MAC address the represented client has
-     * \param argName       The hostname of the represented client
-     * \param argXPosition  The client's x coordinate in the lab's grid
-     * \param argYPosition  The client's y coordinate in the lab's grid
-     */
-    Client( const QString &argIP, const QString &argMAC, const QString &argName,
-            unsigned short int argXPosition, unsigned short int argYPosition,
-            const QString &argPingCmd );
-    //! Client's destructor
-    ~Client();
-    //! Beams the chosen file to the client's 'media4ztree' directory
-    /*!
-      @param argFileToBeam                  The file which shall be beamed to the client's 'media4ztree' directory
-      @param argPublickeyPathUser           The path to the publickey for user login on the clients
-      @param argUserNameOnClients           The name of the user on the clients
-    */
-    void BeamFile( const QString &argFileToBeam, const QString * const argPublickeyPathUser, const QString * const argUserNameOnClients );
-    /*!
-     * \brief Boots the client
-     */
-    void Boot();
-    /*!
-     * \brief DeactiveScreensaver deactivates potentially running screensavers on the client
-     */
-    void DeactiveScreensaver();
-    //! Returns the current state of the client
-    /*!
-      @return The current state of the client
-    */
-    state_t GetClientState() const { return state; }
-    int GetSessionPort() const { return sessionPort; }
-    /*!
-     * \brief Kills all processes 'zleaf.exe' on the client
-     */
-    void KillZLeaf();
-    //! Opens a file manager for the client's file system
-    /*!
-     @param argUserToBeUsed                 The name of the user on the clients
-    */
-    void OpenFilesystem( const QString * const argUserToBeUsed );
-    /*!
-     * \brief Opens a terminal for the client
-     * \param argCommand A command which shall be executed in the terminal window (Pass an empty QString if not wanted)
-     * \param argOpenAsRoot Run the terminal session as root (true) or as normal user (false)
-     */
-    void OpenTerminal( const QString &argCommand, const bool &argOpenAsRoot );
-    void SetSessionPort( int argSP ) { sessionPort = argSP; }
-    void SetzLeafVersion( const QString &argzLeafV ) { zLeafVersion = argzLeafV; }
-    //! Shows the desktop of the given client
-    void ShowDesktopViewOnly();
-    void ShowDesktopFullControl();
-    /*!
-     * \brief Shuts down the client
-     */
-    void Shutdown();
+  const QString ip;
+  const QString mac;
+  const QString name;
+  const unsigned short int xPosition = 1;
+  const unsigned short int yPosition = 1;
 
-    /*!
-    * \brief Starts a zLeaf instance on the client
-    * @param argFakeName The name the zLeaf instance shall have (if not the default, which is the hostname of the client)
-    */
-    void StartZLeaf(const QString *argFakeName = nullptr, QString cmd = "" );
+  /*!
+   * \brief Client's constructor
+   * \param argIP         The IP address the represented client has
+   * \param argMAC        The MAC address the represented client has
+   * \param argName       The hostname of the represented client
+   * \param argXPosition  The client's x coordinate in the lab's grid
+   * \param argYPosition  The client's y coordinate in the lab's grid
+   */
+  Client(const QString &argIP, const QString &argMAC, const QString &argName,
+         unsigned short int argXPosition, unsigned short int argYPosition,
+         const QString &argPingCmd);
+  //! Client's destructor
+  ~Client();
+  //! Beams the chosen file to the client's 'media4ztree' directory
+  /*!
+    @param argFileToBeam                  The file which shall be beamed to the
+    client's 'media4ztree' directory
+    @param argPublickeyPathUser           The path to the publickey for user
+    login on the clients
+    @param argUserNameOnClients           The name of the user on the clients
+  */
+  void BeamFile(const QString &argFileToBeam,
+                const QString *const argPublickeyPathUser,
+                const QString *const argUserNameOnClients);
+  /*!
+   * \brief Boots the client
+   */
+  void Boot();
+  /*!
+   * \brief DeactiveScreensaver deactivates potentially running screensavers on
+   * the client
+   */
+  void DeactiveScreensaver();
+  //! Returns the current state of the client
+  /*!
+    @return The current state of the client
+  */
+  State GetClientState() const { return state; }
+  int GetSessionPort() const { return sessionPort; }
+  /*!
+   * \brief Kills all processes 'zleaf.exe' on the client
+   */
+  void KillZLeaf();
+  //! Opens a file manager for the client's file system
+  /*!
+   @param argUserToBeUsed                 The name of the user on the clients
+  */
+  void OpenFilesystem(const QString *const argUserToBeUsed);
+  /*!
+   * \brief Opens a terminal for the client
+   * \param argCommand A command which shall be executed in the terminal window
+   * (Pass an empty QString if not wanted) \param argOpenAsRoot Run the terminal
+   * session as root (true) or as normal user (false)
+   */
+  void OpenTerminal(const QString &argCommand, const bool &argOpenAsRoot);
+  void SetSessionPort(int argSP) { sessionPort = argSP; }
+  void SetzLeafVersion(const QString &argzLeafV) { zLeafVersion = argzLeafV; }
+  //! Shows the desktop of the given client
+  void ShowDesktopViewOnly();
+  void ShowDesktopFullControl();
+  /*!
+   * \brief Shuts down the client
+   */
+  void Shutdown();
 
-    /*!
-    * \brief Opens a browser window on the client
-    * @param argURL                     URL to open in clients browser
-    */
-    void StartClientBrowser( const QString *argURL = nullptr, const bool *argFullscreen = nullptr, const QString *argBrowser = nullptr );
+  /*!
+   * \brief Starts a zLeaf instance on the client
+   * @param argFakeName The name the zLeaf instance shall have (if not the
+   * default, which is the hostname of the client)
+   */
+  void StartZLeaf(const QString *argFakeName = nullptr, QString cmd = "");
 
-    /*!
-    * \brief Closes all browser instances
-    */
-    void StopClientBrowser();
+  /*!
+   * \brief Opens a browser window on the client
+   * @param argURL                     URL to open in clients browser
+   */
+  void StartClientBrowser(const QString *argURL = nullptr,
+                          const bool *argFullscreen = nullptr,
+                          const QString *argBrowser = nullptr);
 
-    /*!
-    * \brief Enable/Disable right mouse button
-    */
-    void ControlRMB(bool enable = true);
+  /*!
+   * \brief Closes all browser instances
+   */
+  void StopClientBrowser();
+
+  /*!
+   * \brief Enable/Disable right mouse button
+   */
+  void ControlRMB(bool enable = true);
 
 private:
-    const QString &GetzLeafVersion() const { return zLeafVersion; }
+  const QString &GetzLeafVersion() const { return zLeafVersion; }
 
-    unsigned short int protectedCycles;
-    ClientPinger *pinger = nullptr;
-    QThread pingerThread;
-    state_t state = state_t::UNINITIALIZED;
-    QTimer *pingTimer = nullptr;                       //! QTimer used to trigger pings by pinger's ClientPinger instance
-    int sessionPort = 0;
-    QString zLeafVersion;
+  unsigned short int protectedCycles;
+  ClientPinger *pinger = nullptr;
+  QThread pingerThread;
+  State state = State::UNINITIALIZED;
+  QTimer *pingTimer = nullptr; //! QTimer used to trigger pings by pinger's
+                               //! ClientPinger instance
+  int sessionPort = 0;
+  QString zLeafVersion;
 
 private slots:
-    void GotStatusChanged( state_t argState );
-    void RequestAPing();
+  void GotStatusChanged(State argState);
+  void RequestAPing();
 
 signals:
-    void PingWanted();
+  void PingWanted();
 };
 
-}
+} // namespace lc
+Q_DECLARE_METATYPE(lc::Client::State)
 
 #endif // CLIENT_H

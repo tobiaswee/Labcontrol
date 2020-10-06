@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Markus Prasser
+ * Copyright 2014-2020 Markus Prasser
  *
  * This file is part of Labcontrol.
  *
@@ -27,31 +27,34 @@
 
 namespace lc {
 
-//! The NetstatAgent class is used to do repetitive runs of the 'netstat' program to check for active zLeaf connections.
+//! The NetstatAgent class is used to do repetitive runs of the 'netstat'
+//! program to check for active zLeaf connections.
 /*!
   This class is just used for repetive executions of netstat.
 */
 class NetstatAgent : public QObject {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    explicit NetstatAgent( const QString &argNetstatCommand, QObject *argParent = nullptr );
-    
+  explicit NetstatAgent(const QString &argNetstatCommand,
+                        QObject *argParent = nullptr);
+
 signals:
-    //! This signal is emitted if the query of the currently active zLeaf connections finished
-    void QueryFinished(QStringList *argActiveZLeafConnections);
-    
+  //! This signal is emitted if the query of the currently active zLeaf
+  //! connections finished
+  void QueryFinished(QStringList *argActiveZLeafConnections);
+
 public slots:
-    void QueryClientConnections();
-    
+  void QueryClientConnections();
+
 private:
-    const QRegularExpression extractionRegexp;
-    const QStringList netstatArguments;
-    const QString &netstatCommand;
-    QProcess netstatQueryProcess;
-    const QRegularExpression searchRegexp;
+  const QRegularExpression extractionRegexp;
+  const QStringList netstatArguments;
+  const QString &netstatCommand;
+  QProcess netstatQueryProcess;
+  const QRegularExpression searchRegexp;
 };
 
-}
+} // namespace lc
 
 #endif // NETSTATAGENT_H
